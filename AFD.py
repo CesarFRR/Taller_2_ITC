@@ -2,7 +2,7 @@ from Alfabeto import Alfabeto
 
 
 class AFD:
-    Sigma=None
+    Sigma=None #se intentará hacer el delta como  un diccionario en esta rama, debido a la complejidad del taller
     Q=None
     q0=None
     F=None
