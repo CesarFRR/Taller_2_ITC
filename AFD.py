@@ -27,21 +27,26 @@ class AFD:
                         i=i+1
                         self.Sigma=Alfabeto(lineas[i])
                     elif (lineas[i] =="#states"):
-                        while(lineas[i+1][0]=="s"):
+                        while(lineas[i+1][0]!="#initial"):
                             i=i+1
                             self.Q.append(lineas[i])
+                       
+                        
                     elif (lineas[i] =="#initial"):
                         i=i+1
                         self.q0=lineas[i]
                     elif (lineas[i] =="#accepting"):
-                        while(lineas[i+1][0]=="s"):
+                        while(lineas[i+1][0]!="#transitions"):
                             i=i+1
                             self.F.append(lineas[i])
                     elif (lineas[i] =="#transitions"):
-                        self.delta=[[None]*len(self.Sigma.simbolos) for i in range(len(self.Q))]
-                        print("ESTE ES DELTA:\n ",self.delta)
+                        # self.delta=[[None]*len(self.Sigma.simbolos) for i in range(len(self.Q))]
+
+                        self.delta=dict(zip(self.Q,[[None]*(len(self.Sigma.simbolos)) for i in range(len(self.Sigma.simbolos))])) #delta -> dict
+                        print("delta como diccionario:\n", self.delta)
                         while(lineas[i+1][0]=="s"):
                             i=i+1
+                            
                             # TODO: agregar delta de txt a la matriz self.delta --> MATRIZ: filas: q0, q1, q2, q3, q2,..,qn ; columnas: a, b, c,..,m-simbolo
                         pass
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
