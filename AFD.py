@@ -104,8 +104,22 @@ class AFD:
     def exportar(self, archivo):
         pass
 
-    def procesarCadena(self, cadena):
-        return True
+    def procesarCadena(self, cadena):   #Procesar cadena con delta como un diccionario
+            actual = self.q0
+            for i in cadena:
+                if i not in self.Sigma:  #Comprobar que el simbolo leido se encuentre en el alfabeto
+                    return False
+                if self.delta.get(actual) is not None:  #Verificar que el estado actual exista
+                    transicion = self.delta[actual]    #Lista de transiciones del estado actual
+                    for j in transicion:    
+                        if i in j: #Recorrer las transiciones verificando el simbolo actual y el estado resultado
+                            actual = j[1] #Realizar transicion                    
+                            break
+                            
+            if actual in self.F: #verificar si el estado actual es de aceptacion
+                return True
+            else:
+                return False   
 
     def procesarCadenaConDetalles(self, cadena):
         return True
