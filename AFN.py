@@ -21,8 +21,6 @@ class AFN:
                 with open(args[0], 'r', newline='', encoding='utf-8') as file:
                     file = file.read().replace('\r\n', '\n').replace('\r', '\n')  # problema de saltos de linea solucionados
                     string= f'''{file}'''
-                    if(not string.startswith(self.etiquetas[0])):
-                        print("si empieza con: ", self.etiquetas[0])
                     dictReader={}
                     afc={}
                     for i in string.split('\n'):
@@ -31,76 +29,75 @@ class AFN:
                         elif i != '':
                             if(key!='#transitions' and Alfabeto.validate_regex(i,r"^[^#;\n]+$")): # regex para que los estados no contengan ";", "#" ni \n
                                 afc.setdefault(key, []).append(i)
-                            elif key== '#transitions' and i.split(":")[1].split(">")[0]!= "$":
-                                trans=re.split(r"[:>]", i)# transiciones, verificar que cada una no contenga $ (lambda), esto es AFN, no AFN-lambda
+                            elif key== '#transitions' and i.split(":")[1].split(">")[0]!= "$": # AFN: no contiene transiciones lambda
+                                trans=re.split(r"[:>]", i)
                                 if(len(trans)!=3): raise ValueError("transición inválida: ", i)
-                                estado=trans[0]
-                                simbolo=trans[1]
-                                deltaResultado=trans[2]
-                                #===================================================================#
+                                estado, simbolo, deltaResultado = trans
                                 valor=dictReader.get(estado)
-                                #print("i: ", i, " key: ", key, " trans", trans, " valor: ", valor)
                                 if(valor==None): #No existe el estado? crearlo y agregar { simbolo:deltaResultado }
-                                    dictReader[estado]={simbolo: set(deltaResultado.split(',')) }
-                                elif(simbolo in valor):
-                                    pass #Transición válida --> AFN: si pueden haber varias transiciones de q para un simbolo o etiqueta
-                                else:
-                                    dictReader[estado].update({simbolo:set(deltaResultado.split(','))})
+                                    dictReader[estado]={simbolo: set(deltaResultado.split(';')) }
+                                else: #AFN: Pueden haber varias transiciones de q para un simbolo
+                                    dictReader[estado].update({simbolo:set(deltaResultado.split(';'))})
                     self.Sigma = Alfabeto([afc['#alphabet'][0]])
-                    self.Q = afc['#states']
+                    self.Q = set(afc['#states'])
                     self.q0 = afc['#initial'][0]
-                    self.F = afc['#accepting']
+                    self.F = set(afc['#accepting'])
                     self.delta = dictReader       
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
-            self.Sigma = args[0]
-            self.Q = args[1]
-            self.q0 = args[2]
-            self.F = args[3]
-            self.delta = args[4]
-    def hallarEstadosInaccesibles():
-        pass
+            self.Sigma, self.Q, self.qo, self.F, self.delta = args
+            self.Q=set(self.Q)
+            self.F=set(self.F)
+    def hallarEstadosInaccesibles(self):
+        accesibles=set()
+        for q in self.delta:
+            for simb in self.delta[q]:
+                accesibles.add(self.delta[q][simb])
+        inaccesibles=self.Q.difference(accesibles)  #inaccesibles = Q - accesibles
+
+        
+    pass
 
     def toString(self):
-        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(self.Q)+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(self.F)+ '\n'+ self.etiquetas[5]+'\n'
-        for estado in self.delta:
-            keys_simbolos=list(self.delta[estado].keys())
-            simbolos=self.delta.get(estado)
-            for k in keys_simbolos:
-                set=simbolos[k]
-                set = set.pop() if len(set)==1 else ','.join(set)
-                #print(estado+':'+k+'>'+set)
-                out=out+estado+':'+k+'>'+set+'\n'
+        simb=''
+        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]
+        deltaLinea=''
+        for q in self.delta:
+            for simb in self.delta[q]:
+                deltaSet= sorted(list(self.delta[q][simb]))
+                deltaSet= deltaSet[0] if len(deltaSet)==1 else ';'.join(deltaSet)
+                deltaLinea=f'{q}:{simb}>{deltaSet}'
+                out+='\n'+deltaLinea
         return out
-
-    def imprimirAFNSimplificado():
-        pass
-    
-    def exportar(archivo):
+    def imprimirAFNSimplificado(self):
         pass
 
-    def AFD_AFNtoAFD(afn: "AFN"):
+    def exportar(self, archivo):
+        with open(archivo, "w") as f:
+                f.write(self.toString())
+
+    def AFD_AFNtoAFD(self, afn: "AFN"):
         pass
 
-    def procesarCadena(cadena):
+    def procesarCadena(self, cadena):
         return True
 
-    def procesarCadenaConDetalles(cadena):
+    def procesarCadenaConDetalles(self, cadena):
         return True
 
-    def computarTodosLosProcesamientos(cadena, nombreArchivo):
+    def computarTodosLosProcesamientos(self, cadena, nombreArchivo):
         return 0
-    def procesarListaCadenas(listaCadenas, nombreArchivo, imprimirPantalla):
+    def procesarListaCadenas(self, listaCadenas, nombreArchivo, imprimirPantalla):
         pass
 
-    def procesarCadenaConversion(cadena):
+    def procesarCadenaConversion(self, cadena):
         return True
     
-    def  procesarCadenaConDetallesConversion(cadena):
+    def  procesarCadenaConDetallesConversion(self, cadena):
         return True
     
-    def procesarListaCadenasConversion(listaCadenas,nombreArchivo, imprimirPantalla):
+    def procesarListaCadenasConversion(self, listaCadenas,nombreArchivo, imprimirPantalla):
         pass
 
 #================================================
@@ -108,3 +105,5 @@ class AFN:
 print('Ejecutando:...\n')
 nfa1= AFN("ej1.nfa")
 print(nfa1.toString())
+print('\n')
+nfa1.exportar('ej2.nfa')

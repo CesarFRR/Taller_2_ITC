@@ -2,6 +2,7 @@
 #alphabet
 a-b
 #states
+L
 s0
 s1
 s2
@@ -17,3 +18,6 @@ s1:b>s1
 s2:a>s2
 s2:b>s2
 s3:a>s0
+s3:b>L
+L:a>L
+L:b>L
