@@ -13,11 +13,16 @@ s1
 #transitions
 s0:a>s2
 s0:b>s1
+s0:c>L
 s1:a>s1
 s1:b>s1
+s1:c>L
 s2:a>s2
 s2:b>s2
+s2:c>L
 s3:a>s0
 s3:b>L
+s3:c>L
 L:a>L
 L:b>L
+L:c>L

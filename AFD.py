@@ -1,7 +1,6 @@
 from Alfabeto import Alfabeto
-import re
-
-
+import re, copy
+import AFN
 class AFD:
     Sigma = None  
     Q = None
@@ -13,7 +12,7 @@ class AFD:
     extension = "dfa"
     etiquetas=['#!dfa', '#alphabet', '#states', '#initial', '#accepting', '#transitions']
     def __init__(self, *args):
-        if (len(args) == 1):  # Inicializar por archivo txt
+        if (len(args) == 1 and isinstance(args[0], str)):  # Inicializar por archivo txt
             if (not args[0].endswith("." + self.extension)):raise ValueError("El archivo proporcioando no es de formato ", self.extension)
             try:
                 afc = {}
@@ -52,6 +51,17 @@ class AFD:
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
             self.Sigma, self.Q, self.qo, self.F, self.delta = args
             self.Q=set(self.Q)
+        elif(len(args) == 0 and isinstance(args[0], AFD)):
+            self.Sigma=copy.deepcopy(args[0].Sigma)
+            self.Q=copy.deepcopy(args[0].Q)
+            self.qo=args[0].q0
+            self.F=copy.deepcopy(args[0].F)
+            self.delta=copy.deepcopy(args[0].delta)
+            self.extension=args[0].extension
+            self.estadosInaccesibles=copy.deepcopy(args[0].estadosInaccesibles)
+            self.estadosLimbo=copy.deepcopy(args[0].estadosLimbo)
+            self.etiquetas=args[0].etiquetas
+            pass
         self.estadosLimbo = set()
         self.estadosInaccesibles=set()
         self.verificarCorregirCompletitudAFD()
@@ -68,12 +78,12 @@ class AFD:
                     self.estadosLimbo.add('L')
 
         if faltalimbo: self.delta.update(limbo)
-        print('verificarCorregirCompletitudAFD(): \n', self.toString())
+        #print('verificarCorregirCompletitudAFD(): \n', self.toString())
         out = self.toString() #.get() retorna el conjunto del simbolo dado, si no existe retorna un conjunto vacío (esto es para evitar errores de KeyError: clave no encontrada)
 
     def hallarEstadosLimbo(self):
         if (self.estadosLimbo==None):
-            print('estadosLimbo= None!!!!')
+            #print('estadosLimbo= None!!!!')
             self.estadoslimbo =set()
         for estado in self.delta:
             if all( self.delta[estado][simb]=={estado} for simb in self.Sigma.simbolos):
@@ -81,8 +91,8 @@ class AFD:
                 if(estado==self.q0): raise ValueError('El estado inicial no puede ser un estado limbo')
                 self.estadosLimbo.add(estado)
                 self.Q.add(estado)
-                
-        print('hallarEstadosLimbo(): \n', self.estadosLimbo , ' Q: ', self.Q)
+
+        #print('hallarEstadosLimbo(): \n', self.estadosLimbo , ' Q: ', self.Q)
     def hallarEstadosInaccesibles(self):
         pass
 
@@ -129,6 +139,12 @@ class AFD:
         pass
 
     def AFD_hallarComplemento(self, afdInput: "AFD"):
+        print("hallando complemento: \n")
+        complemento= AFD(afdInput)
+        nuevosEstadosF= self.Q.difference(self.F)
+        nuevosEstadosNormales=self.F
+        
+
         pass
 
     def AFD_hallarProductoCartesianoY(self, afd1: "AFD", afd2: "AFD"):
@@ -151,9 +167,9 @@ class AFD:
 
     def pruebas(self, cadena):
         out=''
-        print("usando delta: \n")
+        #print("usando delta: \n")
         limbo = { 'L':{  s: set('L') for s in self.Sigma.simbolos} }
-        print('limbo: ', limbo)
+        #print('limbo: ', limbo)
         for estado in self.delta:
             for simb in self.Sigma.simbolos:
                 if(self.delta[estado].get(simb)==None):
@@ -166,7 +182,7 @@ class AFD:
 
 print('Ejecutando:...\n')
 afd1= AFD("ej1.dfa")
-print(afd1.toString())
-afd1.toString()
+#print(afd1.toString())
+#afd1.toString()
 print('\n')
 afd1.exportar("ej2.dfa")

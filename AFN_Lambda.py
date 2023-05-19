@@ -1,5 +1,6 @@
 from Alfabeto import Alfabeto
 import re
+import AFD, AFN
 class AFN_Lambda:
     Sigma=None
     Q=None
@@ -106,6 +107,9 @@ class AFN_Lambda:
 
 print('Ejecutando:...\n')
 nfe1= AFN_Lambda("ej1.nfe")
+
+print('Ejecutando:...\n')
+print(nfe1.delta)
 # print(nfe1.toString())
 # print('\n')
 # nfe1.exportar('ej2.nfe')

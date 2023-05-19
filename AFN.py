@@ -1,5 +1,6 @@
 from Alfabeto import Alfabeto
 import re
+import AFD, AFN_Lambda
 class AFN:
     Sigma = None
     Q = None
@@ -56,7 +57,7 @@ class AFN:
                 accesibles.add(self.delta[q][simb])
         inaccesibles=self.Q.difference(accesibles)  #inaccesibles = Q - accesibles
 
-        
+
     pass
 
     def toString(self):
@@ -77,7 +78,8 @@ class AFN:
         with open(archivo, "w") as f:
                 f.write(self.toString())
 
-    def AFD_AFNtoAFD(self, afn: "AFN"):
+    def AFNtoAFD(self, afn: "AFN"):
+        afd = AFD('')
         pass
 
     def procesarCadena(self, cadena):
