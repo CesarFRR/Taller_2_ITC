@@ -15,19 +15,22 @@ class Alfabeto:
     formato_entrada=None
 
     def __init__(self, a_c):
-        self.formato_entrada=a_c
-        for i in a_c:
-            if ("$" in i):
-                raise ValueError(
-                    "Lambda no permitido como simbolo para el alfabeto")
-            elif (len(i) == 1):
-                self.simbolos.append(i[0])
-            elif (i[1] == "-"):
-                self.generarListaSimbolos(i[0], i[2])
-            else:
-                raise ValueError("Entrada de simbolos", i,
-                                 "no permitida para el alfabeto")
-        (self.simbolos).sort()
+        if a_c=='' or a_c==None:
+            pass
+        else:
+            self.formato_entrada=a_c
+            for i in a_c:
+                if ("$" in i):
+                    raise ValueError(
+                        "Lambda no permitido como simbolo para el alfabeto")
+                elif (len(i) == 1):
+                    self.simbolos.append(i[0])
+                elif (i[1] == "-"):
+                    self.generarListaSimbolos(i[0], i[2])
+                else:
+                    raise ValueError("Entrada de simbolos", i,
+                                    "no permitida para el alfabeto")
+            (self.simbolos).sort()
 
     def generarListaSimbolos(self, min, max):
         for i in range(ord(min), ord(max)+1):

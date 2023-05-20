@@ -1,11 +1,10 @@
 import copy
 import re
 from Alfabeto import Alfabeto
-
+from itertools import product as productoCartesiano
 
 
 class AFD:
-    EActual=None
     Sigma = None
     Q = None
     q0 = None
@@ -15,6 +14,7 @@ class AFD:
     estadosInaccesibles = None
     extension = "dfa"
     etiquetas=['#!dfa', '#alphabet', '#states', '#initial', '#accepting', '#transitions']
+    instanciaVacia=False
     def __init__(self, *args):
         if (len(args) == 1 and isinstance(args[0], str)):  # Inicializar por archivo txt
             if (not args[0].endswith("." + self.extension)):raise ValueError("El archivo proporcioando no es de formato ", self.extension)
@@ -29,7 +29,7 @@ class AFD:
                     for i in string.split('\n'):
                         if i in self.etiquetas[1:]:
                             key = i
-                        elif i != '':
+                        elif i != '' or not i.isspace():
                             if(key!='#transitions' and Alfabeto.validate_regex(i,r"^[^#;\n]+$")): # regex para que los estados no contengan ";", "#" ni \n
                                 afc.setdefault(key, []).append(i)
                             elif key== '#transitions' and i.split(":")[1].split(">")[0]!= "$": # AFD: no contiene transiciones lambda
@@ -55,35 +55,51 @@ class AFD:
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
             self.Sigma, self.Q, self.qo, self.F, self.delta = args
             self.Q=set(self.Q)
-        elif(len(args) == 0 and isinstance(args[0], AFD)):
+        elif(len(args) == 1 and isinstance(args[0], AFD)):
             self.Sigma=copy.deepcopy(args[0].Sigma)
             self.Q=copy.deepcopy(args[0].Q)
             self.qo=args[0].q0
             self.F=copy.deepcopy(args[0].F)
             self.delta=copy.deepcopy(args[0].delta)
-            self.extension=args[0].extension
             self.estadosInaccesibles=copy.deepcopy(args[0].estadosInaccesibles)
             self.estadosLimbo=copy.deepcopy(args[0].estadosLimbo)
-            self.etiquetas=args[0].etiquetas
-            pass
+        elif(len(args) == 0):
+            self.Sigma = Alfabeto('')
+            self.Q = set()
+            self.q0 = ''
+            self.F = set()
+            self.delta = {}
+            self.estadosLimbo = set()
+            self.estadosInaccesibles = set()
+            self.instanciaVacia=True
+
+        
         self.estadosLimbo = set()
         self.estadosInaccesibles=set()
         self.verificarCorregirCompletitudAFD()
         self.hallarEstadosLimbo()
 
     def verificarCorregirCompletitudAFD(self):
+        char =self.q0
+        nombreLimbo='L'
+        if(len(char)>1 and isinstance(char[1], int)):  # Formas de nombrar al nuevo estado Limbo evitando repetidos
+            nombreLimbo = f'{char[0]}{len(self.Q)+1}'
+            if(nombreLimbo in self.Q):
+                nombreLimbo = f'LimboDel{self.extension}_{len(self.Q)+1}'
+
         limbo = { 'L':{  s: set('L') for s in self.Sigma.simbolos} }
         faltalimbo=False
         for estado in self.delta:
             for simb in self.Sigma.simbolos:
                 if(self.delta[estado].get(simb)==None):
-                    if(not 'L' in self.delta.keys()): faltalimbo = True
+                    if(not 'L' in self.delta.keys()):
+                        faltalimbo = True
                     self.delta[estado][simb]=limbo
                     self.estadosLimbo.add('L')
 
         if faltalimbo: self.delta.update(limbo)
         #print('verificarCorregirCompletitudAFD(): \n', self.toString())
-        out = self.toString() #.get() retorna el conjunto del simbolo dado, si no existe retorna un conjunto vacío (esto es para evitar errores de KeyError: clave no encontrada)
+        #out = self.toString() 
 
     def hallarEstadosLimbo(self):
         if (self.estadosLimbo==None):
@@ -98,7 +114,7 @@ class AFD:
 
     def hallarEstadosInaccesibles(self):
         accesibles ={self.q0} #Conjunto accesibles empieza con el inicial
-        if (list(accesibles)[0]==None): raise Exception("El estado inicial debe existir para hallar los inaccesibles")
+        if (list(accesibles)[0]==None or list(accesibles)[0]==''): raise Exception("El estado inicial debe existir para hallar los inaccesibles")
         while True:
             alteraciones = False
             for estado in list(accesibles): #recorrer estados accesibles
@@ -116,6 +132,8 @@ class AFD:
         return inaccesibles
 
     def toString(self):
+        #print('instancia vacia?: ', self.instanciaVacia)
+        if self.instanciaVacia: return 'Instancia AFD vacía, no se le asignó un archivo o argumentos'
         simb=''
         out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]
         deltaLinea=''
@@ -136,14 +154,12 @@ class AFD:
 
     def procesarCadena(self, cadena):   #Procesar cadena con delta como un diccionario
         actual = self.q0
-        self.EActual=actual
         estados=self.delta.keys()
         for i in cadena:
             if i not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
                 return False
             if(actual in estados):
                 actual = list(self.delta[actual][i])[0] #Realizar transicion 
-                self.EActual=actual 
                 pass
             #Nota: no es necesario verificar si la transicion existe en el estado actual, 
             # en el constructor se rellenó con Limbos las transiciones que faltaban en la lectura de las transiciones del archivo,
@@ -166,11 +182,25 @@ class AFD:
         nuevosEstadosF= self.Q.difference(self.F)
         complemento.F=nuevosEstadosF
         return complemento
-
-    def AFD_hallarProductoCartesianoY(self, afd1 , afd2 ):
+    @staticmethod
+    def AFD_hallarProductoCartesianoY(afd1 , afd2 ):
         pass
-
-    def AFD_hallarProductoCartesianoO(self, afd1 , afd2 ):
+    @staticmethod
+    def AFD_hallarProductoCartesianoO(afd1 , afd2 ):
+        #1. hacer los pares del producto cartesiano usando la libreria itertools
+        print('producto cartesiano:\n')
+        afd1Q=sorted(list(afd1.Q))
+        afd2Q=sorted(list(afd2.Q))
+        print('afd1Q: ', afd1Q, '\nafd2Q: ', afd2Q)
+        pares =productoCartesiano(afd1Q, afd2Q)
+        paresOrdenados=list([(list(p)) for p in pares]) #Lista de listas, los sets() no dejan ordenar, importante ordenar
+        print('producto cartesiano Ordenado:\n')
+        print(paresOrdenados)
+        #2. Hallar los pares que son el resultado de evaluar los ParesOrdenados con delta1 y delta2
+        nuevoAFD=AFD()
+        afd1Delta=afd1.delta
+        afd2Delta=afd2.delta
+        nuevoDelta={}
         pass
 
     def AFD_hallarProductoCartesianoDiferencia(self, afd1 , afd2 ):
@@ -194,19 +224,30 @@ class AFD:
             for simb in self.Sigma.simbolos:
                 if(self.delta[estado].get(simb)==None):
                     self.delta[estado][simb]=limbo
-        
         out = self.toString() #.get() retorna el conjunto del simbolo dado, si no existe retorna un conjunto vacío (esto es para evitar errores de KeyError: clave no encontrada)
         return out
 
 #================================================
 
 #print('real Ejecutando:...\n')
-afd1= AFD("ej1.dfa") # AFD--> L: cadenas que solo tengan exactamente 2 bes
-#print(afd1.toString())
-#afd1.toString()
-#print('\n')
-print('Procesar cadena:   ', afd1.procesarCadena('bab'))
+
+archivo='impares' # AFD--> L: |w| impar
+afd1= AFD(archivo+'.dfa') 
+cadena='aaaba'
+print('AFD: ',archivo, ' Procesar la cadena: ',cadena,'resultado: ',  afd1.procesarCadena(cadena))
+afd1.exportar(archivo+'Exportado.'+afd1.extension)
+
+archivo='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
+afd2= AFD(archivo+'.dfa')
+cadena='abaaabab'
+print('AFD: ',archivo, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
+afd2.exportar(archivo+'Exportado.'+afd2.extension)
+
+#Producto cartesiano tipo Union
+
+afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2)
 print('#############################################################################')
-print('#############################################################################')
-print('#############################################################################')
-print('encontrar inaccesibles: \n', afd1.hallarEstadosInaccesibles())
+
+
+
+
