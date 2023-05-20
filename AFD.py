@@ -142,10 +142,8 @@ class AFD:
         print("hallando complemento: \n")
         complemento= AFD(afdInput)
         nuevosEstadosF= self.Q.difference(self.F)
-        nuevosEstadosNormales=self.F
-        
-
-        pass
+        complemento.F=nuevosEstadosF
+        return complemento
 
     def AFD_hallarProductoCartesianoY(self, afd1: "AFD", afd2: "AFD"):
         pass
