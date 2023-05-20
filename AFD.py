@@ -1,8 +1,6 @@
 import copy
 import re
 from Alfabeto import Alfabeto
-from AFN import AFN
-from AFN_e import AFN_Lambda
 
 
 
@@ -98,9 +96,24 @@ class AFD:
                 self.estadosLimbo.add(estado)
                 self.Q.add(estado)
 
-       
     def hallarEstadosInaccesibles(self):
-        pass
+        accesibles ={self.q0} #Conjunto accesibles empieza con el inicial
+        if (list(accesibles)[0]==None): raise Exception("El estado inicial debe existir para hallar los inaccesibles")
+        while True:
+            alteraciones = False
+            for estado in list(accesibles): #recorrer estados accesibles
+                transiciones = self.delta[estado] # obtener los {'simbolo': delta} de un estado
+                for estados_destino in transiciones.values(): #Recorrer los deltas de ese estado, cada estados_destino es un set(  ) de estados
+                    for d in estados_destino: # Recorrer los elementos (estados) de ese set()
+                        if d not in accesibles: # si (d) estado destino no está en los accesibles se agrega
+                            accesibles.add(d)
+                            alteraciones = True # Se vuelve a iterar el while, pero con conjunto de accesibles alterado (más grande)
+            if not alteraciones: 
+                break #En este punto ya se recorrió todos los estados accesibles por el estado inicial,
+                        #por lo que no hay alteraciones, y para no entrar en bucles infinitos se hace break
+        estados_totales = set(self.Q)
+        inaccesibles = estados_totales - accesibles #Inaccesibles = Q - Accesibles
+        return inaccesibles
 
     def toString(self):
         simb=''
@@ -196,5 +209,4 @@ print('Procesar cadena:   ', afd1.procesarCadena('bab'))
 print('#############################################################################')
 print('#############################################################################')
 print('#############################################################################')
-print('#############################################################################')
-afd1.exportar("ej2.dfa")
+print('encontrar inaccesibles: \n', afd1.hallarEstadosInaccesibles())
