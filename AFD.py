@@ -1,8 +1,14 @@
+import copy
+import re
 from Alfabeto import Alfabeto
-import re, copy
-import AFN
+from AFN import AFN
+from AFN_e import AFN_Lambda
+
+
+
 class AFD:
-    Sigma = None  
+    EActual=None
+    Sigma = None
     Q = None
     q0 = None
     F = None
@@ -40,7 +46,7 @@ class AFD:
                                     dictReader[estado]={simbolo: set({deltaResultado}) }
                                 else:
                                     dictReader[estado].update({simbolo:set({deltaResultado})})
-                    self.Sigma = Alfabeto([afc['#alphabet'][0]])
+                    self.Sigma = Alfabeto(afc['#alphabet'])
                     self.Q = set(afc['#states'])
                     self.q0 = afc['#initial'][0]
                     self.F = set(afc['#accepting'])
@@ -92,7 +98,7 @@ class AFD:
                 self.estadosLimbo.add(estado)
                 self.Q.add(estado)
 
-        #print('hallarEstadosLimbo(): \n', self.estadosLimbo , ' Q: ', self.Q)
+       
     def hallarEstadosInaccesibles(self):
         pass
 
@@ -113,24 +119,27 @@ class AFD:
 
     def exportar(self, archivo):
         with open(archivo, "w") as f:
-                f.write(self.toString())
+            f.write(self.toString())
 
     def procesarCadena(self, cadena):   #Procesar cadena con delta como un diccionario
-            actual = self.q0
-            for i in cadena:
-                if i not in self.Sigma:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-                    return False
-                if self.delta.get(actual) is not None:  #Verificar que el estado actual exista
-                    transicion = self.delta[actual]    #Lista de transiciones del estado actual
-                    for j in transicion:    
-                        if i in j: #Recorrer las transiciones verificando el simbolo actual y el estado resultado
-                            actual = j[1] #Realizar transicion                    
-                            break
-                            
-            if actual in self.F: #verificar si el estado actual es de aceptacion
-                return True
-            else:
-                return False   
+        actual = self.q0
+        self.EActual=actual
+        estados=self.delta.keys()
+        for i in cadena:
+            if i not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
+                return False
+            if(actual in estados):
+                actual = list(self.delta[actual][i])[0] #Realizar transicion 
+                self.EActual=actual 
+                pass
+            #Nota: no es necesario verificar si la transicion existe en el estado actual, 
+            # en el constructor se rellenó con Limbos las transiciones que faltaban en la lectura de las transiciones del archivo,
+            # por lo que la clase AFD siempre trabaja con tablas de transiciones completas
+        if actual in self.F: #verificar si el estado actual es de aceptacion
+            return True
+        else:
+            return False   
+            
 
     def procesarCadenaConDetalles(self, cadena):
         return True
@@ -138,29 +147,29 @@ class AFD:
     def procesarListaCadenas(self, listaCadenas, nombreArchivo, imprimirPantalla):
         pass
 
-    def AFD_hallarComplemento(self, afdInput: "AFD"):
+    def AFD_hallarComplemento(self, afdInput ):
         print("hallando complemento: \n")
         complemento= AFD(afdInput)
         nuevosEstadosF= self.Q.difference(self.F)
         complemento.F=nuevosEstadosF
         return complemento
 
-    def AFD_hallarProductoCartesianoY(self, afd1: "AFD", afd2: "AFD"):
+    def AFD_hallarProductoCartesianoY(self, afd1 , afd2 ):
         pass
 
-    def AFD_hallarProductoCartesianoO(self, afd1: "AFD", afd2: "AFD"):
+    def AFD_hallarProductoCartesianoO(self, afd1 , afd2 ):
         pass
 
-    def AFD_hallarProductoCartesianoDiferencia(self, afd1: "AFD", afd2: "AFD"):
+    def AFD_hallarProductoCartesianoDiferencia(self, afd1 , afd2 ):
         pass
 
-    def AFD_hallarProductoCartesianoDiferenciaSimétrica(self, afd1: "AFD", afd2: "AFD"):
+    def AFD_hallarProductoCartesianoDiferenciaSimétrica(self, afd1 , afd2 ):
         pass
 
-    def AFD_hallarProductoCartesiano(self, afd1: "AFD", afd2: "AFD", StringOperacion):
+    def AFD_hallarProductoCartesiano(self, afd1 , afd2 , StringOperacion):
         pass
 
-    def AFD_simplificarAFD(self, afdinput: "AFD"):
+    def AFD_simplificarAFD(self, afdinput ):
         pass
 
     def pruebas(self, cadena):
@@ -178,9 +187,14 @@ class AFD:
 
 #================================================
 
-print('Ejecutando:...\n')
-afd1= AFD("ej1.dfa")
+#print('real Ejecutando:...\n')
+afd1= AFD("ej1.dfa") # AFD--> L: cadenas que solo tengan exactamente 2 bes
 #print(afd1.toString())
 #afd1.toString()
-print('\n')
+#print('\n')
+print('Procesar cadena:   ', afd1.procesarCadena('bab'))
+print('#############################################################################')
+print('#############################################################################')
+print('#############################################################################')
+print('#############################################################################')
 afd1.exportar("ej2.dfa")

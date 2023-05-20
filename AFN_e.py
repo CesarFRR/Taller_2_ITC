@@ -1,6 +1,5 @@
 from Alfabeto import Alfabeto
 import re
-import AFD, AFN
 class AFN_Lambda:
     Sigma=None
     Q=None
@@ -39,7 +38,7 @@ class AFN_Lambda:
                                     dictReader[estado]={simbolo: set(deltaResultado.split(';')) }
                                 else:  #AFN-lambda: Pueden haber varias transiciones de q para un simbolo
                                     dictReader[estado].update({simbolo:set(deltaResultado.split(';'))})
-                    self.Sigma = Alfabeto([afc['#alphabet'][0]])
+                    self.Sigma = Alfabeto(afc['#alphabet'])
                     self.Q = set(afc['#states'])
                     self.q0 = afc['#initial'][0]
                     self.F = set(afc['#accepting'])

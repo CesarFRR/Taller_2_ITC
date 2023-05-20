@@ -1,6 +1,6 @@
 from Alfabeto import Alfabeto
 import re
-import AFD, AFN_Lambda
+
 class AFN:
     Sigma = None
     Q = None
@@ -78,8 +78,8 @@ class AFN:
         with open(archivo, "w") as f:
                 f.write(self.toString())
 
-    def AFNtoAFD(self, afn: "AFN"):
-        afd = AFD('')
+    def AFNtoAFD(self, afn):
+        #afd = AFD('')
         pass
 
     def procesarCadena(self, cadena):
