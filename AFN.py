@@ -83,11 +83,32 @@ class AFN:
         pass
 
     def procesarCadena(self, cadena):
-        return True
-
+        actual = [self.q0]
+        for simbolo in cadena:
+            prox = []
+            if simbolo not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
+                return False
+            for state in actual:
+                if self.delta.get(actual[actual.index(state)]) is not None:   #Verificar que el estado actual exista
+                    transiciones = self.delta[actual[actual.index(state)]]    #Lista de transiciones del estado actual    
+                    if simbolo in transiciones:                               #Recorrer las transiciones verificando el simbolo actual y el estado resultado
+                        for i in transiciones[simbolo]:
+                            prox.append(i)                                    
+            actual = prox
+            if actual == []:
+                break
+            #print(f'{simbolo:3}:{actual}')
+            
+        for state in actual:              
+            if state in self.F and actual!=[]:  #verificar si el estado actual es de aceptacion en cualquier procesamiento
+                return True
+        return False
+    
+    #Trabajando en esto
     def procesarCadenaConDetalles(self, cadena):
         return True
-
+    
+    #Trabajando en esto
     def computarTodosLosProcesamientos(self, cadena, nombreArchivo):
         return 0
     def procesarListaCadenas(self, listaCadenas, nombreArchivo, imprimirPantalla):
