@@ -278,7 +278,7 @@ class AFD:
             nuevoDelta.update({nuevoEstado:{}})
             if({q1,q2}=={afd1.q0, afd2.q0}):
                 nuevoq0 =nuevoEstado
-                
+
             for simbolo in afd1.Sigma.simbolos: 
                 qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
                 qAFD2= list(afd2.delta[q2][simbolo])[0]
@@ -374,7 +374,7 @@ cadena= 'babab' # Contiene bb Y es impar --> True
 #print('AFD: ',archivo3, ' Procesar la cadena: ',cadena,'resultado: ',  afd3.procesarCadena(cadena))
 #afd3.exportar(archivo3+'Exportado.'+afd3.extension)
 #print('\n#############################################################################')
-
+#Faltan desarrollar algunos métodos
 
 
 
