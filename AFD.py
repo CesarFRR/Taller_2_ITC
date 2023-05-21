@@ -278,6 +278,7 @@ class AFD:
             nuevoDelta.update({nuevoEstado:{}})
             if({q1,q2}=={afd1.q0, afd2.q0}):
                 nuevoq0 =nuevoEstado
+                
             for simbolo in afd1.Sigma.simbolos: 
                 qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
                 qAFD2= list(afd2.delta[q2][simbolo])[0]
