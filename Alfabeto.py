@@ -33,8 +33,11 @@ class Alfabeto:
             (self.simbolos).sort()
 
     def generarListaSimbolos(self, min, max):
-        for i in range(ord(min), ord(max)+1):
-            self.simbolos.append(chr(i))
+        if(ord(max) - ord(min)==1):
+            self.simbolos=[min, max]
+        else:
+            for i in range(ord(min), ord(max)+1):
+                self.simbolos.append(chr(i))
 
     def generarCadenaAleatoria(self, n: int):
         string = ""

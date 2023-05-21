@@ -82,12 +82,12 @@ class AFD:
     def verificarCorregirCompletitudAFD(self):
         char =self.q0
         nombreLimbo='L'
-        if(len(char)>1 and isinstance(char[1], int)):  # Formas de nombrar al nuevo estado Limbo evitando repetidos
-            nombreLimbo = f'{char[0]}{len(self.Q)+1}'
-            if(nombreLimbo in self.Q):
-                nombreLimbo = f'LimboDel{self.extension}_{len(self.Q)+1}'
+        # if(len(char)>1 and isinstance(char[1], int)):  # Formas de nombrar al nuevo estado Limbo evitando repetidos
+        #     nombreLimbo = f'{char[0]}{len(self.Q)+1}'
+        #     if(nombreLimbo in self.Q):
+        #         nombreLimbo = f'LimboDel{self.extension}_{len(self.Q)+1}'
 
-        limbo = { 'L':{  s: set('L') for s in self.Sigma.simbolos} }
+        limbo = { 'L':{  s: {'L'} for s in self.Sigma.simbolos} }
         faltalimbo=False
         for estado in self.delta:
             for simb in self.Sigma.simbolos:
@@ -192,17 +192,45 @@ class AFD:
         afd1Q=sorted(list(afd1.Q))
         afd2Q=sorted(list(afd2.Q))
         print('afd1Q: ', afd1Q, '\nafd2Q: ', afd2Q)
+        print('afd1 q0: ', afd1.q0, '\nafd2 q0: ', afd2.q0)
         pares =productoCartesiano(afd1Q, afd2Q)
         paresOrdenados=list([(list(p)) for p in pares]) #Lista de listas, los sets() no dejan ordenar, importante ordenar
         print('producto cartesiano Ordenado:\n')
         print(paresOrdenados)
         #2. Hallar los pares que son el resultado de evaluar los ParesOrdenados con delta1 y delta2
-        nuevoAFD=AFD()
-        afd1Delta=afd1.delta
-        afd2Delta=afd2.delta
-        nuevoDelta={}
-        pass
+        # Al mismo tiempo que se desarrollan los nuevos atributos del nuevo AFD
+        # Nota: para cada par (a, b) de paresOrdenados, (a) pertenece afd1, (b) a afd2
 
+        print('\nNuevo AFD:\n')
+        nuevoSigma=afd1.Sigma # Ley: ambos deben tener el mismo alfabeto A, por eso basta con que este sigma tambien sea A
+        nuevoQ=set()
+        nuevoq0=''
+        nuevoF=set()
+        nuevoDelta={}
+
+        for q1, q2 in paresOrdenados:
+            nuevoEstado=f'{q1},{q2}'
+            nuevoQ.add(nuevoEstado)
+            nuevoDelta.update({nuevoEstado:{}})
+            if(q1 in afd1.F or q2 in afd2.F): # UNION: Aqui se usa el OR, en intersección se usaria el AND y en las demás, opreaciones entre conjuntos
+                nuevoF.add(nuevoEstado)
+            if(q1 == afd1.q0 and q2 == afd2.q0): # Definimos el nuevo estado inicial (q0)
+                nuevoq0 =nuevoEstado
+                print('estado q0 elegido, es:', nuevoEstado)
+
+            for simbolo in afd1.Sigma.simbolos: 
+                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
+                qAFD2= list(afd2.delta[q2][simbolo])[0]
+                print(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                nuevoDelta[nuevoEstado][simbolo]={f'{qAFD1},{qAFD2}'}
+        print('\nAlfabeto (Sigma) del nuevoAFD: ', nuevoSigma.simbolos)
+        print('\nself.Q del nuevo AFD: ', nuevoQ, 'tamaño: ', len(nuevoQ))
+        print('\nq0 del nuevoAFD: ', nuevoq0)
+        print('\nestados de aceptacion del nuevoAFD: ', nuevoF, 'tamaño: ', len(nuevoF))
+        print('\ndelta del nuevoAFD: ', nuevoDelta, '\nTamaño del delta: ', len(nuevoDelta))
+        return AFD(nuevoSigma, nuevoQ, nuevoq0, nuevoF, nuevoDelta)
+
+        
     def AFD_hallarProductoCartesianoDiferencia(self, afd1 , afd2 ):
         pass
 
@@ -218,7 +246,7 @@ class AFD:
     def pruebas(self, cadena):
         out=''
         #print("usando delta: \n")
-        limbo = { 'L':{  s: set('L') for s in self.Sigma.simbolos} }
+        limbo = { 'L':{  s: {'L'} for s in self.Sigma.simbolos} }
         #print('limbo: ', limbo)
         for estado in self.delta:
             for simb in self.Sigma.simbolos:
@@ -231,22 +259,25 @@ class AFD:
 
 #print('real Ejecutando:...\n')
 
-archivo='impares' # AFD--> L: |w| impar
-afd1= AFD(archivo+'.dfa') 
+archivo1='impares' # AFD--> L: |w| impar
+afd1= AFD(archivo1+'.dfa') 
 cadena='aaaba'
-print('AFD: ',archivo, ' Procesar la cadena: ',cadena,'resultado: ',  afd1.procesarCadena(cadena))
-afd1.exportar(archivo+'Exportado.'+afd1.extension)
+print('AFD: ',archivo1, ' Procesar la cadena: ',cadena,'resultado: ',  afd1.procesarCadena(cadena))
+afd1.exportar(archivo1+'Exportado.'+afd1.extension)
 
-archivo='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
-afd2= AFD(archivo+'.dfa')
+archivo2='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
+afd2= AFD(archivo2+'.dfa')
 cadena='abaaabab'
-print('AFD: ',archivo, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
-afd2.exportar(archivo+'Exportado.'+afd2.extension)
+print('AFD: ',archivo2, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
+afd2.exportar(archivo2+'Exportado.'+afd2.extension)
 
 #Producto cartesiano tipo Union
-
+archivo3=f'{archivo1}X{archivo2}' # L: impares Ó que no contengan bb
 afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2)
-print('#############################################################################')
+cadena= 'bab'
+print('AFD: ',archivo3, ' Procesar la cadena: ',cadena,'resultado: ',  afd3.procesarCadena(cadena))
+#afd3.exportar(archivo3+'Exportado.'+afd3.extension)
+print('\n#############################################################################')
 
 
 
