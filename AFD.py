@@ -53,7 +53,7 @@ class AFD:
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
-            self.Sigma, self.Q, self.qo, self.F, self.delta = args
+            self.Sigma, self.Q, self.q0, self.F, self.delta = args
             self.Q=set(self.Q)
         elif(len(args) == 1 and isinstance(args[0], AFD)):
             self.Sigma=copy.deepcopy(args[0].Sigma)
@@ -184,61 +184,153 @@ class AFD:
         return complemento
     @staticmethod
     def AFD_hallarProductoCartesianoY(afd1 , afd2 ):
-        pass
+        afd1Q=sorted(list(afd1.Q))
+        afd2Q=sorted(list(afd2.Q))
+        pares =productoCartesiano(afd1Q, afd2Q)
+        paresOrdenados=list([(list(p)) for p in pares]) 
+        #print(paresOrdenados)
+        nuevoSigma=afd1.Sigma 
+        nuevoQ=set()
+        nuevoq0=''
+        nuevoF=set()
+        nuevoDelta={}
+        out=[] #Lo que el profe pide imprimir --> ProductoCartesiano.png
+        for q1, q2 in paresOrdenados:
+            nuevoEstado=f'{q1},{q2}'
+            nuevoQ.add(nuevoEstado)
+            nuevoDelta.update({nuevoEstado:{}})
+            if(q1 in afd1.F and q2 in afd2.F): # INTERSECCIÓN: Se usa el AND
+                nuevoF.add(nuevoEstado)
+            if({q1,q2}=={afd1.q0, afd2.q0}):
+                nuevoq0 =nuevoEstado
+            for simbolo in afd1.Sigma.simbolos: 
+                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
+                qAFD2= list(afd2.delta[q2][simbolo])[0]
+                out.append(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                nuevoDelta[nuevoEstado][simbolo]={f'{qAFD1},{qAFD2}'}
+
+        print('\n'.join(out))
+        return AFD(nuevoSigma, nuevoQ, nuevoq0, nuevoF, nuevoDelta)
+    
     @staticmethod
     def AFD_hallarProductoCartesianoO(afd1 , afd2 ):
         #1. hacer los pares del producto cartesiano usando la libreria itertools
-        print('producto cartesiano:\n')
+        #print('producto cartesiano:\n')
         afd1Q=sorted(list(afd1.Q))
         afd2Q=sorted(list(afd2.Q))
-        print('afd1Q: ', afd1Q, '\nafd2Q: ', afd2Q)
-        print('afd1 q0: ', afd1.q0, '\nafd2 q0: ', afd2.q0)
+        #print('afd1Q: ', afd1Q, '\nafd2Q: ', afd2Q)
+        #print('afd1 q0: ', afd1.q0, '\nafd2 q0: ', afd2.q0)
         pares =productoCartesiano(afd1Q, afd2Q)
         paresOrdenados=list([(list(p)) for p in pares]) #Lista de listas, los sets() no dejan ordenar, importante ordenar
-        print('producto cartesiano Ordenado:\n')
-        print(paresOrdenados)
-        #2. Hallar los pares que son el resultado de evaluar los ParesOrdenados con delta1 y delta2
-        # Al mismo tiempo que se desarrollan los nuevos atributos del nuevo AFD
-        # Nota: para cada par (a, b) de paresOrdenados, (a) pertenece afd1, (b) a afd2
-
-        print('\nNuevo AFD:\n')
+        #print('producto cartesiano Ordenado:\n')
+        #print(paresOrdenados)
+        #2. Hallar los pares que son el resultado de evaluar los ParesOrdenados con delta1 y delta2,
+        # al mismo tiempo que se desarrollan los nuevos atributos del nuevo AFD
+        # Nota: para cada par (a, b) de paresOrdenados, (a) pertenece afd1, (b) a afd2, por eso el orden importa
+        #print('\nNuevo AFD:\n')
         nuevoSigma=afd1.Sigma # Ley: ambos deben tener el mismo alfabeto A, por eso basta con que este sigma tambien sea A
         nuevoQ=set()
         nuevoq0=''
         nuevoF=set()
         nuevoDelta={}
-
+        out=[] #Lo que el profe pide imprimir --> ProductoCartesiano.png
         for q1, q2 in paresOrdenados:
             nuevoEstado=f'{q1},{q2}'
             nuevoQ.add(nuevoEstado)
             nuevoDelta.update({nuevoEstado:{}})
             if(q1 in afd1.F or q2 in afd2.F): # UNION: Aqui se usa el OR, en intersección se usaria el AND y en las demás, opreaciones entre conjuntos
                 nuevoF.add(nuevoEstado)
-            if(q1 == afd1.q0 and q2 == afd2.q0): # Definimos el nuevo estado inicial (q0)
+            if({q1,q2}=={afd1.q0, afd2.q0}): # Definimos el nuevo estado inicial (q0), se comparan con conjuntos (a prueba de errores)
                 nuevoq0 =nuevoEstado
-                print('estado q0 elegido, es:', nuevoEstado)
+                #print('estado q0 elegido, es:', nuevoEstado)
 
             for simbolo in afd1.Sigma.simbolos: 
                 qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
                 qAFD2= list(afd2.delta[q2][simbolo])[0]
-                print(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                out.append(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                #print(out[-1])
                 nuevoDelta[nuevoEstado][simbolo]={f'{qAFD1},{qAFD2}'}
-        print('\nAlfabeto (Sigma) del nuevoAFD: ', nuevoSigma.simbolos)
-        print('\nself.Q del nuevo AFD: ', nuevoQ, 'tamaño: ', len(nuevoQ))
-        print('\nq0 del nuevoAFD: ', nuevoq0)
-        print('\nestados de aceptacion del nuevoAFD: ', nuevoF, 'tamaño: ', len(nuevoF))
-        print('\ndelta del nuevoAFD: ', nuevoDelta, '\nTamaño del delta: ', len(nuevoDelta))
+        # print('\nAlfabeto (Sigma) del nuevoAFD: ', nuevoSigma.simbolos)
+        # print('\nself.Q del nuevo AFD: ', nuevoQ, 'tamaño: ', len(nuevoQ))
+        # print('\nq0 del nuevoAFD: ', nuevoq0)
+        # print('\nestados de aceptacion del nuevoAFD: ', nuevoF, 'tamaño: ', len(nuevoF))
+        # print('\ndelta del nuevoAFD: ', nuevoDelta, '\nTamaño del delta: ', len(nuevoDelta))
+        print('\n'.join(out))
         return AFD(nuevoSigma, nuevoQ, nuevoq0, nuevoF, nuevoDelta)
 
-        
-    def AFD_hallarProductoCartesianoDiferencia(self, afd1 , afd2 ):
-        pass
+    @staticmethod    
+    def AFD_hallarProductoCartesianoDiferencia(afd1 , afd2 ):
+        afd1Q=sorted(list(afd1.Q))
+        afd2Q=sorted(list(afd2.Q))
+        pares =productoCartesiano(afd1Q, afd2Q)
+        paresOrdenados=list([(list(p)) for p in pares]) 
+        print(paresOrdenados)
+        nuevoSigma=afd1.Sigma 
+        nuevoQ=set()
+        nuevoq0=''
+        nuevoF= set(afd1.F).difference(set(afd2.F)) # DIFERENCIA: Se restan conjuntos
+        nuevoDelta={}
+        out=[] #Lo que el profe pide imprimir --> ProductoCartesiano.png
+        for q1, q2 in paresOrdenados:
+            nuevoEstado=f'{q1},{q2}'
+            nuevoQ.add(nuevoEstado)
+            nuevoDelta.update({nuevoEstado:{}})
+            if({q1,q2}=={afd1.q0, afd2.q0}):
+                nuevoq0 =nuevoEstado
+            for simbolo in afd1.Sigma.simbolos: 
+                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
+                qAFD2= list(afd2.delta[q2][simbolo])[0]
+                out.append(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                #print(out[-1])
+                nuevoDelta[nuevoEstado][simbolo]={f'{qAFD1},{qAFD2}'}
+        print('\n'.join(out))
+        return AFD(nuevoSigma, nuevoQ, nuevoq0, nuevoF, nuevoDelta)
+    
+    @staticmethod
+    def AFD_hallarProductoCartesianoDiferenciaSimetrica( afd1 , afd2 ):
+        afd1Q=sorted(list(afd1.Q))
+        afd2Q=sorted(list(afd2.Q))
+        pares =productoCartesiano(afd1Q, afd2Q)
+        paresOrdenados=list([(list(p)) for p in pares]) 
+        print(paresOrdenados)
+        nuevoSigma=afd1.Sigma 
+        nuevoQ=set()
+        nuevoq0=''
+        nuevoF= set(afd1.F).symmetric_difference(set(afd2.F)) # DIFERENCIA SIMÉTRICA: Se restan conjuntos
+        nuevoDelta={}
+        out=[] #Lo que el profe pide imprimir --> ProductoCartesiano.png
+        for q1, q2 in paresOrdenados:
+            nuevoEstado=f'{q1},{q2}'
+            nuevoQ.add(nuevoEstado)
+            nuevoDelta.update({nuevoEstado:{}})
+            if({q1,q2}=={afd1.q0, afd2.q0}):
+                nuevoq0 =nuevoEstado
+            for simbolo in afd1.Sigma.simbolos: 
+                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
+                qAFD2= list(afd2.delta[q2][simbolo])[0]
+                out.append(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                #print(out[-1])
+                nuevoDelta[nuevoEstado][simbolo]={f'{qAFD1},{qAFD2}'}
+        print('\n'.join(out))
+        return AFD(nuevoSigma, nuevoQ, nuevoq0, nuevoF, nuevoDelta)
+    @staticmethod
+    def AFD_hallarProductoCartesiano(afd1 , afd2 , StringOperacion):
+        # "interseccion", "union", "diferencia" o "diferencia simétrica"
+        AFD=None
+        union=['union', 'u', '+', '∪']
+        inters=['interseccion','intersección', 'and', '^', '∩']
+        dif=['diferencia', 'difference', 'diff', 'dif', '-']
+        difSimetrica=['diferencia simétrica', 'diferencia simetrica', 'Δ']
+        if(StringOperacion in union):
+            AFD = AFD.AFD_hallarProductoCartesianoO(afd1,afd2)
+        elif(StringOperacion in inters):
+            AFD = AFD.AFD_hallarProductoCartesianoY(afd1,afd2)
+        elif(StringOperacion in dif):
+            AFD = AFD.AFD_hallarProductoCartesianoDiferencia(afd1,afd2)
+        elif(StringOperacion in difSimetrica):
+            AFD = AFD.AFD_hallarProductoCartesianoDiferenciaSimetrica(afd1,afd2)
 
-    def AFD_hallarProductoCartesianoDiferenciaSimétrica(self, afd1 , afd2 ):
-        pass
-
-    def AFD_hallarProductoCartesiano(self, afd1 , afd2 , StringOperacion):
-        pass
+        return AFD
 
     def AFD_simplificarAFD(self, afdinput ):
         pass
@@ -262,22 +354,24 @@ class AFD:
 archivo1='impares' # AFD--> L: |w| impar
 afd1= AFD(archivo1+'.dfa') 
 cadena='aaaba'
-print('AFD: ',archivo1, ' Procesar la cadena: ',cadena,'resultado: ',  afd1.procesarCadena(cadena))
+#print('AFD: ',archivo1, ' Procesar la cadena: ',cadena,'resultado: ',  afd1.procesarCadena(cadena))
 afd1.exportar(archivo1+'Exportado.'+afd1.extension)
 
 archivo2='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
 afd2= AFD(archivo2+'.dfa')
 cadena='abaaabab'
-print('AFD: ',archivo2, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
+#print('AFD: ',archivo2, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
 afd2.exportar(archivo2+'Exportado.'+afd2.extension)
 
-#Producto cartesiano tipo Union
+#Producto cartesiano
 archivo3=f'{archivo1}X{archivo2}' # L: impares Ó que no contengan bb
-afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2)
-cadena= 'bab'
-print('AFD: ',archivo3, ' Procesar la cadena: ',cadena,'resultado: ',  afd3.procesarCadena(cadena))
+#afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2) #union
+afd3 = AFD.AFD_hallarProductoCartesianoY(afd1, afd2) #Interseccion
+#print('\nAFD nuevo, Alfabeto: ', afd3.Sigma.simbolos, '\nEstados: ', afd3.Q, '\nEstado inicial: ',afd3.q0, '\nEstados Finales: ', afd3.F, '\ndelta: ',afd3.delta)
+cadena= 'babab' # Contiene bb Y es impar --> True
+#print('AFD: ',archivo3, ' Procesar la cadena: ',cadena,'resultado: ',  afd3.procesarCadena(cadena))
 #afd3.exportar(archivo3+'Exportado.'+afd3.extension)
-print('\n#############################################################################')
+#print('\n#############################################################################')
 
 
 
