@@ -146,6 +146,7 @@ class AFD:
         return out
 
     def imprimirAFDSimplificado(self):
+        
         pass
 
     def exportar(self, archivo):
