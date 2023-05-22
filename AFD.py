@@ -161,7 +161,6 @@ class AFD:
                 return False
             if(actual in estados):
                 actual = list(self.delta[actual][i])[0] #Realizar transicion 
-                pass
             #Nota: no es necesario verificar si la transicion existe en el estado actual, 
             # en el constructor se rellenó con Limbos las transiciones que faltaban en la lectura de las transiciones del archivo,
             # por lo que la clase AFD siempre trabaja con tablas de transiciones completas
@@ -172,10 +171,62 @@ class AFD:
             
 
     def procesarCadenaConDetalles(self, cadena):
-        return True
+        actual = self.q0
+        estados=self.delta.keys()
+        out=''
+        aceptada=None
+        for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptación | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptación
+            if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
+                out+= f'[{actual},{cadena[index:]}]-> No Aceptación'
+                print(out)
+                return False
+            if(actual in estados):
+                out+= f'[{actual},{cadena[index:]}]-> ' 
+                actual = list(self.delta[actual][char])[0] #Realizar transicion 
 
-    def procesarListaCadenas(self, listaCadenas, nombreArchivo, imprimirPantalla):
-        pass
+        if actual in self.F: #verificar si el estado actual es de aceptacion
+            out+= 'Aceptación'
+            aceptada= True
+        else:
+            out+= 'No Aceptación'
+            aceptada= False
+        print(out)
+        return aceptada
+
+    def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str, imprimirPantalla: bool):
+        # campos para print y para archivo:
+        # ▪ cadena,
+        # ▪ sucesión de parejas (estado, símbolo) de cada paso del procesamiento .
+        # ▪ sí o no dependiendo de si la cadena es aceptada o no.
+
+        actual = self.q0
+        estados=self.delta.keys()
+        out=''
+
+        for cadena in listaCadenas:
+            aceptada=None
+            for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptación | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptación
+                if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
+                    out+= f'[{actual},{cadena[index:]}]-> No Aceptación'
+                    aceptada= False
+                    break
+                if(actual in estados):
+                    out+= f'[{actual},{cadena[index:]}]-> ' 
+                    actual = list(self.delta[actual][char])[0] #Realizar transicion 
+            if actual in self.F : #verificar si el estado actual es de aceptacion
+                if(aceptada==None):
+                    out+= 'Aceptación'
+                aceptada= True
+            else:
+                if(aceptada==None):
+                    out+= 'No Aceptación'
+                aceptada= False
+            out+='\n'
+  
+        with open(nombreArchivo, "w") as f:
+            f.write(out)
+        if(imprimirPantalla):
+            print(out)
 
     def AFD_hallarComplemento(self, afdInput ):
         print("hallando complemento: \n")
@@ -355,22 +406,29 @@ class AFD:
 
 archivo1='impares' # AFD--> L: |w| impar
 afd1= AFD(archivo1+'.dfa') 
-cadena='aaaba'
-#print('AFD: ',archivo1, ' Procesar la cadena: ',cadena,'resultado: ',  afd1.procesarCadena(cadena))
-afd1.exportar(archivo1+'Exportado.'+afd1.extension)
+# cadena=''
+# print('AFD: ',archivo1, ' Procesar la cadena: ',cadena,'resultado: ',  afd1.procesarCadena(cadena))
+# print('\n\nAFD: ',archivo1, ' Procesar la cadena con detalles: ',cadena,'Procedimiento: \n')
+# result= afd1.procesarCadenaConDetalles(cadena)
+# print('\nResultado: ', result)
+# afd1.exportar(archivo1+'Exportado.'+afd1.extension)
 
-archivo2='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
-afd2= AFD(archivo2+'.dfa')
-cadena='abaaabab'
-#print('AFD: ',archivo2, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
-afd2.exportar(archivo2+'Exportado.'+afd2.extension)
+#exportar lista cadenas:
+listaCadenas= ['abba', 'baabb', 'bbabaaab', 'a', 'bba', 'baabba', 'aaaaaba', 'bbbbab', 'ababababbaXa']
+afd1.procesarListaCadenas(listaCadenas, 'procesarListaCadenasResultado.txt',True)
+
+# archivo2='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
+# afd2= AFD(archivo2+'.dfa')
+# cadena='abaaabab'
+# #print('AFD: ',archivo2, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
+# afd2.exportar(archivo2+'Exportado.'+afd2.extension)
 
 #Producto cartesiano
-archivo3=f'{archivo1}X{archivo2}' # L: impares Ó que no contengan bb
+#archivo3=f'{archivo1}X{archivo2}' # L: impares Ó que no contengan bb
 #afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2) #union
-afd3 = AFD.AFD_hallarProductoCartesianoY(afd1, afd2) #Interseccion
+#afd3 = AFD.AFD_hallarProductoCartesianoY(afd1, afd2) #Interseccion
 #print('\nAFD nuevo, Alfabeto: ', afd3.Sigma.simbolos, '\nEstados: ', afd3.Q, '\nEstado inicial: ',afd3.q0, '\nEstados Finales: ', afd3.F, '\ndelta: ',afd3.delta)
-cadena= 'babab' # Contiene bb Y es impar --> True
+#cadena= 'babab' # Contiene bb Y es impar --> True
 #print('AFD: ',archivo3, ' Procesar la cadena: ',cadena,'resultado: ',  afd3.procesarCadena(cadena))
 #afd3.exportar(archivo3+'Exportado.'+afd3.extension)
 #print('\n#############################################################################')
