@@ -126,6 +126,7 @@ class AFN:
             strStates.append(str(state))    #convertir tupla a string (para no generar conflicto al crear el AFD)
             
         return AFD(afn.Sigma, set(strStates), afn.q0, set(F), delta)    #Retornar AFD equivalente
+    #Nota: Al imprimir el AFD resultante, en las transiciones solo imprime el primer estado cuando es una tupla
 
     def procesarCadena(self, cadena):
         actual = [self.q0]
@@ -172,6 +173,9 @@ class AFN:
 
 print('Ejecutando:...\n')
 nfa1= AFN("ej1.nfa")
-print(nfa1.toString())
+nda = nfa1.AFNtoAFD(nfa1)
+print(nda.toString())
 print('\n')
-nfa1.exportar('ej2.nfa')
+#print(nfa1.toString())
+#print('\n')
+#nfa1.exportar('ej2.nfa')
