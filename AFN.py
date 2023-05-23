@@ -77,10 +77,55 @@ class AFN:
     def exportar(self, archivo):
         with open(archivo, "w") as f:
                 f.write(self.toString())
-
+    
     def AFNtoAFD(self, afn):
-        #afd = AFD('')
-        pass
+        states = list(afn.Q)
+        delta = afn.delta
+        F= afn.F
+        
+        #Recorrer transiciones de los estados al inicio
+        for state in afn.delta:       
+            for transition in afn.delta.get(state):
+                if len(afn.delta.get(state).get(transition))>1:                 #Comprobar si un simbolo lleva a mas de un estado
+                    states.append(tuple(afn.delta.get(state).get(transition)))  #Agregar tupla de todos los estados a los que lleva
+        
+        #Recorrer lista de estados una vez realizadas las modificaciones anteriores
+        for actual in states:          
+            transitions = dict()       #diccionario con transiciones para los nuevos estados
+            if type(actual) is tuple and actual is not None:        #Verificar que el estado actual sea una tupla (si no es quiere decir que se encuentra en los estados del afn)
+                for state in actual:        
+                    if len(state) > 1 and actual is not None and state is not None and afn.delta.get(state) is not None:    #Verificar que la tupla contenga mas de un elemento (filtar tuplas con un solo estado, pues ya estan en la lista)
+                        for symbol in afn.delta.get(state):         #Verificar transiciones de cada simbolo con cada estado de la tupla
+                            #Si ya se agregaron las transiciones de uno de los estados, actualizar con las de los demas
+                            if transitions.get(symbol) is not None: transitions.update({str(symbol):transitions.get(symbol).union(afn.delta.get(state).get(symbol))})
+                            #Aun no se han agregado las transiciones de ningun estado
+                            else: transitions.update({str(symbol):afn.delta.get(state).get(symbol)})
+  
+                delta.update({actual:transitions})  #actualizar el diccionario de transiciones
+                for symbol in afn.delta.get(actual): #Agregar los estados que vayan surgiendo durante el proceso
+                    #Verificar si alguna de las tuplas obtenidas en el paso anterior no se encuentra en la lista de estados
+                    if tuple(afn.delta.get(actual).get(symbol)) not in states and len(tuple(afn.delta.get(actual).get(symbol)))>1 and tuple(afn.delta.get(actual).get(symbol)) is not None:
+                        states.append(tuple(afn.delta.get(actual).get(symbol))) #Agregar el nuevo estado
+        
+        #Imprimir tabla de trancisiones
+        headers = ['Estado']+(list(afn.Sigma.simbolos))
+        for i in headers:
+            print(f'{i:<20}',end="")
+        for key, value in delta.items():
+            print('\n',f'{str(key):<20}', end="")
+            for state,transition in value.items():
+                print(f'{str(value[state]):<20}', end="")
+        print('\n')
+
+        strStates = []
+        for state in states:    #Agregar todos los estados que contengan alguno de aceptacion 
+            if type(state) is tuple:
+                for i in state:
+                    if i in afn.F:
+                        F.add(str(state))
+            strStates.append(str(state))    #convertir tupla a string (para no generar conflicto al crear el AFD)
+            
+        return AFD(afn.Sigma, set(strStates), afn.q0, set(F), delta)    #Retornar AFD equivalente
 
     def procesarCadena(self, cadena):
         actual = [self.q0]
