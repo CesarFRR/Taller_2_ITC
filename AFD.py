@@ -9,7 +9,7 @@ class AFD:
     Q = None
     q0 = None
     F = None
-    delta = None # se intentará hacer el delta como  un diccionario, cada estado q contiene otro diccionario --> clave:simbolo, valor: conjunto de estados resultantes tras evaluar con la funcion delta
+    delta = None # se intentara hacer el delta como  un diccionario, cada estado q contiene otro diccionario --> clave:simbolo, valor: conjunto de estados resultantes tras evaluar con la funcion delta
     estadosLimbo = None
     estadosInaccesibles = None
     extension = "dfa"
@@ -34,7 +34,7 @@ class AFD:
                                 afc.setdefault(key, []).append(i)
                             elif key== '#transitions' and i.split(":")[1].split(">")[0]!= "$": # AFD: no contiene transiciones lambda
                                 trans=re.split(r"[:>]", i)
-                                if(len(trans)!=3 or ';' in trans[2]): raise ValueError("transición inválida: ", i) # "; " q no puede tener varias salidas con un simbolo
+                                if(len(trans)!=3 or ';' in trans[2]): raise ValueError("transicion invalida: ", i) # "; " q no puede tener varias salidas con un simbolo
                                 estado, simbolo, deltaResultado = trans
                                 #print('trans: ', trans)
                                 #===================================================================#
@@ -121,11 +121,11 @@ class AFD:
                 transiciones = self.delta[estado] # obtener los {'simbolo': delta} de un estado
                 for estados_destino in transiciones.values(): #Recorrer los deltas de ese estado, cada estados_destino es un set(  ) de estados
                     for d in estados_destino: # Recorrer los elementos (estados) de ese set()
-                        if d not in accesibles: # si (d) estado destino no está en los accesibles se agrega
+                        if d not in accesibles: # si (d) estado destino no esta en los accesibles se agrega
                             accesibles.add(d)
-                            alteraciones = True # Se vuelve a iterar el while, pero con conjunto de accesibles alterado (más grande)
+                            alteraciones = True # Se vuelve a iterar el while, pero con conjunto de accesibles alterado (mas grande)
             if not alteraciones: 
-                break #En este punto ya se recorrió todos los estados accesibles por el estado inicial,
+                break #En este punto ya se recorrio todos los estados accesibles por el estado inicial,
                         #por lo que no hay alteraciones, y para no entrar en bucles infinitos se hace break
         estados_totales = set(self.Q)
         inaccesibles = estados_totales - accesibles #Inaccesibles = Q - Accesibles
@@ -133,7 +133,7 @@ class AFD:
 
     def toString(self):
         #print('instancia vacia?: ', self.instanciaVacia)
-        if self.instanciaVacia: return 'Instancia AFD vacía, no se le asignó un archivo o argumentos'
+        if self.instanciaVacia: return 'Instancia AFD vacía, no se le asigno un archivo o argumentos'
         simb=''
         out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]
         deltaLinea=''
@@ -162,7 +162,7 @@ class AFD:
             if(actual in estados):
                 actual = list(self.delta[actual][i])[0] #Realizar transicion 
             #Nota: no es necesario verificar si la transicion existe en el estado actual, 
-            # en el constructor se rellenó con Limbos las transiciones que faltaban en la lectura de las transiciones del archivo,
+            # en el constructor se relleno con Limbos las transiciones que faltaban en la lectura de las transiciones del archivo,
             # por lo que la clase AFD siempre trabaja con tablas de transiciones completas
         if actual in self.F: #verificar si el estado actual es de aceptacion
             return True
@@ -175,9 +175,9 @@ class AFD:
         estados=self.delta.keys()
         out=''
         aceptada=None
-        for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptación | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptación
+        for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptacion | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptacion
             if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-                out+= f'[{actual},{cadena[index:]}]-> No Aceptación'
+                out+= f'[{actual},{cadena[index:]}]-> No Aceptacion'
                 print(out)
                 return False
             if(actual in estados):
@@ -185,10 +185,10 @@ class AFD:
                 actual = list(self.delta[actual][char])[0] #Realizar transicion 
 
         if actual in self.F: #verificar si el estado actual es de aceptacion
-            out+= 'Aceptación'
+            out+= 'Aceptacion'
             aceptada= True
         else:
-            out+= 'No Aceptación'
+            out+= 'No Aceptacion'
             aceptada= False
         print(out)
         return aceptada
@@ -196,7 +196,7 @@ class AFD:
     def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str, imprimirPantalla: bool):
         # campos para print y para archivo:
         # ▪ cadena,
-        # ▪ sucesión de parejas (estado, símbolo) de cada paso del procesamiento .
+        # ▪ sucesion de parejas (estado, símbolo) de cada paso del procesamiento .
         # ▪ sí o no dependiendo de si la cadena es aceptada o no.
 
         actual = self.q0
@@ -205,9 +205,9 @@ class AFD:
 
         for cadena in listaCadenas:
             aceptada=None
-            for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptación | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptación
+            for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptacion | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptacion
                 if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-                    out+= f'[{actual},{cadena[index:]}]-> No Aceptación'
+                    out+= f'[{actual},{cadena[index:]}]-> No Aceptacion'
                     aceptada= False
                     break
                 if(actual in estados):
@@ -215,11 +215,11 @@ class AFD:
                     actual = list(self.delta[actual][char])[0] #Realizar transicion 
             if actual in self.F : #verificar si el estado actual es de aceptacion
                 if(aceptada==None):
-                    out+= 'Aceptación'
+                    out+= 'Aceptacion'
                 aceptada= True
             else:
                 if(aceptada==None):
-                    out+= 'No Aceptación'
+                    out+= 'No Aceptacion'
                 aceptada= False
             out+='\n'
   
@@ -251,7 +251,7 @@ class AFD:
             nuevoEstado=f'{q1},{q2}'
             nuevoQ.add(nuevoEstado)
             nuevoDelta.update({nuevoEstado:{}})
-            if(q1 in afd1.F and q2 in afd2.F): # INTERSECCIÓN: Se usa el AND
+            if(q1 in afd1.F and q2 in afd2.F): # INTERSECCION: Se usa el AND
                 nuevoF.add(nuevoEstado)
             if({q1,q2}=={afd1.q0, afd2.q0}):
                 nuevoq0 =nuevoEstado
@@ -290,7 +290,7 @@ class AFD:
             nuevoEstado=f'{q1},{q2}'
             nuevoQ.add(nuevoEstado)
             nuevoDelta.update({nuevoEstado:{}})
-            if(q1 in afd1.F or q2 in afd2.F): # UNION: Aqui se usa el OR, en intersección se usaria el AND y en las demás, opreaciones entre conjuntos
+            if(q1 in afd1.F or q2 in afd2.F): # UNION: Aqui se usa el OR, en interseccion se usaria el AND y en las demas, opreaciones entre conjuntos
                 nuevoF.add(nuevoEstado)
             if({q1,q2}=={afd1.q0, afd2.q0}): # Definimos el nuevo estado inicial (q0), se comparan con conjuntos (a prueba de errores)
                 nuevoq0 =nuevoEstado
@@ -371,7 +371,7 @@ class AFD:
         # "interseccion", "union", "diferencia" o "diferencia simétrica"
         AFD=None
         union=['union', 'u', '+', '∪']
-        inters=['interseccion','intersección', 'and', '^', '∩']
+        inters=['interseccion','interseccion', 'and', '^', '∩']
         dif=['diferencia', 'difference', 'diff', 'dif', '-']
         difSimetrica=['diferencia simétrica', 'diferencia simetrica', 'Δ']
         if(StringOperacion in union):
@@ -432,7 +432,7 @@ afd1.procesarListaCadenas(listaCadenas, 'procesarListaCadenasResultado.txt',True
 # afd2.exportar(archivo2+'Exportado.'+afd2.extension)
 
 #Producto cartesiano
-#archivo3=f'{archivo1}X{archivo2}' # L: impares Ó que no contengan bb
+#archivo3=f'{archivo1}X{archivo2}' # L: impares O que no contengan bb
 #afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2) #union
 #afd3 = AFD.AFD_hallarProductoCartesianoY(afd1, afd2) #Interseccion
 #print('\nAFD nuevo, Alfabeto: ', afd3.Sigma.simbolos, '\nEstados: ', afd3.Q, '\nEstado inicial: ',afd3.q0, '\nEstados Finales: ', afd3.F, '\ndelta: ',afd3.delta)

@@ -31,7 +31,7 @@ class AFN_Lambda:
                                 afc.setdefault(key, []).append(i)
                             elif key== '#transitions':  # transiciones, si pueden contener $ (lambda), esto es AFN-lambda
                                 trans=re.split(r"[:>]", i)
-                                if(len(trans)!=3): raise ValueError("transición inválida: ", i)
+                                if(len(trans)!=3): raise ValueError("transicion invalida: ", i)
                                 estado, simbolo, deltaResultado = trans
                                 valor=dictReader.get(estado)
                                 if(valor==None): #No existe el estado? crearlo y agregar { simbolo:deltaResultado }

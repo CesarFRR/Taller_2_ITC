@@ -8,7 +8,7 @@ class ClasePrueba:
         pass
     def probarAFNLambda():
         pass
-    def main(): # invoca a los otros para que puedan ser comentados fácilmente y poder escoger cuál se va a probar.
+    def main(): # invoca a los otros para que puedan ser comentados facilmente y poder escoger cual se va a probar.
         pass
 
     def probarAFNtoAFD():
@@ -21,6 +21,6 @@ class ClasePrueba:
         pass
     def probarProductoCartesiano():
         pass
-    def probarSimplificación():
+    def probarSimplificacion():
         pass
     
