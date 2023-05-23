@@ -87,7 +87,7 @@ class AFN:
         for state in afn.delta:       
             for transition in afn.delta.get(state):
                 if len(afn.delta.get(state).get(transition))>1:                 #Comprobar si un simbolo lleva a mas de un estado
-                    states.append(tuple(afn.delta.get(state).get(transition)))  #Agregar tupla de todos los estados a los que lleva
+                    states.append(tuple(sorted(tuple(delta.get(state).get(transition)))))  #Agregar tupla de todos los estados a los que lleva
         
         #Recorrer lista de estados una vez realizadas las modificaciones anteriores
         for actual in states:          
@@ -97,9 +97,9 @@ class AFN:
                     if len(state) > 1 and actual is not None and state is not None and afn.delta.get(state) is not None:    #Verificar que la tupla contenga mas de un elemento (filtar tuplas con un solo estado, pues ya estan en la lista)
                         for symbol in afn.delta.get(state):         #Verificar transiciones de cada simbolo con cada estado de la tupla
                             #Si ya se agregaron las transiciones de uno de los estados, actualizar con las de los demas
-                            if transitions.get(symbol) is not None: transitions.update({str(symbol):transitions.get(symbol).union(afn.delta.get(state).get(symbol))})
+                            if transitions.get(symbol) is not None: transitions.update({str(symbol):sorted(set(transitions.get(symbol)).union(delta.get(state).get(symbol)))})
                             #Aun no se han agregado las transiciones de ningun estado
-                            else: transitions.update({str(symbol):afn.delta.get(state).get(symbol)})
+                            else: transitions.update({str(symbol):sorted(delta.get(state).get(symbol))})
   
                 delta.update({actual:transitions})  #actualizar el diccionario de transiciones
                 for symbol in afn.delta.get(actual): #Agregar los estados que vayan surgiendo durante el proceso
@@ -117,15 +117,15 @@ class AFN:
                 print(f'{str(value[state]):<20}', end="")
         print('\n')
 
-        strStates = []
+        strStates = set()
         for state in states:    #Agregar todos los estados que contengan alguno de aceptacion 
             if type(state) is tuple:
                 for i in state:
                     if i in afn.F:
                         F.add(str(state))
-            strStates.append(str(state))    #convertir tupla a string (para no generar conflicto al crear el AFD)
+            strStates.add(str(state))    #convertir tupla a string (para no generar conflicto al crear el AFD)
             
-        return AFD(afn.Sigma, set(strStates), afn.q0, set(F), delta)    #Retornar AFD equivalente
+        return AFD(afn.Sigma, strStates, afn.q0, F, delta)    #Retornar AFD equivalente
     #Nota: Al imprimir el AFD resultante, en las transiciones solo imprime el primer estado cuando es una tupla
 
     def procesarCadena(self, cadena):
