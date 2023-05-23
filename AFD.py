@@ -2,7 +2,7 @@ import copy
 import re
 from Alfabeto import Alfabeto
 from itertools import product as productoCartesiano
-
+from prettytable import PrettyTable
 
 class AFD:
     Sigma = None
@@ -386,6 +386,14 @@ class AFD:
         return AFD
 
     def AFD_simplificarAFD(self, afdinput ):
+        nombres_campos=['{p,q}', 'δ(p,a),δ(q,a)', 'δ(p,b),δ(q,b)']
+        tabla = PrettyTable()
+        tabla.field_names=nombres_campos
+        pares = sorted(list(self.Q))
+        print(pares)
+        for q, simb in self.delta:
+
+            pass
         pass
 
     def pruebas(self, cadena):
