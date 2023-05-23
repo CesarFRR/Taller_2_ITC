@@ -121,11 +121,19 @@ class AFN:
         strStates = set()
         for state in states:        #Agregar todos los estados que contengan alguno de aceptacion
             if type(state) is tuple:
+                x = ','.join(state)     
+                strStates.add(f'({x})')     #Convertir tupla a string
                 for i in state:
                     if i in afn.F:
-                        accepting.add(str(state))
-            strStates.add(str(state))   #convertir tuplas a string 
+                        accepting.add(f'({x})')
+            else:
+                strStates.add(f'{state})')
 
+        strDelta = dict()
+        for actual, transition in delta.items():    #Cambiar keys del diccionario por strings
+            x = '('+','.join(actual)+')' if type(actual) is tuple else actual
+            strDelta[f'{x}'] = delta[actual]
+            
         return AFD(afn.Sigma, strStates, afn.q0, set(accepting), delta) #Retornar AFD equivalente
 
     def procesarCadena(self, cadena):
