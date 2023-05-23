@@ -3,7 +3,6 @@ import re
 from Alfabeto import Alfabeto
 from itertools import product as productoCartesiano
 from prettytable import PrettyTable
-
 class AFD:
     Sigma = None
     Q = None
@@ -117,6 +116,7 @@ class AFD:
         if (list(accesibles)[0]==None or list(accesibles)[0]==''): raise Exception("El estado inicial debe existir para hallar los inaccesibles")
         while True:
             alteraciones = False
+            #________________________SALE ERROR__________________________
             for estado in list(accesibles): #recorrer estados accesibles
                 transiciones = self.delta[estado] # obtener los {'simbolo': delta} de un estado
                 for estados_destino in transiciones.values(): #Recorrer los deltas de ese estado, cada estados_destino es un set(  ) de estados
@@ -144,10 +144,6 @@ class AFD:
                 out+='\n'+deltaLinea
                 #print ('deltaLinea: ',deltaLinea)
         return out
-
-    def imprimirAFDSimplificado(self):
-        
-        pass
 
     def exportar(self, archivo):
         with open(archivo, "w") as f:
@@ -396,6 +392,9 @@ class AFD:
             pass
         pass
 
+    def imprimirAFDSimplificado(self):
+        
+        pass
     def pruebas(self, cadena):
         out=''
         #print("usando delta: \n")
