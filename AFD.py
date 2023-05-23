@@ -155,11 +155,13 @@ class AFD:
         for i in cadena:
             if i not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
                 return False
-            if(actual in estados):
-                actual = list(self.delta[actual][i])[0] #Realizar transicion 
+            if(actual in estados):  #Realizar transicion 
+                actual = list(self.delta[actual][i])[0] if len(self.delta[actual][i])==1 else '('+','.join(self.delta[actual][i])+')'#Realizar transicion 
+                 #Nota2: Se modifico para porder recibir los estados resultantes de la conversion sin problemas
             #Nota: no es necesario verificar si la transicion existe en el estado actual, 
             # en el constructor se relleno con Limbos las transiciones que faltaban en la lectura de las transiciones del archivo,
             # por lo que la clase AFD siempre trabaja con tablas de transiciones completas
+ 
         if actual in self.F: #verificar si el estado actual es de aceptacion
             return True
         else:
@@ -178,7 +180,8 @@ class AFD:
                 return False
             if(actual in estados):
                 out+= f'[{actual},{cadena[index:]}]-> ' 
-                actual = list(self.delta[actual][char])[0] #Realizar transicion 
+                actual = list(self.delta[actual][char])[0] if len(self.delta[actual][char])==1 else '('+','.join(self.delta[actual][char])+')'
+                #Nota: Se modifico para porder recibir los estados resultantes de la conversion sin problemas
 
         if actual in self.F: #verificar si el estado actual es de aceptacion
             out+= 'Aceptacion'
