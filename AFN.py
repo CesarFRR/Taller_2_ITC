@@ -166,13 +166,15 @@ class AFN:
     def computarTodosLosProcesamientos(self, cadena, nombreArchivo):
         return 0
     def procesarListaCadenas(self, listaCadenas, nombreArchivo, imprimirPantalla):
-        pass
+        pass 
 
     def procesarCadenaConversion(self, cadena):
-        return True
+        afd = self.AFNtoAFD(self)
+        return afd.procesarCadena(cadena)
     
     def  procesarCadenaConDetallesConversion(self, cadena):
-        return True
+        afd = self.AFNtoAFD(self)
+        return afd.procesarCadenaConDetalles(cadena)
     
     def procesarListaCadenasConversion(self, listaCadenas,nombreArchivo, imprimirPantalla):
         pass
