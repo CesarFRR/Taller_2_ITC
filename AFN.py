@@ -60,9 +60,9 @@ class AFN:
 
     pass
 
-    def toString(self):
+    def toString(self): 
         simb=''
-        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]
+        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]+'\n'+'\n'.join(sorted((list(self.hallarEstadosInaccesibles()))))+'\n'+self.etiquetas[6]
         deltaLinea=''
         for q in self.delta:
             for simb in self.delta[q]:
@@ -70,9 +70,19 @@ class AFN:
                 deltaSet= deltaSet[0] if len(deltaSet)==1 else ';'.join(deltaSet)
                 deltaLinea=f'{q}:{simb}>{deltaSet}'
                 out+='\n'+deltaLinea
-        return out
-    def imprimirAFNSimplificado(self):
-        pass
+        return print(out)
+    
+    def imprimirAFNSimplificado(self): #Similar al anterior sin estados inaccesibles
+        simb=''
+        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+'\n'+self.etiquetas[6]
+        deltaLinea=''
+        for q in self.delta:
+            for simb in self.delta[q]:
+                deltaSet= sorted(list(self.delta[q][simb]))
+                deltaSet= deltaSet[0] if len(deltaSet)==1 else ';'.join(deltaSet)
+                deltaLinea=f'{q}:{simb}>{deltaSet}'
+                out+='\n'+deltaLinea
+        return print(out)
 
     def exportar(self, archivo):
         with open(archivo, "w") as f:
