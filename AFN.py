@@ -184,7 +184,7 @@ class AFN:
                 if self.delta.get(actual) is not None: 
                     if len(list(self.delta[actual][char])) > 1:
                         out+= f'[{actual},{cadena[index:]}]-> '
-                        for i in list(self.delta[actual][char]):
+                        for i in sorted(self.delta[actual][char]):
                             procesamiento = self.procesamiento(cadena[index+1:],i,out)
                             if procesamiento ==True:
                                 return True
