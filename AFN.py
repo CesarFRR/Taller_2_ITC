@@ -208,8 +208,56 @@ class AFN:
     #Trabajando en esto
     def computarTodosLosProcesamientos(self, cadena, nombreArchivo):
         return 0
-    def procesarListaCadenas(self, listaCadenas, nombreArchivo, imprimirPantalla):
-        pass 
+    
+    def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str, imprimirPantalla:bool):
+        out = ''
+        with open(nombreArchivo, 'r+') as archivo:
+            archivo.truncate(0)
+
+        for cadena in listaCadenas:
+            actual = self.q0
+            aceptada = None
+            procesamiento = self.procesamientoLista(cadena, actual, out, aceptada, imprimirPantalla, nombreArchivo)
+            if not procesamiento:
+                if imprimirPantalla:
+                    print('No aceptacion')
+                with open(nombreArchivo, 'a') as archivo:
+                    archivo.write('No aceptacion'+'\n')
+
+    def procesamientoLista(self,cadena,actual, out, aceptada, imprimirPantallla, nombreArchivo):
+        final = False
+        for index, char in enumerate(cadena):
+            if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
+                out+= f'[{actual},{cadena[index:]}]-> No Aceptación'
+                print(out)
+                return False
+            if(actual in self.Q):
+                if self.delta.get(actual) is not None and self.delta.get(actual).get(char) is not None: 
+                    if len(list(self.delta[actual][char])) > 1:
+                        out+= f'[{actual},{cadena[index:]}]-> '
+                        for i in sorted(self.delta[actual][char]):
+                            procesamiento = self.procesamientoLista(cadena[index+1:],i,out, aceptada, imprimirPantallla, nombreArchivo)
+                            if procesamiento ==True:
+                                return True
+                    elif len(list(self.delta[actual][char])) == 1:
+                        out+= f'[{actual},{cadena[index:]}]-> '
+                        actual = list(self.delta[actual][char])[0]
+                else:
+                    break
+            else:
+                break
+            if len(cadena[index:]) == 1:
+                final = True
+
+        if actual in self.F and final: #verificar si el estado actual es de aceptacion
+            out+= 'Aceptacion'  
+            if imprimirPantallla:
+                print(out)  
+            with open(nombreArchivo, 'a') as archivo:
+                archivo.write(out+'\n')
+
+            return True
+        return False
 
     def procesarCadenaConversion(self, cadena):
         afd = self.AFNtoAFD(self)
