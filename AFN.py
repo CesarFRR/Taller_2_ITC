@@ -170,7 +170,40 @@ class AFN:
     
     #Trabajando en esto
     def procesarCadenaConDetalles(self, cadena):
-        return True
+        return self.procesamiento(cadena,self.q0,'')
+        
+    
+    def procesamiento(self,cadena, actual, out):
+        final = False
+        for index, char in enumerate(cadena):
+            if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
+                out+= f'[{actual},{cadena[index:]}]-> No Aceptación'
+                print(out)
+                return False
+            if(actual in self.Q):
+                if self.delta.get(actual) is not None: 
+                    if len(list(self.delta[actual][char])) > 1:
+                        out+= f'[{actual},{cadena[index:]}]-> '
+                        for i in list(self.delta[actual][char]):
+                            procesamiento = self.procesamiento(cadena[index+1:],i,out)
+                            if procesamiento ==True:
+                                return True
+                    elif len(list(self.delta[actual][char])) == 1:
+                        out+= f'[{actual},{cadena[index:]}]-> '
+                        actual = list(self.delta[actual][char])[0]
+            else:
+                break
+            if len(cadena[index:]) == 1:
+                final = True
+
+        if actual in self.F and final == True: #verificar si el estado actual es de aceptacion
+            out+= 'Aceptación'
+            print(out)
+            return True
+        else:
+            out+= 'No Aceptación'
+        
+        return False
     
     #Trabajando en esto
     def computarTodosLosProcesamientos(self, cadena, nombreArchivo):
