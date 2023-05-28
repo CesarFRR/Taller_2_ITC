@@ -200,11 +200,12 @@ class AFD:
         # ▪ sucesion de parejas (estado, símbolo) de cada paso del procesamiento .
         # ▪ sí o no dependiendo de si la cadena es aceptada o no.
 
-        actual = self.q0
+        
         estados=self.delta.keys()
         out=''
 
         for cadena in listaCadenas:
+            actual = self.q0
             aceptada=None
             for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptacion | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptacion
                 if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
@@ -213,7 +214,7 @@ class AFD:
                     break
                 if(actual in estados):
                     out+= f'[{actual},{cadena[index:]}]-> ' 
-                    actual = list(self.delta[actual][char])[0] #Realizar transicion 
+                    actual = list(self.delta[actual][char])[0] if len(self.delta[actual][char])==1 else '('+','.join(self.delta[actual][char])+')'
             if actual in self.F : #verificar si el estado actual es de aceptacion
                 if(aceptada==None):
                     out+= 'Aceptacion'
