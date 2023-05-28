@@ -91,7 +91,7 @@ class AFN:
         with open(archivo, "w") as f:
                 f.write(self.toString())
 
-    def AFNtoAFD(self, afn):
+    def AFNtoAFD(self, afn, imprimir = True):
         states = list(afn.Q)
         delta = afn.delta
         accepting= afn.F
@@ -122,15 +122,17 @@ class AFN:
                         states.append(newState)
 
         #Imprimir tabla de trancisiones
-        headers = ['Estado']+(list(afn.Sigma.simbolos))
-        for i in headers:
-            print(f'{i:<20}',end="")
-        for key, value in delta.items():
-            print('\n',f'{str(key):<20}', end="")
-            for state,transition in value.items():
-                print(f'{str(value[state]):<20}', end="")
-        print('\n')
-
+        if imprimir:
+            out = ''
+            for q in self.delta:
+                for simb in self.delta[q]:
+                    deltaSet= sorted(list(self.delta[q][simb]))
+                    deltaSet= deltaSet[0] if len(deltaSet)==1 else ';'.join(deltaSet)
+                    deltaLinea=f'{q}:{simb}>{deltaSet}'
+                    out+='\n'+deltaLinea
+            print(out)
+            print('\n')
+            
         strStates = set()
         for state in states:        #Agregar todos los estados que contengan alguno de aceptacion
             if type(state) is tuple:
@@ -272,15 +274,17 @@ class AFN:
                     print(line)
 
     def procesarCadenaConversion(self, cadena):
-        afd = self.AFNtoAFD(self)
-        return afd.procesarCadena(cadena)
-
+        afd = self.AFNtoAFD(self, False)
+        return afd.procesarCadena(cadena) 
+    
     def  procesarCadenaConDetallesConversion(self, cadena):
-        afd = self.AFNtoAFD(self)
-        return afd.procesarCadenaConDetalles(cadena)
+        afd = self.AFNtoAFD(self, False)
+        return afd.procesarCadenaConDetalles(cadena) 
 
+    
     def procesarListaCadenasConversion(self, listaCadenas,nombreArchivo, imprimirPantalla):
-        pass
+        afd = self.AFNtoAFD(self, False)
+        return afd.procesarListaCadenas(listaCadenas, nombreArchivo, imprimirPantalla)
 
 #================================================
 
