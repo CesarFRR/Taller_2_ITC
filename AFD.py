@@ -3,6 +3,8 @@ import re
 from Alfabeto import Alfabeto
 from itertools import product as productoCartesiano
 from prettytable import PrettyTable
+from visual_automata.fa.dfa import VisualDFA
+
 class AFD:
     Sigma = None
     Q = None
@@ -398,7 +400,26 @@ class AFD:
     def imprimirAFDSimplificado(self):
         
         pass
+    def graficarAFD(self):
 
+        gEstados=dict()
+        for q in self.delta:
+            gEstados.update({q:dict()})
+            for simb in self.delta[q]:
+                deltaSet= list(self.delta[q][simb])[0]
+                gEstados[q].update({simb:deltaSet})
+                
+                #print ('deltaLinea: ',deltaLinea)
+        dfa = VisualDFA(
+            states=self.Q,
+            input_symbols=set(self.Sigma.simbolos),
+            transitions=gEstados,
+            initial_state=self.q0,
+            final_states=self.F,
+        )
+
+
+        dfa.show_diagram().render('grafoRENDERIZADOZX', format='png', cleanup=True, view=True)
     
     def pruebas(self, cadena):
         out=''
@@ -429,15 +450,17 @@ afd1= AFD(archivo1+'.dfa')
 listaCadenas= ['abba', 'baabb', 'bbabaaab', 'a', 'bba', 'baabba', 'aaaaaba', 'bbbbab', 'ababababbaXa']
 afd1.procesarListaCadenas(listaCadenas, 'procesarListaCadenasResultado.txt',True)
 
-# archivo2='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
-# afd2= AFD(archivo2+'.dfa')
-# cadena='abaaabab'
-# #print('AFD: ',archivo2, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
+archivo2='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
+afd2= AFD(archivo2+'.dfa')
+cadena='abaaabab'
+#print('AFD: ',archivo2, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
 # afd2.exportar(archivo2+'Exportado.'+afd2.extension)
 
 #Producto cartesiano
-#archivo3=f'{archivo1}X{archivo2}' # L: impares O que no contengan bb
-#afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2) #union
+archivo3=f'{archivo1}X{archivo2}' # L: impares O que no contengan bb
+afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2) #union
+
+afd3.graficarAFD()
 #afd3 = AFD.AFD_hallarProductoCartesianoY(afd1, afd2) #Interseccion
 #print('\nAFD nuevo, Alfabeto: ', afd3.Sigma.simbolos, '\nEstados: ', afd3.Q, '\nEstado inicial: ',afd3.q0, '\nEstados Finales: ', afd3.F, '\ndelta: ',afd3.delta)
 #cadena= 'babab' # Contiene bb Y es impar --> True
