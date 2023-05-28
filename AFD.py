@@ -399,6 +399,9 @@ class AFD:
         pass
 
     def imprimirAFDSimplificado(self):
+
+
+        
         
         pass
     def graficarAFD(self):
