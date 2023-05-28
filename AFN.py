@@ -146,68 +146,96 @@ class AFN:
             
         return AFD(afn.Sigma, strStates, afn.q0, set(accepting), delta) #Retornar AFD equivalente
 
-    def procesarCadena(self, cadena):
-        actual = [self.q0]
-        for simbolo in cadena:
-            prox = []
-            if simbolo not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-                return False
-            for state in actual:
-                if self.delta.get(actual[actual.index(state)]) is not None:   #Verificar que el estado actual exista
-                    transiciones = self.delta[actual[actual.index(state)]]    #Lista de transiciones del estado actual    
-                    if simbolo in transiciones:                               #Recorrer las transiciones verificando el simbolo actual y el estado resultado
-                        for i in transiciones[simbolo]:
-                            prox.append(i)                                    
-            actual = prox
-            if actual == []:
-                break
-            #print(f'{simbolo:3}:{actual}')
-            
-        for state in actual:              
-            if state in self.F and actual!=[]:  #verificar si el estado actual es de aceptacion en cualquier procesamiento
-                return True
-        return False
+   def procesarCadena(self, cadena):
+        return self.procesamiento(cadena, self.q0, False, True)
     
     #Trabajando en esto
     def procesarCadenaConDetalles(self, cadena):
-        return self.procesamiento(cadena,self.q0,'')
+        return self.procesamiento(cadena, self.q0, True, True)
         
     
-    def procesamiento(self,cadena, actual, out):
+    def procesamiento(self,cadena, actual, detalles, proc,  out=''):
         final = False
+        breaked = False
+
         for index, char in enumerate(cadena):
             if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-                out+= f'[{actual},{cadena[index:]}]-> No Aceptación'
-                print(out)
-                return False
+                out+= f'[{actual},{cadena[index:]}]-> Procesamiento abortado'
+                if out not in self.abortadas:
+                    self.abortadas.append(out)
+                break
             if(actual in self.Q):
-                if self.delta.get(actual) is not None: 
+                if self.delta.get(actual) is not None and self.delta.get(actual).get(char) is not None: 
                     if len(list(self.delta[actual][char])) > 1:
                         out+= f'[{actual},{cadena[index:]}]-> '
                         for i in sorted(self.delta[actual][char]):
-                            procesamiento = self.procesamiento(cadena[index+1:],i,out)
-                            if procesamiento ==True:
-                                return True
+                            #print(sorted(self.delta[actual][char]))
+                            actual = i
+                            procesamiento = self.procesamiento(cadena[index+1:],i,detalles, proc,  out)
+                            if proc:
+                                if procesamiento:
+                                    return True
                     elif len(list(self.delta[actual][char])) == 1:
                         out+= f'[{actual},{cadena[index:]}]-> '
                         actual = list(self.delta[actual][char])[0]
-            else:
-                break
-            if len(cadena[index:]) == 1:
+                else:
+                    out+= f'[{actual},{cadena[index:]}]-> '
+                    breaked = True
+                    break
+            if index == len(cadena)-1:
                 final = True
-
-        if actual in self.F and final == True: #verificar si el estado actual es de aceptacion
-            out+= 'Aceptación'
-            print(out)
-            return True
-        else:
-            out+= 'No Aceptación'
         
-        return False
+        if actual in self.F and final: #verificar si el estado actual es de aceptacion
+            out+= f'[{actual},]-> '
+            out+= 'Aceptacion'  
+            if out not in self.aceptacion:
+                self.aceptacion.append(out)
+            if proc:
+                if detalles:
+                    print(out)
+                return True
+                 
+        elif actual not in self.F:
+            out+= f'[{actual},]-> '
+            out+= 'No aceptacion'
+            if out not in self.rechazadas:
+                self.rechazadas.append(out)
+            if proc:
+                return False
+
+        elif breaked is True:
+            out+= 'Procesamiento abortado'
+            if out not in self.abortadas:
+                self.abortadas.append(out)
+            if proc:
+                return False
+        if proc:
+            return False
     
     #Trabajando en esto
     def computarTodosLosProcesamientos(self, cadena, nombreArchivo):
-        return 0
+        self.aceptacion = []
+        self.rechazadas = []
+        self.abortadas = []
+        self.procesamiento(cadena,  self.q0, False, '')
+        
+        with open(f'{nombreArchivo}Abortadas.txt', 'a') as abortadas:
+            abortadas.truncate(0)
+            for i in self.abortadas:
+                abortadas.write(f'{i}\n')
+                print(f'{i}')
+        with open(f'{nombreArchivo}Rechazadas.txt', 'a') as rechazadas:
+            rechazadas.truncate(0)
+            for i in self.rechazadas:
+                rechazadas.write(f'{i}\n')
+                print(f'{i}')
+        with open(f'{nombreArchivo}Aceptadas.txt', 'a') as aceptadas:
+            aceptadas.truncate(0)
+            for i in self.aceptacion:
+                aceptadas.write(f'{i}\n')
+                print(f'{i}')
+  
+        return len(self.aceptacion+self.rechazadas+self.abortadas)
     
     def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str, imprimirPantalla:bool):
         out = ''
