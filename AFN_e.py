@@ -1,3 +1,4 @@
+from AFN import AFN
 from Alfabeto import Alfabeto
 import re
 class AFN_Lambda:
@@ -42,14 +43,14 @@ class AFN_Lambda:
                     self.Q = set(afc['#states'])
                     self.q0 = afc['#initial'][0]
                     self.F = set(afc['#accepting'])
-                    self.delta = dictReader       
+                    self.delta = dictReader
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
             self.Sigma, self.Q, self.qo, self.F, self.delta = args
             self.Q=set(self.Q)
             self.F=set(self.F)
-            
+
     def hallarEstadosInaccesibles(self):
         pass
     def toString(self):
@@ -68,12 +69,50 @@ class AFN_Lambda:
 
     def exportar(self, archivo):
         with open(archivo, "w") as f:
-                f.write(self.toString())
+            f.write(self.toString())
+
+    def lambda_clausura(self, afnl, states):
+        clausura = set(states)
+        while True:
+            # Para cada estado en clausura, añade todos los estados que se pueden alcanzar mediante transiciones lambda.
+            new_states = set(state for s in clausura for state in afnl.delta[s].get('$', set()))
+            # Si no se añadieron nuevos estados, detiene el bucle.
+            if new_states.issubset(clausura):
+                break
+            # Añade los nuevos estados a clausura.
+            clausura = clausura.union(new_states)
+        return clausura
 
     def AFN_LambdaToAFN(self, afnl):
-        pass
+        # Copia Sigma, Q, q0 y F desde afnl, pero elimina el símbolo '$' de Sigma.
+        Sigma = afnl.Sigma - {'$'}
+        Q = afnl.Q
+        q0 = afnl.q0
+        F = set()
+        delta = {}
+
+        # Calcula la función de transición para el AFN.
+        for state in Q:
+            delta[state] = {}
+            for symbol in Sigma:
+                next_states = set()
+                for target in afnl.delta[state].get(symbol, set()):
+                    next_states = next_states.union(self.lambda_clausura(afnl, {target}))
+                delta[state][symbol] = next_states
+
+        # Actualiza los estados de aceptación para el AFN.
+        for state in Q:
+            # Si un estado puede llegar a un estado de aceptación a través de transiciones lambda, se convierte en un estado de aceptación.
+            if not afnl.F.isdisjoint(self.lambda_clausura(afnl, {state})):
+                F.add(state)
+
+        return AFN(Sigma, Q, q0, F, delta)
+
     def AFN_LambdaToAFD(self, afnl):
-        pass
+        afn = self.AFN_LambdaToAFN(afnl)
+        afd = AFN.AFNtoAFD(afn, False)
+        return afd
+
     def procesarCadena(self, cadena):
         return True
     def procesarCadenaConDetalles(self, cadena):
@@ -86,7 +125,7 @@ class AFN_Lambda:
         pass
     def procesarCadenaConDetallesConversion(self, cadena):
         pass
-    def procesarListaCadenasConversion(self, listaCadenas,nombreArchivo, imprimirPantalla): 
+    def procesarListaCadenasConversion(self, listaCadenas,nombreArchivo, imprimirPantalla):
         pass
 
     def pruebas(self, cadena):
@@ -97,8 +136,8 @@ class AFN_Lambda:
         for estado in self.delta:
             for simb in self.Sigma.simbolos:
                 if(self.delta[estado].get(simb)==None):
-                    self.delta[estado][simb]=limbo
-        
+                    self.delta[estado][simb] = limbo
+
         out = self.toString() #.get() retorna el conjunto del simbolo dado, si no existe retorna un conjunto vacío (esto es para evitar errores de KeyError: clave no encontrada)
         return out
 

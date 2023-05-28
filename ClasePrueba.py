@@ -2,25 +2,25 @@ class ClasePrueba:
     def __init__(self, *args):
         pass
 
-    def probarAFD():
+    def probarAFD(self):
         pass
-    def probarAFN():
+    def probarAFN(self):
         pass
-    def probarAFNLambda():
+    def probarAFNLambda(self):
         pass
-    def main(): # invoca a los otros para que puedan ser comentados facilmente y poder escoger cual se va a probar.
+    def main(self): # invoca a los otros para que puedan ser comentados facilmente y poder escoger cual se va a probar.
         pass
 
-    def probarAFNtoAFD():
+    def probarAFNtoAFD(self):
         pass
-    def probarAFNLambdaToAFN():
+    def probarAFNLambdaToAFN(self):
         pass
-    def probarAFNLambdaToAFN():
+    def probarAFNLambdaToAFN(self):
         pass
-    def probarComplemento():
+    def probarComplemento(self):
         pass
-    def probarProductoCartesiano():
+    def probarProductoCartesiano(self):
         pass
-    def probarSimplificacion():
+    def probarSimplificacion(self):
         pass
     

@@ -1,3 +1,4 @@
+from AFD import AFD
 from Alfabeto import Alfabeto
 import re
 
@@ -50,7 +51,7 @@ class AFN:
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
-            self.Sigma, self.Q, self.qo, self.F, self.delta = args
+            self.Sigma, self.Q, self.q0, self.F, self.delta = args
             self.Q=set(self.Q)
             self.F=set(self.F)
     def hallarEstadosInaccesibles(self):
@@ -96,10 +97,10 @@ class AFN:
         delta = afn.delta
         accepting= afn.F
 
-        for state,transition in delta.items():  
-            for symbol in transition:
-                if len(transition[symbol])>1:           #Comprobar si un simbolo lleva a mas de un estado
-                    states.append(tuple(transition[symbol]))    #Agregar tupla de todos los estados a los que lleva
+        for state, transition in delta.items():
+            for symbol, destiny in transition.items():
+                if len(destiny)>1:           #Comprobar si un simbolo lleva a mas de un estado
+                    states.append(tuple(destiny))    #Agregar tupla de todos los estados a los que lleva
 
         #Recorrer lista de estados una vez realizadas las modificaciones anteriores
         for actual in states:
