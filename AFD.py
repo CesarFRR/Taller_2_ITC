@@ -13,6 +13,7 @@ class AFD:
     delta = None # se intentara hacer el delta como  un diccionario, cada estado q contiene otro diccionario --> clave:simbolo, valor: conjunto de estados resultantes tras evaluar con la funcion delta
     estadosLimbo = None
     estadosInaccesibles = None
+    nombreArchivo='archivo'
     extension = "dfa"
     etiquetas=['#!dfa', '#alphabet', '#states', '#initial', '#accepting', '#transitions']
     instanciaVacia=False
@@ -51,6 +52,7 @@ class AFD:
                     self.F = set(afc['#accepting'])
                     self.delta = dictReader
                     #print('delta: ', self.delta)
+                    self.nombreArchivo=((args[0]).split('.'+self.extension))[0]
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
@@ -209,7 +211,7 @@ class AFD:
             aceptada=None
             for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptacion | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptacion
                 if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-                    out+= f'[{actual},{cadena[index:]}]-> No Aceptacion'
+                    out+= f'[{actual},{cadena[index:]}]-> Procesamiento abortado'
                     aceptada= False
                     break
                 if(actual in estados):
@@ -387,16 +389,58 @@ class AFD:
 
         return AFD
 
-    def AFD_simplificarAFD(self, afdinput ):
-        nombres_campos=['{p,q}', 'δ(p,a),δ(q,a)', 'δ(p,b),δ(q,b)']
-        tabla = PrettyTable()
-        tabla.field_names=nombres_campos
-        pares = sorted(list(self.Q))
-        print(pares)
-        for q, simb in self.delta:
+    def AFD_simplificarAFD(afdinput ):
+        # nombres_campos=['{p,q}', 'δ(p,a),δ(q,a)', 'δ(p,b),δ(q,b)']
+        # tabla = PrettyTable()
+        # tabla.field_names=nombres_campos
+        # pares = sorted(list(self.Q))
+        # print(pares)
+        # Inicializar conjuntos y diccionarios
+        states = afdinput.Q
+        alphabet = set(afdinput.Sigma.simbolos)
+        for transitions in afdinput.delta.values():
+            alphabet.update(transitions.keys())
 
-            pass
-        pass
+        # Dividir los estados en finales y no finales
+        final_states = afdinput.F
+        non_final_states = afdinput.Q.difference(afdinput.F)
+
+        # Inicializar la partición inicial de los estados
+        partition = [final_states, non_final_states]
+        new_partition = partition.copy()
+
+        while new_partition != partition:
+            partition = new_partition.copy()
+            new_partition = []
+
+            for group in partition:
+                for symbol in alphabet:
+                    # Calcular el conjunto de destinos para el símbolo actual
+                    destinations = set()
+                    for state in group:
+                        transitions = afdinput.delta[state].get(symbol, set())
+                        destinations.update(transitions)
+
+                    # Dividir el grupo actual en subgrupos basados en los destinos
+                    for sub_group in new_partition:
+                        intersect = sub_group.intersection(destinations)
+                        difference = sub_group.difference(destinations)
+                        if intersect and difference:
+                            new_partition.remove(sub_group)
+                            new_partition.append(intersect)
+                            new_partition.append(difference)
+                            break
+                    else:
+                        new_partition.append(destinations)
+
+        # Construir el nuevo delta minimizado
+        minimized_delta = {}
+        for i, group in enumerate(new_partition):
+            state_name = 'q{}'.format(i)
+            for state in group:
+                minimized_delta[state] = state_name
+
+        return minimized_delta
 
     def imprimirAFDSimplificado(self):
         
@@ -420,7 +464,7 @@ class AFD:
         )
 
 
-        dfa.show_diagram().render('grafoRENDERIZADOZX', format='png', cleanup=True, view=True)
+        dfa.show_diagram().render(self.nombreArchivo, format='png', cleanup=True, view=True)
     
     def pruebas(self, cadena):
         out=''
@@ -438,8 +482,8 @@ class AFD:
 
 #print('real Ejecutando:...\n')
 
-archivo1='impares' # AFD--> L: |w| impar
-afd1= AFD(archivo1+'.dfa') 
+#archivo1='impares' # AFD--> L: |w| impar
+#afd1= AFD(archivo1+'.dfa') 
 # cadena=''
 # print('AFD: ',archivo1, ' Procesar la cadena: ',cadena,'resultado: ',  afd1.procesarCadena(cadena))
 # print('\n\nAFD: ',archivo1, ' Procesar la cadena con detalles: ',cadena,'Procedimiento: \n')
@@ -448,20 +492,20 @@ afd1= AFD(archivo1+'.dfa')
 # afd1.exportar(archivo1+'Exportado.'+afd1.extension)
 
 #exportar lista cadenas:
-listaCadenas= ['abba', 'baabb', 'bbabaaab', 'a', 'bba', 'baabba', 'aaaaaba', 'bbbbab', 'ababababbaXa']
-afd1.procesarListaCadenas(listaCadenas, 'procesarListaCadenasResultado.txt',True)
+#listaCadenas= ['abba', 'baabb', 'bbabaaab', 'a', 'bba', 'baabba', 'aaaaaba', 'bbbbab', 'ababababbaXa']
+#afd1.procesarListaCadenas(listaCadenas, 'procesarListaCadenasResultado.txt',True)
 
-archivo2='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
-afd2= AFD(archivo2+'.dfa')
-cadena='abaaabab'
+#archivo2='nocontieneBB' #AFD--> L: No contiene bb, que pendejada tan redundante :v
+#afd2= AFD(archivo2+'.dfa')
+#cadena='abaaabab'
 #print('AFD: ',archivo2, ' Procesar la cadena: ',cadena,'resultado: ',  afd2.procesarCadena(cadena))
 # afd2.exportar(archivo2+'Exportado.'+afd2.extension)
 
 #Producto cartesiano
-archivo3=f'{archivo1}X{archivo2}' # L: impares O que no contengan bb
-afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2) #union
+#archivo3=f'{archivo1}X{archivo2}' # L: impares O que no contengan bb
+#afd3 = AFD.AFD_hallarProductoCartesianoO(afd1, afd2) #union
 
-afd3.graficarAFD()
+#afd3.graficarAFD()
 #afd3 = AFD.AFD_hallarProductoCartesianoY(afd1, afd2) #Interseccion
 #print('\nAFD nuevo, Alfabeto: ', afd3.Sigma.simbolos, '\nEstados: ', afd3.Q, '\nEstado inicial: ',afd3.q0, '\nEstados Finales: ', afd3.F, '\ndelta: ',afd3.delta)
 #cadena= 'babab' # Contiene bb Y es impar --> True
@@ -469,6 +513,10 @@ afd3.graficarAFD()
 #afd3.exportar(archivo3+'Exportado.'+afd3.extension)
 #print('\n#############################################################################')
 #Faltan desarrollar algunos métodos
+simplificar= 'simplificar'
+afdsimp = AFD(simplificar+'.dfa') 
+#afdsimp.graficarAFD()
+simplificado = AFD.AFD_simplificarAFD(afdsimp)
 
-
+print(sorted(list(simplificado)))
 
