@@ -3,62 +3,22 @@ import pandas as pd
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
-
+import matplotlib.backends.backend_pdf as pdf_backend
 from AFD import AFD
 from AFN import AFN
 from AFN_e import AFN_Lambda
 class graficarAutomata:
     rad = .1
-    automata =None
-    # def __init__(self, *args):
-    #     archivo1='impares' # AFD--> L: |w| impar
-    #     afd1= AFD(archivo1+'.dfa') 
-    #     #Crear un dataframe vacío
-    #     nfa1= AFN("ej1.nfa")
-    #     data = pd.DataFrame(columns=['source', 'to', 'label'])
+    def mostrarGrafo(self, automata):
+        """Muestra por una ventana de Matplotlib el grafo del autómata ingresado, puede ser cualquier autómata del taller 2
 
-    #     delta2 = {}
-    #     for estado, transiciones in nfa1.delta.items():
-    #         delta2[estado] = {}
-    #         for simbolo, destinos in transiciones.items():
-    #             for destino in destinos:
-    #                 if destino in delta2[estado]:
-    #                     delta2[estado][destino].add(simbolo)
-    #                 else:
-    #                     delta2[estado][destino] = {simbolo}
-
-    #     for estado, transiciones in delta2.items():
-    #         for destino, simbolos in transiciones.items():
-    #             data = data.append({'source': estado, 'to': destino, 'label': ', '.join(simbolos)}, ignore_index=True)
-    #     print(data)
-
-        
-    #     conn_style = f'arc3,rad={self.rad}'
-    #     G = nx.from_pandas_edgelist(data, source='source', target='to', edge_attr='label', create_using=nx.DiGraph())
-    #     node_fill_colors = ["lightgrey" if n == 'q0' else "white" for n in G.nodes()]
-    #     node_border_colors = ['black'] * len(G.nodes())
-    #     node_border_widths = [3 if node == "q3" else 1 for node in G.nodes()]
-    #     node_sizes = [len(str(n))*300 for n in G.nodes()]
-    #     weight = nx.get_edge_attributes(G, 'label')
-    #     pos = nx.shell_layout(G, scale=1)
-
-    #     nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color=node_fill_colors, linewidths=node_border_widths, edgecolors=node_border_colors)
-    #     nx.draw_networkx_labels(G, pos=pos, font_color='black', font_family='Times New Roman', font_size=10)
-    #     edges=nx.draw_networkx_edges(G, pos=pos, edgelist=G.edges(), edge_color=self.random_edges_colors(G),
-    #                         connectionstyle=conn_style)
-    #     d = nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=weight, font_family='Times New Roman')
-    #     self.edge_calibration(d, pos, asp = self.get_aspect(plt.gca()))
-    #     plt.tight_layout()
-    #     print('d: ',type(d),'edges: ', type(edges))
-    #     plt.setp(edges, zorder=2)
-    #     plt.setp(d.values(), zorder=3)
-    #     plt.show()
-    def graficar(self, automata):
-        self.automata=automata
+        Args:
+            automata (AFD, AFN, AFN_Lambda): Para pilas y MT usar sus respectivos métodos
+        """
         #Crear un dataframe vacío
         data = pd.DataFrame(columns=['source', 'to', 'label'])
         delta2 = {}
-        for estado, transiciones in self.automata.delta.items():
+        for estado, transiciones in automata.delta.items():
 
             delta2[estado] = {}
             for simbolo, destinos in transiciones.items():
@@ -76,9 +36,9 @@ class graficarAutomata:
         
         conn_style = f'arc3,rad={self.rad}'
         G = nx.from_pandas_edgelist(data, source='source', target='to', edge_attr='label', create_using=nx.DiGraph())
-        node_fill_colors = ["lightgrey" if n in self.automata.q0 else "white" for n in G.nodes()]
+        node_fill_colors = ["lightgrey" if n in automata.q0 else "white" for n in G.nodes()]
         node_border_colors = ['black'] * len(G.nodes())
-        node_border_widths = [3 if node in self.automata.F else 1 for node in G.nodes()]
+        node_border_widths = [3 if node in automata.F else 1 for node in G.nodes()]
         node_sizes = [len(str(n))*300 for n in G.nodes()]
         weight = nx.get_edge_attributes(G, 'label')
         pos = nx.shell_layout(G, scale=1)
@@ -92,14 +52,102 @@ class graficarAutomata:
         plt.tight_layout()
         plt.setp(edges, zorder=2)
         plt.setp(d.values(), zorder=3)
-        tituloVentana=f"Gráfo del autómata: {self.automata.nombreArchivo}.{self.automata.extension}"
+        tituloVentana=f"Gráfo del autómata: {automata.nombreArchivo}.{automata.extension}"
         print(tituloVentana)
         print(automata.Sigma.simbolos)
         plt.gcf().canvas.manager.set_window_title(tituloVentana)
 
         plt.show()
+    def mostrarGrafos(self, listaAutomatas):
+        for M in listaAutomatas:
+            self.mostrarGrafo(M)
+    def exportarGrafo(self, automata):
+        pdf = pdf_backend.PdfPages(f"grafo[{automata.nombreArchivo}.{automata.extension}].pdf")
+        #Crear un dataframe vacío
+        data = pd.DataFrame(columns=['source', 'to', 'label'])
+        delta2 = {}
+        for estado, transiciones in automata.delta.items():
 
+            delta2[estado] = {}
+            for simbolo, destinos in transiciones.items():
+                for destino in destinos:
+                    if destino in delta2[estado]:
+                        delta2[estado][destino].add(simbolo)
+                    else:
+                        delta2[estado][destino] = {simbolo}
 
+        for estado, transiciones in delta2.items():
+            for destino, simbolos in transiciones.items():
+                data = data.append({'source': estado, 'to': destino, 'label': ', '.join(simbolos)}, ignore_index=True)
+        print(data)
+
+        
+        conn_style = f'arc3,rad={self.rad}'
+        G = nx.from_pandas_edgelist(data, source='source', target='to', edge_attr='label', create_using=nx.DiGraph())
+        node_fill_colors = ["lightgrey" if n in automata.q0 else "white" for n in G.nodes()]
+        node_border_colors = ['black'] * len(G.nodes())
+        node_border_widths = [3 if node in automata.F else 1 for node in G.nodes()]
+        node_sizes = [len(str(n))*300 for n in G.nodes()]
+        weight = nx.get_edge_attributes(G, 'label')
+        pos = nx.shell_layout(G, scale=1)
+
+        nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color=node_fill_colors, linewidths=node_border_widths, edgecolors=node_border_colors)
+        nx.draw_networkx_labels(G, pos=pos, font_color='black', font_family='Times New Roman', font_size=10)
+        edges=nx.draw_networkx_edges(G, pos=pos, edgelist=G.edges(), edge_color=self.random_edges_colors(G),
+                            connectionstyle=conn_style)
+        d = nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=weight, font_family='Times New Roman')
+        self.edge_calibration(d, pos, asp = self.get_aspect(plt.gca()))
+        plt.tight_layout()
+        plt.setp(edges, zorder=2)
+        plt.setp(d.values(), zorder=3)
+        pdf.savefig()
+        plt.close()
+        pdf.close()
+
+    def exportarGrafos(self, listaAutomatas):        
+        pdf = pdf_backend.PdfPages("grafos.pdf")
+        for M in listaAutomatas: 
+            #Crear un dataframe vacío
+            data = pd.DataFrame(columns=['source', 'to', 'label'])
+            delta2 = {}
+            for estado, transiciones in M.delta.items():
+
+                delta2[estado] = {}
+                for simbolo, destinos in transiciones.items():
+                    for destino in destinos:
+                        if destino in delta2[estado]:
+                            delta2[estado][destino].add(simbolo)
+                        else:
+                            delta2[estado][destino] = {simbolo}
+
+            for estado, transiciones in delta2.items():
+                for destino, simbolos in transiciones.items():
+                    data = data.append({'source': estado, 'to': destino, 'label': ', '.join(simbolos)}, ignore_index=True)
+            print(data)
+
+            
+            conn_style = f'arc3,rad={self.rad}'
+            G = nx.from_pandas_edgelist(data, source='source', target='to', edge_attr='label', create_using=nx.DiGraph())
+            node_fill_colors = ["lightgrey" if n in M.q0 else "white" for n in G.nodes()]
+            node_border_colors = ['black'] * len(G.nodes())
+            node_border_widths = [3 if node in M.F else 1 for node in G.nodes()]
+            node_sizes = [len(str(n))*300 for n in G.nodes()]
+            weight = nx.get_edge_attributes(G, 'label')
+            pos = nx.shell_layout(G, scale=1)
+
+            nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color=node_fill_colors, linewidths=node_border_widths, edgecolors=node_border_colors)
+            nx.draw_networkx_labels(G, pos=pos, font_color='black', font_family='Times New Roman', font_size=10)
+            edges=nx.draw_networkx_edges(G, pos=pos, edgelist=G.edges(), edge_color=self.random_edges_colors(G),
+                                connectionstyle=conn_style)
+            d = nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=weight, font_family='Times New Roman')
+            self.edge_calibration(d, pos, asp = self.get_aspect(plt.gca()))
+            plt.tight_layout()
+            plt.setp(edges, zorder=2)
+            plt.setp(d.values(), zorder=3)
+            pdf.savefig()
+            plt.close()
+        pdf.close()
+    
     def random_edges_colors(self, G):
         colors = [] # Aristas de diferentes colores ayuda a diferenciarlas mejor en el grafo
         for _ in G.edges():
@@ -143,13 +191,17 @@ class graficarAutomata:
 
         return disp_ratio / data_ratio
 
+
+
 nfa1= AFN("ej1.nfa")
 dfa1 =AFD("ej0.dfa")
 nfe1= AFN_Lambda('ej1.nfe')
 graficar = graficarAutomata()
-graficar.graficar(dfa1)
-graficar.graficar(nfa1)
-graficar.graficar(nfe1)
+# graficar.mostrarGrafo(dfa1)
+# graficar.mostrarGrafo(nfa1)
+# graficar.mostrarGrafo(nfe1)
+
+graficar.exportarGrafos([dfa1, nfa1, nfe1])
 print(dfa1.delta,'\n\n')
 print(dfa1.Sigma.simbolos,'\n\n')
 

@@ -48,7 +48,3 @@
 # print("estado incial: ", initial)
 # print("estados de aceptacion: ", accepting)
 # print("transiciones (delta): ", transitions)
-
-
-field = ['{hola}', '{adios}']
-print(field[0])
