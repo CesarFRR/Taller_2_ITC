@@ -1,37 +1,42 @@
+
 class AFPD:
+    Q = None
+    q0 =None
+    F =None
+    Sigma =None
+    PSigma = None
+    delta = None
     def __init__(self, estados, estadoInicial, estadosAceptacion, alfabetoCinta, alfabetoPila, delta):
-        self.estados = estados
-        self.estadoInicial = estadoInicial
-        self.estadosAceptacion = estadosAceptacion
-        self.alfabetoCinta = alfabetoCinta
-        self.alfabetoPila = alfabetoPila
+        self.Q = estados
+        self.q0 = estadoInicial
+        self.F = estadosAceptacion
+        self.Sigma = alfabetoCinta
+        self.PSigma = alfabetoPila
         self.delta = delta
 
-    def verificarDeterminismo(self):
-        # Método para verificar que las transiciones dadas garanticen el determinismo del autómata.
-        # Implementación pendiente.
+    def modificarPila(self, pila, operacion, parametro):
+        """Para ejecutar los cambios en la pila realizados por las transiciones, incluyendo los básicos así como la inserción/reemplazamiento de cadenas en el tope de la pila vistos en clase."""
         pass
         
     def procesarCadena(self, cadena):
-        # Método para procesar una cadena de entrada en el autómata.
-        estadoActual = self.estadoInicial
-        pila = []
-        
-        for simbolo in cadena:
-            if simbolo not in self.alfabetoCinta:
-                return False
-            
-            transicionesPosibles = [transicion for transicion in self.delta if transicion[0] == estadoActual and 
-                                    transicion[1] == simbolo and transicion[2] == pila[-1]]
-            
-            if len(transicionesPosibles) == 0:
-                return False
-            
-            estadoActual, _, nuevoContenidoPila = transicionesPosibles[0]
-            pila.pop()
-            
-            if nuevoContenidoPila != '':
-                for simbolo in nuevoContenidoPila[::-1]:
-                    pila.append(simbolo)
+        """ procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. """
                     
-        return estadoActual in self.estadosAceptacion and len(pila) == 0
+        return True
+    def procesarCadenaConDetalles(self, cadena):
+        """realiza  lo  mismo  que  el  método  anterior aparte  imprime  losdetalles  del  procesamiento  con  el  formato  que se  indica  en  el  archivo AFPD.pdf."""
+        return True
+    def procesarListaCadenas(self, listaCadenas,nombreArchivo, imprimirPantalla): 
+        """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo;  si  este  es  inválido  se  asigna  un  nombre  por  defecto.Además,todo  esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.
+        Los campos deben estar separados por tabulación y son:
+        1. cadena.
+        2. procesamiento (con el formato del archivo AFPD.pdf).
+        3. ‘yes’ o ‘no’dependiendo de si la cadena es aceptada o no.
+        """
+        pass
+    def hallarProductoCartesianoConAFD(afd):
+        """: debe calcular y retornar el producto cartesiano con un AFD dado como parámetro."""
+        pass
+    def toString(self):
+        """Representar  el  AFPD  con  el  formato  de  los  archivos  de  entrada  de  AFPD (AFPD.pdf)de manera que se pueda imprimir fácilmente"""
+        pass
+    
