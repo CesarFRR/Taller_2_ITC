@@ -11,10 +11,11 @@ import re
 
 
 class Alfabeto:
-    simbolos = []
+    simbolos = None
     formato_entrada=None
 
     def __init__(self, a_c):
+        self.simbolos=[]
         if a_c=='' or a_c==None:
             pass
         else:
@@ -60,9 +61,9 @@ class Alfabeto:
     def prueba (self, otro_alfabeto: "Alfabeto"):
         pass
 
-# ejemplo = ["z", "0-5", "a", "b", "p", "k-o"]
-# alf1 = Alfabeto(ejemplo)
-# #print(alf1.simbolos)
+ejemplo = ["a-c"]
+alf1 = Alfabeto(ejemplo)
+print(alf1.simbolos)
 
 # print(alf1.toStringEntrada())
 # # alf = Alfabeto("a-f")

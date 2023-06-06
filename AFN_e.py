@@ -11,6 +11,8 @@ class AFN_Lambda:
     estadosInaccesibles = None
     automata_tipo = "nfe"
     etiquetas=['#!nfe', '#alphabet', '#states', '#initial', '#accepting', '#transitions']
+    nombreArchivo=''
+    extension = "nfe"
     aceptacion = []
     rechazadas = []
     abortadas = []
@@ -47,6 +49,7 @@ class AFN_Lambda:
                     self.q0 = afc['#initial'][0]
                     self.F = set(afc['#accepting'])
                     self.delta = dictReader
+                    self.nombreArchivo=((args[0]).split('.'+self.extension))[0]
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
@@ -54,7 +57,7 @@ class AFN_Lambda:
             self.Q=set(self.Q)
             self.F=set(self.F)
 
-        self.Sigma.add('$')
+        self.Sigma.simbolos.append('$')
 
     def hallarEstadosInaccesibles(self):
         pass

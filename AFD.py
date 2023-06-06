@@ -46,6 +46,7 @@ class AFD:
                                     dictReader[estado]={simbolo: set({deltaResultado}) }
                                 else:
                                     dictReader[estado].update({simbolo:set({deltaResultado})})
+                    print('en constructor, mostrar alphabet:---> ', afc['#alphabet'])
                     self.Sigma = Alfabeto(afc['#alphabet'])
                     self.Q = set(afc['#states'])
                     self.q0 = afc['#initial'][0]
@@ -53,6 +54,7 @@ class AFD:
                     self.delta = dictReader
                     #print('delta: ', self.delta)
                     self.nombreArchivo=((args[0]).split('.'+self.extension))[0]
+                    print('en constructor, mostrar simbolos:---> ', self.Sigma.simbolos)
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta

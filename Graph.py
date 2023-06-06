@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from AFD import AFD
 from AFN import AFN
+from AFN_e import AFN_Lambda
 class graficarAutomata:
     rad = .1
     automata =None
@@ -58,6 +59,7 @@ class graficarAutomata:
         data = pd.DataFrame(columns=['source', 'to', 'label'])
         delta2 = {}
         for estado, transiciones in self.automata.delta.items():
+
             delta2[estado] = {}
             for simbolo, destinos in transiciones.items():
                 for destino in destinos:
@@ -74,9 +76,9 @@ class graficarAutomata:
         
         conn_style = f'arc3,rad={self.rad}'
         G = nx.from_pandas_edgelist(data, source='source', target='to', edge_attr='label', create_using=nx.DiGraph())
-        node_fill_colors = ["lightgrey" if n == 'q0' else "white" for n in G.nodes()]
+        node_fill_colors = ["lightgrey" if n in self.automata.q0 else "white" for n in G.nodes()]
         node_border_colors = ['black'] * len(G.nodes())
-        node_border_widths = [3 if node == "q3" else 1 for node in G.nodes()]
+        node_border_widths = [3 if node in self.automata.F else 1 for node in G.nodes()]
         node_sizes = [len(str(n))*300 for n in G.nodes()]
         weight = nx.get_edge_attributes(G, 'label')
         pos = nx.shell_layout(G, scale=1)
@@ -88,9 +90,13 @@ class graficarAutomata:
         d = nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=weight, font_family='Times New Roman')
         self.edge_calibration(d, pos, asp = self.get_aspect(plt.gca()))
         plt.tight_layout()
-        print('d: ',type(d),'edges: ', type(edges))
         plt.setp(edges, zorder=2)
         plt.setp(d.values(), zorder=3)
+        tituloVentana=f"Gráfo del autómata: {self.automata.nombreArchivo}.{self.automata.extension}"
+        print(tituloVentana)
+        print(automata.Sigma.simbolos)
+        plt.gcf().canvas.manager.set_window_title(tituloVentana)
+
         plt.show()
 
 
@@ -139,7 +145,12 @@ class graficarAutomata:
 
 nfa1= AFN("ej1.nfa")
 dfa1 =AFD("ej0.dfa")
+nfe1= AFN_Lambda('ej1.nfe')
 graficar = graficarAutomata()
-graficar.graficar(nfa1)
 graficar.graficar(dfa1)
+graficar.graficar(nfa1)
+graficar.graficar(nfe1)
+print(dfa1.delta,'\n\n')
+print(dfa1.Sigma.simbolos,'\n\n')
+
 #plt.figure(figsize = (10,10))
