@@ -53,7 +53,11 @@ class AFN_Lambda:
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
-            self.Sigma, self.Q, self.qo, self.F, self.delta = args
+            simbolos, self.Q, self.qo, self.F, self.delta = args
+            if(isinstance(simbolos, Alfabeto)):
+                self.Sigma=simbolos
+            else:
+                self.Sigma=Alfabeto(simbolos)
             self.Q=set(self.Q)
             self.F=set(self.F)
 
@@ -93,7 +97,7 @@ class AFN_Lambda:
 
     def AFN_LambdaToAFN(self, afnl):
         # Copia Sigma, Q, q0 y F desde afnl, pero elimina el símbolo '$' de Sigma.
-        Sigma = afnl.Sigma - {'$'}
+        Sigma = [s for s in afnl.Sigma.simbolos if s!='$']
         Q = afnl.Q
         q0 = afnl.q0
         F = set()

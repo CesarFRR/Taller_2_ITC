@@ -30,7 +30,9 @@ class graficarAutomata:
 
         for estado, transiciones in delta2.items():
             for destino, simbolos in transiciones.items():
-                data = data.append({'source': estado, 'to': destino, 'label': ', '.join(simbolos)}, ignore_index=True)
+                #print('simb========: ',simbolos,'tipo:',type(simbolos))
+                new_row = pd.Series({'source': estado, 'to': destino, 'label': ', '.join(sorted(list(simbolos)))})
+                data.loc[len(data)] = new_row
         print(data)
 
         
@@ -103,8 +105,7 @@ class graficarAutomata:
         pdf.savefig()
         plt.close()
         pdf.close()
-
-    def exportarGrafos(self, listaAutomatas):        
+    def exportarGrafos(self, listaAutomatas):
         pdf = pdf_backend.PdfPages("grafos.pdf")
         for M in listaAutomatas: 
             #Crear un dataframe vacío
@@ -196,13 +197,20 @@ class graficarAutomata:
 nfa1= AFN("ej1.nfa")
 dfa1 =AFD("ej0.dfa")
 nfe1= AFN_Lambda('ej1.nfe')
+nfeAafd=nfe1.AFN_LambdaToAFD(nfe1)
+nfeAnfa=nfe1.AFN_LambdaToAFN(nfe1)
+for estado, simbolo in nfeAnfa.delta.items():
+    print('estado: ', estado, ' tipo: ', type(estado), 'simbolo:', simbolo, 'tipo: ', type(simbolo))
 graficar = graficarAutomata()
 # graficar.mostrarGrafo(dfa1)
 # graficar.mostrarGrafo(nfa1)
 # graficar.mostrarGrafo(nfe1)
-
-graficar.exportarGrafos([dfa1, nfa1, nfe1])
-print(dfa1.delta,'\n\n')
-print(dfa1.Sigma.simbolos,'\n\n')
+#graficar.mostrarGrafo(nfeAafd)
+#print('delta del afne a afd: \n', nfeAafd.delta.items())
+graficar.mostrarGrafo(nfeAnfa)
+ 
+#graficar.exportarGrafos([dfa1, nfa1, nfe1])
+# print(nfeAnfa.delta,'\n\n')
+# print(nfeAnfa.Sigma.simbolos,'\n\n')
 
 #plt.figure(figsize = (10,10))

@@ -57,7 +57,11 @@ class AFN:
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
-            self.Sigma, self.Q, self.q0, self.F, self.delta = args
+            simbolos, self.Q, self.q0, self.F, self.delta = args
+            if(isinstance(simbolos, Alfabeto)):
+                self.Sigma=simbolos
+            else:
+                self.Sigma=Alfabeto(simbolos)
             self.Q=set(self.Q)
             self.F=set(self.F)
     def hallarEstadosInaccesibles(self):
@@ -98,7 +102,7 @@ class AFN:
         with open(archivo, "w") as f:
                 f.write(self.toString())
 
-    def AFNtoAFD(self, afn, imprimir = True):
+    def AFNtoAFD(afn, imprimir = True):
         states = list(afn.Q)
         delta = afn.delta
         accepting= afn.F
@@ -131,9 +135,9 @@ class AFN:
         #Imprimir tabla de trancisiones
         if imprimir:
             out = ''
-            for q in self.delta:
-                for simb in self.delta[q]:
-                    deltaSet= sorted(list(self.delta[q][simb]))
+            for q in afn.delta:
+                for simb in afn.delta[q]:
+                    deltaSet= sorted(list(afn.delta[q][simb]))
                     deltaSet= deltaSet[0] if len(deltaSet)==1 else ';'.join(deltaSet)
                     deltaLinea=f'{q}:{simb}>{deltaSet}'
                     out+='\n'+deltaLinea
@@ -153,10 +157,11 @@ class AFN:
 
         strDelta = dict()
         for actual, transition in delta.items():    #Cambiar keys del diccionario por strings
-            x = '('+','.join(actual)+')' if type(actual) is tuple else actual
+            x = '{'+','.join(sorted(list(actual)))+'}' if type(actual) is tuple else actual
             strDelta[f'{x}'] = delta[actual]
+        print('sigma: ', type(afn.Sigma), ' strStates: ', type(strStates), ' q0: ', type(afn.q0))  
 
-        return AFD(afn.Sigma, strStates, afn.q0, set(accepting), delta) #Retornar AFD equivalente
+        return AFD(afn.Sigma, strStates, afn.q0, set(accepting), strDelta) #Retornar AFD equivalente
 
     def procesamiento(self,cadena, actual, detalles, proc,  out=''):
         final = False

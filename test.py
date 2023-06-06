@@ -48,3 +48,18 @@
 # print("estado incial: ", initial)
 # print("estados de aceptacion: ", accepting)
 # print("transiciones (delta): ", transitions)
+diccionario = {('q01', 'q0'): 1, ('q02', 'q1'): 2, ('q03', 'q2'): 3}
+
+nuevo_diccionario = {}
+for clave, valor in diccionario.items():
+    if isinstance(clave, set):
+        lista_clave = sorted(list(clave))
+        nueva_clave = '{' + ', '.join(lista_clave) + '}'
+    else:
+        nueva_clave = clave
+    nuevo_diccionario[nueva_clave] = valor
+
+for clave2, valor2 in nuevo_diccionario.items():
+    print('clave: ', clave2, 'tipo:', type(clave2), ' valor: ', valor2, ' tipo: ',type(valor2))
+
+print(nuevo_diccionario)
