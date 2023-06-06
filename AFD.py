@@ -3,7 +3,7 @@ import re
 from Alfabeto import Alfabeto
 from itertools import product as productoCartesiano
 from prettytable import PrettyTable
-from visual_automata.fa.dfa import VisualDFA
+#from visual_automata.fa.dfa import VisualDFA
 
 class AFD:
     Sigma = None
@@ -445,26 +445,26 @@ class AFD:
     def imprimirAFDSimplificado(self):
         
         pass
-    def graficarAFD(self):
+    # def graficarAFD(self):
 
-        gEstados=dict()
-        for q in self.delta:
-            gEstados.update({q:dict()})
-            for simb in self.delta[q]:
-                deltaSet= list(self.delta[q][simb])[0]
-                gEstados[q].update({simb:deltaSet})
+    #     gEstados=dict()
+    #     for q in self.delta:
+    #         gEstados.update({q:dict()})
+    #         for simb in self.delta[q]:
+    #             deltaSet= list(self.delta[q][simb])[0]
+    #             gEstados[q].update({simb:deltaSet})
                 
-                #print ('deltaLinea: ',deltaLinea)
-        dfa = VisualDFA(
-            states=self.Q,
-            input_symbols=set(self.Sigma.simbolos),
-            transitions=gEstados,
-            initial_state=self.q0,
-            final_states=self.F,
-        )
+    #             #print ('deltaLinea: ',deltaLinea)
+    #     dfa = VisualDFA(
+    #         states=self.Q,
+    #         input_symbols=set(self.Sigma.simbolos),
+    #         transitions=gEstados,
+    #         initial_state=self.q0,
+    #         final_states=self.F,
+    #     )
 
 
-        dfa.show_diagram().render(self.nombreArchivo, format='png', cleanup=True, view=True)
+    #     dfa.show_diagram().render(self.nombreArchivo, format='png', cleanup=True, view=True)
     
     def pruebas(self, cadena):
         out=''
@@ -513,10 +513,10 @@ class AFD:
 #afd3.exportar(archivo3+'Exportado.'+afd3.extension)
 #print('\n#############################################################################')
 #Faltan desarrollar algunos métodos
-simplificar= 'simplificar'
-afdsimp = AFD(simplificar+'.dfa') 
-#afdsimp.graficarAFD()
-simplificado = AFD.AFD_simplificarAFD(afdsimp)
+# simplificar= 'simplificar'
+# afdsimp = AFD(simplificar+'.dfa') 
+# #afdsimp.graficarAFD()
+# simplificado = AFD.AFD_simplificarAFD(afdsimp)
 
-print(sorted(list(simplificado)))
+# print(sorted(list(simplificado)))
 

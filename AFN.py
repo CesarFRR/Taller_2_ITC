@@ -1,7 +1,7 @@
 from AFD import AFD
 from Alfabeto import Alfabeto
 import re
-from visual_automata.fa.nfa import VisualNFA
+#from visual_automata.fa.nfa import VisualNFA
 
 class AFN:
     Sigma = None
@@ -291,54 +291,54 @@ class AFN:
         return afd.procesarListaCadenas(listaCadenas, nombreArchivo, imprimirPantalla)
     
     
-    def graficarAFN(self):
-        print('GRAFICAR\n\n\n')
-        #print(self.deltaParaGraficar.items())
-        gEstados=dict()
-        for q in self.deltaParaGraficar:
-            est=q
-            if(est=='L'):
-                est='q30'
-            gEstados.update({est:dict()})
+    # def graficarAFN(self):
+    #     print('GRAFICAR\n\n\n')
+    #     #print(self.deltaParaGraficar.items())
+    #     gEstados=dict()
+    #     for q in self.deltaParaGraficar:
+    #         est=q
+    #         if(est=='L'):
+    #             est='q30'
+    #         gEstados.update({est:dict()})
 
-            for simb in self.deltaParaGraficar[q]:
+    #         for simb in self.deltaParaGraficar[q]:
                 
-                deltaSet= list(self.deltaParaGraficar[est][simb])
-                print(f'{q}:{simb}>{deltaSet}')
-                if simb=='$':
-                    gEstados[est].update({"":deltaSet})    
+    #             deltaSet= list(self.deltaParaGraficar[est][simb])
+    #             print(f'{q}:{simb}>{deltaSet}')
+    #             if simb=='$':
+    #                 gEstados[est].update({"":deltaSet})    
                 
-                gEstados[est].update({simb:deltaSet})
+    #             gEstados[est].update({simb:deltaSet})
                 
-                #print ('deltaLinea: ',deltaLinea)
-        # nfa = VisualNFA(
-        #     states=self.Q,
-        #     input_symbols=set(self.Sigma.simbolos),
-        #     transitions=gEstados,
-        #     initial_state=self.q0,
-        #     final_states=self.F,
-        # )
-        nfaprueba = VisualNFA(
-        states={"q0", "q1", "q2"},
-        input_symbols={"0", "1"},
-        transitions={
-        "q0": {"": {"q2"}, "1": {"q1"}},
-        "q1": {"1": {"q2"}, "0": {"q0", "q2"}},
-        "q2": {},
-        },
-        initial_state="q0",
-        final_states={"q0"},
-        )
-        nfaprueba.show_diagram(view=True)#.render('afnGraficar', format='png', cleanup=True, view=True)
+    #             #print ('deltaLinea: ',deltaLinea)
+    #     # nfa = VisualNFA(
+    #     #     states=self.Q,
+    #     #     input_symbols=set(self.Sigma.simbolos),
+    #     #     transitions=gEstados,
+    #     #     initial_state=self.q0,
+    #     #     final_states=self.F,
+    #     # )
+    #     nfaprueba = VisualNFA(
+    #     states={"q0", "q1", "q2"},
+    #     input_symbols={"0", "1"},
+    #     transitions={
+    #     "q0": {"": {"q2"}, "1": {"q1"}},
+    #     "q1": {"1": {"q2"}, "0": {"q0", "q2"}},
+    #     "q2": {},
+    #     },
+    #     initial_state="q0",
+    #     final_states={"q0"},
+    #     )
+    #     nfaprueba.show_diagram(view=True)#.render('afnGraficar', format='png', cleanup=True, view=True)
 
 #================================================
 
-print('Ejecutando:...\n')
-nfa1= AFN("ej1.nfa")
-nfa1.graficarAFN()
-nda = nfa1.AFNtoAFD(nfa1)
-print(nda.toString())
-print('\n')
+# print('Ejecutando:...\n')
+# nfa1= AFN("ej1.nfa")
+# nfa1.graficarAFN()
+# nda = nfa1.AFNtoAFD(nfa1)
+# print(nda.toString())
+# print('\n')
 
 #print(nfa1.toString())
 #print('\n')
