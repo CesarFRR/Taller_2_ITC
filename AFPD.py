@@ -75,6 +75,8 @@ class AFPD:
             self.PSigma = Alfabeto('')
             self.delta = {}
 
+        self.PSigma.simbolos.append('$')
+
 
 
     def modificarPila(self, pila: list, operacion: str, parametro: str):
@@ -85,7 +87,7 @@ class AFPD:
                 if(simb!= '$'):
                     pila.append(simb)
         elif operacion == 'pop':
-            for _ in parametro:
+            for simb in parametro:
                 if(simb!= '$'):
                     pila.pop()
         elif operacion == 'swap':
@@ -109,14 +111,14 @@ class AFPD:
                     return False
                 if len(self.delta[actual][simbolo])>1: raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
                 transicion= self.delta[actual][simbolo][0]
-                pop, push = transicion[0], transicion[1]
+                pop, push, actual = transicion
                 if pop not in self.PSigma.simbolos or push not in self.PSigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto de la pila
                     return False
                 if('$' != pop and '$' !=push):
                     self.modificarPila(pila, 'swap',push)
                 else:
-                    self.modificarPila(pila, 'pop', pop[0])
-                    self.modificarPila(pila, 'push', pop[1])
+                    self.modificarPila(pila, 'pop', pop)
+                    self.modificarPila(pila, 'push', push)
 
         if actual in self.F and len(pila)==0: #verificar si el estado actual es de aceptacion
             return True
@@ -254,4 +256,6 @@ class AFPD:
     
 
 pila1= AFPD('ej1.dpda')
-print(pila1.toString())
+#print(pila1.toString())
+cadena1= 'aabb'
+print('procesando ', cadena1, '--> ',pila1.procesarCadena(cadena1))
