@@ -185,7 +185,7 @@ class AFD:
         aceptada=None
         for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptacion | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptacion
             if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-                out+= f'[{actual},{cadena[index:]}]-> No Aceptacion'
+                out+= f'[{actual},{cadena[index:]}]-> Procesamiento abortado'
                 print(out)
                 return False
             if(actual in estados):
@@ -233,7 +233,7 @@ class AFD:
                 aceptada= False
             out+='\n'
   
-        with open(nombreArchivo, "w") as f:
+        with open(f'{nombreArchivo}procesarListaCadenas.txt', "w") as f:
             f.write(out)
         if(imprimirPantalla):
             print(out)

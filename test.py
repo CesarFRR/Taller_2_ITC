@@ -48,18 +48,55 @@
 # print("estado incial: ", initial)
 # print("estados de aceptacion: ", accepting)
 # print("transiciones (delta): ", transitions)
-diccionario = {('q01', 'q0'): 1, ('q02', 'q1'): 2, ('q03', 'q2'): 3}
+pda_delta = {
+    'q0': {
+        'a': [['B', '$', 'q1']],
+        'b': [['B', '$', 'q0']]
+    },
+    'q1': {
+        'a': [['A', 'B', 'q0']],
+        'b': [['A', 'B', 'q2']]
+    },
+    'q2': {
+        'a': [['A', 'B', 'q2']],
+        'b': [['A', 'B', 'q1']]
+    }
+}
 
-nuevo_diccionario = {}
-for clave, valor in diccionario.items():
-    if isinstance(clave, set):
-        lista_clave = sorted(list(clave))
-        nueva_clave = '{' + ', '.join(lista_clave) + '}'
-    else:
-        nueva_clave = clave
-    nuevo_diccionario[nueva_clave] = valor
+afd_delta = {
+    'q0': {
+        'a': {'q2'},
+        'b': {'q0'}
+    },
+    'q1': {
+        'a': {'q0'},
+        'b': {'q3'}
+    },
+    'q2': {
+        'a': {'q2'},
+        'b': {'q1'}
+    }
+}
 
-for clave2, valor2 in nuevo_diccionario.items():
-    print('clave: ', clave2, 'tipo:', type(clave2), ' valor: ', valor2, ' tipo: ',type(valor2))
+pda_afd_product_delta = {}
 
-print(nuevo_diccionario)
+for pda_state in pda_delta:
+    for afd_state in afd_delta:
+        pda_afd_product_delta[(pda_state, afd_state)] = {}
+
+        for symbol in afd_delta[afd_state]:
+            pda_transitions = pda_delta[pda_state][symbol]
+
+            for pda_transition in pda_transitions:
+                pda_afd_product_delta[(pda_state, afd_state)][symbol] = set()
+                pda_afd_product_delta[(pda_state, afd_state)][symbol].add(pda_transition[2])
+
+for clave, valor in pda_afd_product_delta.items():
+    print(clave, ' : ', valor, '\n')
+
+
+arr = [10, 20, 30, 40, 50]
+a, b = arr[0], arr[1]
+
+print(a)  # Output: 10
+print(b)  # Output: 20

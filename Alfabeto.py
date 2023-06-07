@@ -61,9 +61,9 @@ class Alfabeto:
     def prueba (self, otro_alfabeto: "Alfabeto"):
         pass
 
-ejemplo = ["a-c"]
-alf1 = Alfabeto(ejemplo)
-print(alf1.simbolos)
+# ejemplo = ["a-c"]
+# alf1 = Alfabeto(ejemplo)
+# print(alf1.simbolos)
 
 # print(alf1.toStringEntrada())
 # # alf = Alfabeto("a-f")
