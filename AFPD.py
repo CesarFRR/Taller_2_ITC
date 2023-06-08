@@ -34,18 +34,18 @@ class AFPD:
                             elif key== '#transitions': # AFPD: no contiene transiciones lambda
                                 trans=re.split(r"[:>]", i)
                                 if(len(trans)!=5 or ';' in trans): raise ValueError("transicion invalida: ", i) # "; " q no puede tener varias salidas con un simbolo
-                                estado, simbolo, push, estadoDestino, pop = trans
+                                estado, simbolo, pop, estadoDestino, push = trans
                                 #print('trans: ', trans)
                                 #===================================================================#
                                 valor=dictReader.get(estado)
                                 #print("i: ", i, " key: ", key, " trans", trans, " valor: ", valor)
                                 if(valor==None): #No existe el estado? crearlo y agregar { simbolo:deltaResultado }
-                                    dictReader[estado]={ simbolo:[[push, pop, estadoDestino]] }
+                                    dictReader[estado]={ simbolo:[[pop, push, estadoDestino]] }
                                 else:
                                     if(dictReader[estado].get(simbolo)==None):
                                         dictReader[estado][simbolo]=[[pop, push, estadoDestino]]
                                     else:
-                                        dictReader[estado][simbolo].append([push, pop, estadoDestino])
+                                        dictReader[estado][simbolo].append([pop, push, estadoDestino])
                             
                     self.Sigma = Alfabeto(afc['#tapeAlphabet'])
                     self.PSigma= Alfabeto(afc['#stackAlphabet'])
@@ -89,6 +89,8 @@ class AFPD:
         elif operacion == 'pop':
             for simb in parametro:
                 if(simb!= '$'):
+                    if(len(pila)==0):
+                        return False
                     pila.pop()
         elif operacion == 'swap':
             for simb in parametro:
@@ -96,147 +98,160 @@ class AFPD:
                 pila.append(simb)
                     
         return True
-    def procesarCadena(self, cadena):   #Procesar cadena con delta como un diccionario
-        """ procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. """
+    def procesarCadena(self, cadena: str)->bool:   #Procesar cadena con delta como un diccionario
+        """ procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. 
+        
+            Nota: esta función está diseñada para soportar errores de entrada o lógica, tambien soporta pop y push de varios simbolos en una operación
+            Ej: a, AA | BB---> b, BA | AA
+        """
         pila =list()
         actual = self.q0
         estados=self.delta.keys()
+        aceptada=None
         for simbolo in cadena:
-            if simbolo not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto entrada
-                return False
-            if(actual in estados):  #Realizar transicion 
+            if simbolo not in self.Sigma.simbolos:  
+                aceptada= False # El simbolo no se encuentre en el alfabeto entrada {Sigma}, procesamiento abortado
+                break
+            if(actual in estados):  # procesar la cadena
                 if(self.delta.get(actual)==None):
-                    break
+                    break # estado {actual} sin transiciones, posible estado limbo o estado final
                 elif(self.delta[actual].get(simbolo)==None):
-                    return False
+                    aceptada = False # transicion con simbolo actual no disponible, por lo tanto se aborta el procesamiento
+                    break
                 if len(self.delta[actual][simbolo])>1: raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
                 transicion= self.delta[actual][simbolo][0]
                 pop, push, actual = transicion
-                if pop not in self.PSigma.simbolos or push not in self.PSigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto de la pila
-                    return False
+                if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):  
+                    aceptada = False # simbolo no se encuentre en el alfabeto de la pila {PSigma}
                 if('$' != pop and '$' !=push):
                     self.modificarPila(pila, 'swap',push)
                 else:
-                    self.modificarPila(pila, 'pop', pop)
+                    if(self.modificarPila(pila, 'pop', pop)==False):
+                        aceptada = False #Pila vacía al momento de hacer pop(), procesamiento abortado
                     self.modificarPila(pila, 'push', push)
-
         if actual in self.F and len(pila)==0: #verificar si el estado actual es de aceptacion
-            return True
+            if(aceptada==None):
+                aceptada=True
         else:
-            return False
+            aceptada= False
+        return aceptada
         
     def procesarCadenaConDetalles(self, cadena):
         """realiza  lo  mismo  que  el  método  anterior aparte  imprime  losdetalles  del  procesamiento  con  el  formato  que se  indica  en  el  archivo AFPD.pdf."""
         #(q0,aabb,$)->(q0,abb,A)->(q0,bb,AA)->(q1,b,A)->(q1,$,$)>>accepted
         #(q0,aabbb,$)->(q0,abbb,A)->(q0,bbb,AA)->(q1,bb,A)->(q1,b,$)>>rejected
         pila =list()
-        out=''
         actual = self.q0
         estados=self.delta.keys()
+        aceptada=None
+        out=''
         for index, simbolo in enumerate(cadena):
-            if simbolo not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto entrada
-                out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })-> Procesamiento abortado'
+            if  simbolo not in self.Sigma.simbolos:  
+                out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
                 print(out)
-                return False
-            if(actual in estados):  #Realizar transicion 
-                out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })-> '
+                return False # El simbolo no se encuentre en el alfabeto entrada {Sigma}, procesamiento abortado
+            if(actual in estados):  # procesar la cadena
                 if(self.delta.get(actual)==None):
-                    break
+                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
+                    break # estado {actual} sin transiciones, posible estado limbo o estado final
                 elif(self.delta[actual].get(simbolo)==None):
-                    out+='Procesamiento abortado'
+                    aceptada = False # transicion con simbolo actual no disponible, por lo tanto se aborta el procesamiento
+                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
                     print(out)
                     return False
-                if len(self.delta[actual][simbolo])>1: raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
+                if len(self.delta[actual][simbolo])>1:
+                    raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
                 transicion= self.delta[actual][simbolo][0]
-                pop, push = transicion[0], transicion[1]
-                if pop not in self.PSigma.simbolos or push not in self.PSigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto de la pila
-                    return False
+                pop, push, actual = transicion
+                if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
+                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} ∉ #stackAlphabet) V ({push} ∉ #stackAlphabet)'
+                    print(out)
+                    return False # simbolo no se encuentre en el alfabeto de la pila {PSigma}, abortar
+                out+=  f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
                 if('$' != pop and '$' !=push):
                     self.modificarPila(pila, 'swap',push)
                 else:
-                    self.modificarPila(pila, 'pop', pop[0])
-                    self.modificarPila(pila, 'push', pop[1])
-        print(out)
+                    if(self.modificarPila(pila, 'pop', pop)==False):
+                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
+                        print(out)
+                        return False#Pila vacía al momento de hacer pop(), procesamiento abortado
+                        #aceptada = False 
+                    self.modificarPila(pila, 'push', push)
+
+        out+=  f'({actual},$,{"$" if len(pila)==0 else "".join(pila) })>>'
         if actual in self.F and len(pila)==0: #verificar si el estado actual es de aceptacion
-            return True
+            if(aceptada==None):
+                out+='accepted'
+                aceptada=True
         else:
-            return False
+            if(aceptada==None):
+                out+='rejected'
+            aceptada= False
+        print(out)
+        return aceptada
+       
         
     def procesarListaCadenas(self, listaCadenas,nombreArchivo, imprimirPantalla): 
-        """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo;  si  este  es  inválido  se  asigna  un  nombre  por  defecto.Además,todo  esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.
+        """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo;  si  este  es  inválido  se  asigna  un  nombre  por  defecto. Además,todo  esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.
         Los campos deben estar separados por tabulación y son:
         1. cadena.
         2. procesamiento (con el formato del archivo AFPD.pdf).
-        3. ‘yes’ o ‘no’dependiendo de si la cadena es aceptada o no.
+        3. ‘yes’ o ‘no’ dependiendo de si la cadena es aceptada o no.
         """
+        out=''
+        estados=self.delta.keys()
         for cadena in listaCadenas:
+            out+=f'{cadena}\t'
             pila =list()
-            out=''
-            aceptada=None
             actual = self.q0
             estados=self.delta.keys()
+            aceptada=None
+
             for index, simbolo in enumerate(cadena):
-                if simbolo not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto entrada
-                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })-> Procesamiento abortado'
-                    aceptada=False
-                    break
-                if(actual in estados):  #Realizar transicion 
-                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })-> '
+                if  simbolo not in self.Sigma.simbolos:  
+                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
+                    break # El simbolo no se encuentre en el alfabeto entrada {Sigma}, procesamiento abortado
+                if(actual in estados):  # procesar la cadena
                     if(self.delta.get(actual)==None):
-                        break
+                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
+                        break # estado {actual} sin transiciones, posible estado limbo o estado final
                     elif(self.delta[actual].get(simbolo)==None):
-                        out+='Procesamiento abortado'
-                        print(out)
-                        return False
-                    if len(self.delta[actual][simbolo])>1: raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
+                        aceptada = False # transicion con simbolo actual no disponible, por lo tanto se aborta el procesamiento
+                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
+                    if len(self.delta[actual][simbolo])>1:
+                        raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
                     transicion= self.delta[actual][simbolo][0]
-                    pop, push = transicion[0], transicion[1]
-                    if pop not in self.PSigma.simbolos or push not in self.PSigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto de la pila
-                        return False
+                    pop, push, actual = transicion
+                    if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
+                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} ∉ #stackAlphabet) V ({push} ∉ #stackAlphabet)'
+                        break# simbolo no se encuentre en el alfabeto de la pila {PSigma}, abortar
+                    out+=  f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
                     if('$' != pop and '$' !=push):
                         self.modificarPila(pila, 'swap',push)
                     else:
-                        self.modificarPila(pila, 'pop', pop[0])
-                        self.modificarPila(pila, 'push', pop[1])
-            if actual in self.F : #verificar si el estado actual es de aceptacion
-                if(aceptada==None):
-                    out+= 'Aceptacion'
-                aceptada= True
-            print(out)
-            if actual in self.F and len(pila)==0: #verificar si el estado actual es de aceptacion
-                return True
-            else:
-                return False
-            
-        # estados=self.delta.keys()
-        # out=''
+                        if(self.modificarPila(pila, 'pop', pop)==False):
+                            out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
+                            aceptada = False #Pila vacía al momento de hacer pop(), procesamiento abortado
+                            break
+                        self.modificarPila(pila, 'push', push)
 
-        # for cadena in listaCadenas:
-        #     actual = self.q0
-        #     aceptada=None
-        #     for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptacion | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptacion
-        #         if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-        #             out+= f'[{actual},{cadena[index:]}]-> Procesamiento abortado'
-        #             aceptada= False
-        #             break
-        #         if(actual in estados):
-        #             out+= f'[{actual},{cadena[index:]}]-> ' 
-        #             actual = list(self.delta[actual][char])[0] if len(self.delta[actual][char])==1 else '('+','.join(self.delta[actual][char])+')'
-        #     if actual in self.F : #verificar si el estado actual es de aceptacion
-        #         if(aceptada==None):
-        #             out+= 'Aceptacion'
-        #         aceptada= True
-        #     else:
-        #         if(aceptada==None):
-        #             out+= 'No Aceptacion'
-        #         aceptada= False
-        #     out+='\n'
-  
-        # with open(f'{nombreArchivo}procesarListaCadenas.txt', "w") as f:
-        #     f.write(out)
-        # if(imprimirPantalla):
-        #     print(out)
-        # pass
+            out+=  f'({actual},$,{"$" if len(pila)==0 else "".join(pila) })>>'
+            if actual in self.F and len(pila)==0: #verificar si el estado actual es de aceptacion
+            #if(aceptada==None):
+                out+='accepted'
+                aceptada=True
+            else:
+                if(aceptada==None):
+                    out+='rejected'
+                aceptada= False
+            out+=f'\t{"yes" if aceptada else "no"}\n'
+
+        with open(f'{nombreArchivo}procesarListaCadenasAFPD.txt', "w") as f:
+            f.write(out)
+        if(imprimirPantalla):
+            print(out)
+
+            
     def hallarProductoCartesianoConAFD(afd):
         """: debe calcular y retornar el producto cartesiano con un AFD dado como parámetro."""
         pass
@@ -257,5 +272,7 @@ class AFPD:
 
 pila1= AFPD('ej1.dpda')
 #print(pila1.toString())
-cadena1= 'aabb'
-print('procesando ', cadena1, '--> ',pila1.procesarCadena(cadena1))
+cadena1= 'aa'
+# print('procesando ', cadena1, '--> ',pila1.procesarCadena(cadena1))
+# print('procesando ', 'aaabbbb', '--> ',pila1.procesarCadenaConDetalles('aaabbbb'))
+pila1.procesarListaCadenas(['aabb', 'aab', 'aaabcbb', 'bb', 'aaaa'], 'intento1', True)

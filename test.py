@@ -48,55 +48,87 @@
 # print("estado incial: ", initial)
 # print("estados de aceptacion: ", accepting)
 # print("transiciones (delta): ", transitions)
-pda_delta = {
-    'q0': {
-        'a': [['B', '$', 'q1']],
-        'b': [['B', '$', 'q0']]
-    },
-    'q1': {
-        'a': [['A', 'B', 'q0']],
-        'b': [['A', 'B', 'q2']]
-    },
-    'q2': {
-        'a': [['A', 'B', 'q2']],
-        'b': [['A', 'B', 'q1']]
-    }
-}
 
-afd_delta = {
-    'q0': {
-        'a': {'q2'},
-        'b': {'q0'}
-    },
-    'q1': {
-        'a': {'q0'},
-        'b': {'q3'}
-    },
-    'q2': {
-        'a': {'q2'},
-        'b': {'q1'}
-    }
-}
+# #############################################################################
+# pda_delta = {
+#     'q0': {
+#         'a': [['B', '$', 'q1']],
+#         'b': [['B', '$', 'q0']]
+#     },
+#     'q1': {
+#         'a': [['A', 'B', 'q0']],
+#         'b': [['A', 'B', 'q2']]
+#     },
+#     'q2': {
+#         'a': [['A', 'B', 'q2']],
+#         'b': [['A', 'B', 'q1']]
+#     }
+# }
 
-pda_afd_product_delta = {}
+# afd_delta = {
+#     'q0': {
+#         'a': {'q2'},
+#         'b': {'q0'}
+#     },
+#     'q1': {
+#         'a': {'q0'},
+#         'b': {'q3'}
+#     },
+#     'q2': {
+#         'a': {'q2'},
+#         'b': {'q1'}
+#     }
+# }
 
-for pda_state in pda_delta:
-    for afd_state in afd_delta:
-        pda_afd_product_delta[(pda_state, afd_state)] = {}
+# pda_afd_product_delta = {}
 
-        for symbol in afd_delta[afd_state]:
-            pda_transitions = pda_delta[pda_state][symbol]
+# for pda_state in pda_delta:
+#     for afd_state in afd_delta:
+#         pda_afd_product_delta[(pda_state, afd_state)] = {}
 
-            for pda_transition in pda_transitions:
-                pda_afd_product_delta[(pda_state, afd_state)][symbol] = set()
-                pda_afd_product_delta[(pda_state, afd_state)][symbol].add(pda_transition[2])
+#         for symbol in afd_delta[afd_state]:
+#             pda_transitions = pda_delta[pda_state][symbol]
 
-for clave, valor in pda_afd_product_delta.items():
-    print(clave, ' : ', valor, '\n')
+#             for pda_transition in pda_transitions:
+#                 pda_afd_product_delta[(pda_state, afd_state)][symbol] = set()
+#                 pda_afd_product_delta[(pda_state, afd_state)][symbol].add(pda_transition[2])
+
+# for clave, valor in pda_afd_product_delta.items():
+#     print(clave, ' : ', valor, '\n')
 
 
-arr = [10, 20, 30, 40, 50]
-a, b = arr[0], arr[1]
+# arr = [10, 20, 30, 40, 50]
+# a, b = arr[0], arr[1]
 
-print(a)  # Output: 10
-print(b)  # Output: 20
+# print(a)  # Output: 10
+# print(b)  # Output: 20
+
+
+def procesarListaCadenas(listaCadenas, nombreArchivo, imprimirPantalla):
+    if not nombreArchivo:
+        nombreArchivo = "default.txt"
+
+    with open(nombreArchivo, "w") as f:
+        for cadena in listaCadenas:
+            # Realizar procesamiento de la cadena y obtener los resultados
+            aceptacion = True
+            num_posibles_procesamientos = 10
+            num_procesamientos_aceptacion = 5
+            num_procesamientos_rechazo = 5
+
+            # Construir la línea de salida con los campos separados por tabulación
+            linea = f"{cadena}\t{aceptacion}\t{num_posibles_procesamientos}\t{num_procesamientos_aceptacion}\t{num_procesamientos_rechazo}\t{'yes' if aceptacion else 'no'}\n"
+
+            # Escribir la línea en el archivo
+            f.write(linea)
+
+            # Imprimir la línea en pantalla si imprimirPantalla es True
+            if imprimirPantalla:
+                print(linea, end="")
+
+# Ejemplo de uso
+listaCadenas = ["abc", "def", "xyz"]
+nombreArchivo = "resultados.txt"
+imprimirPantalla = True
+
+procesarListaCadenas(listaCadenas, nombreArchivo, imprimirPantalla)

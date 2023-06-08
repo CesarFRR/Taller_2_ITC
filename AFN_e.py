@@ -64,7 +64,24 @@ class AFN_Lambda:
         self.Sigma.simbolos.append('$')
 
     def hallarEstadosInaccesibles(self):
-        pass
+        accesibles ={self.q0} #Conjunto accesibles empieza con el inicial
+        if (list(accesibles)[0]==None or list(accesibles)[0]==''): raise Exception("El estado inicial debe existir para hallar los inaccesibles")
+        while True:
+            alteraciones = False
+            #________________________SALE ERROR__________________________
+            for estado in list(accesibles): #recorrer estados accesibles
+                transiciones = self.delta[estado] # obtener los {'simbolo': delta} de un estado
+                for estados_destino in transiciones.values(): #Recorrer los deltas de ese estado, cada estados_destino es un set(  ) de estados
+                    for d in estados_destino: # Recorrer los elementos (estados) de ese set()
+                        if d not in accesibles: # si (d) estado destino no esta en los accesibles se agrega
+                            accesibles.add(d)
+                            alteraciones = True # Se vuelve a iterar el while, pero con conjunto de accesibles alterado (mas grande)
+            if not alteraciones: 
+                break #En este punto ya se recorrio todos los estados accesibles por el estado inicial,
+                        #por lo que no hay alteraciones, y para no entrar en bucles infinitos se hace break
+        estados_totales = set(self.Q)
+        inaccesibles = estados_totales - accesibles #Inaccesibles = Q - Accesibles
+        return inaccesibles
     def toString(self):
         simb=''
         out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]
@@ -79,7 +96,7 @@ class AFN_Lambda:
     def imprimirAFNLSimplificado(self):
         pass
 
-    def exportar(self, archivo):
+    def exportar(self, archivo: str):
         with open(archivo, "w") as f:
             f.write(self.toString())
 
@@ -126,7 +143,7 @@ class AFN_Lambda:
         return afd
 
 
-    def procesamiento(self,cadena, actual, detalles, proc,  out=''):
+    def procesamiento(self,cadena: str, actual, detalles, proc,  out='')-> bool:
         final = False
         breaked = False
 
@@ -201,13 +218,13 @@ class AFN_Lambda:
         if proc:
             return False
 
-    def procesarCadena(self, cadena):
+    def procesarCadena(self, cadena: str)-> bool:
         return self.procesamiento(cadena, self.q0, False, True)
 
-    def procesarCadenaConDetalles(self, cadena):
+    def procesarCadenaConDetalles(self, cadena: str)-> bool:
         return self.procesamiento(cadena, self.q0, True, True)
 
-    def computarTodosLosProcesamientos(self, cadena, nombreArchivo):
+    def computarTodosLosProcesamientos(self, cadena: str, nombreArchivo: str)-> int:
         self.aceptacion = []
         self.rechazadas = []
         self.abortadas = []
@@ -231,19 +248,53 @@ class AFN_Lambda:
 
         return len(self.aceptacion + self.rechazadas + self.abortadas)
 
-    def procesarListaCadenas(self, listaCadenas,nombreArchivo, imprimirPantalla):
-        pass
+    def procesarListaCadenas(self, listaCadenas: list,nombreArchivo: str, imprimirPantalla: bool):
+        with open(nombreArchivo, 'r+') as archivo:
+            archivo.truncate(0)
 
-    def procesarCadenaConversion(self, cadena):
-        pass
+        with open(nombreArchivo, 'a') as archivo:
+            for cadena in listaCadenas:
+                self.aceptacion = []
+                self.rechazadas = []
+                self.abortadas = []
+                actual = self.q0
+                self.procesamiento(cadena, actual, True, True)
 
-    def procesarCadenaConDetallesConversion(self, cadena):
-        pass
+                archivo.write(f'{cadena}\n')
+                try:
+                    archivo.write(f'{self.aceptacion[0]}\n')
+                except:
+                    try:
+                        archivo.write(f'{self.rechazadas[0]}\n')
+                    except:
+                        archivo.write(f'{self.abortadas[0]}\n')
+                archivo.write(f'Numero de procesamientos\n{len(self.aceptacion+self.rechazadas+self.abortadas)}\n')
+                archivo.write(f'Numero de procesamientos de aceptacion\n{len(self.aceptacion)}\n')
+                archivo.write(f'Numero de procesamientos abortados\n{len(self.abortadas)}\n')
+                archivo.write(f'Numero de procesamientos rechazados\n{len(self.rechazadas)}\n')
+                if len(self.aceptacion)>=1:
+                    archivo.write('Si\n\n')
+                else:
+                    archivo.write('No\n\n')
 
-    def procesarListaCadenasConversion(self, listaCadenas,nombreArchivo, imprimirPantalla):
-        pass
+        if imprimirPantalla:
+            with open(nombreArchivo, 'r') as archivo:
+                for line in archivo:
+                    print(line)
 
-    def pruebas(self, cadena):
+    def procesarCadenaConversion(self, cadena: str)-> bool:
+        afd1= self.AFN_LambdaToAFD(self)
+        return afd1.procesarCadena(cadena)
+
+    def procesarCadenaConDetallesConversion(self, cadena: str)-> bool:
+        afd1 = self.AFN_LambdaToAFD(self)
+        return afd1.procesarCadenaConDetalles(cadena)
+
+    def procesarListaCadenasConversion(self, listaCadenas: list,nombreArchivo: str, imprimirPantalla: bool):
+        afd1 = self.AFN_LambdaToAFD(self)
+        afd1.procesarListaCadenas(listaCadenas,nombreArchivo,imprimirPantalla)
+
+    def pruebas(self, cadena: str):
         out=''
         print("usando delta: \n")
         limbo = { 'L':{  s: set('L') for s in self.Sigma.simbolos} }
@@ -262,8 +313,15 @@ print('Ejecutando:...\n')
 nfe1= AFN_Lambda("ej1.nfe")
 
 print('Ejecutando:...\n')
-print(nfe1.delta)
+
+listacadenas= ['aaaba', 'bba', 'ababaa', 'aaabbb', 'ab', 'bb', 'aa']
+nfe1.procesarCadena('aaa')
+#nfe1.procesarCadenaConDetalles('aab')
+#nfe1.procesarListaCadenas(listacadenas)
+
+
+#print(nfe1.delta)
 # print(nfe1.toString())
 # print('\n')
 # nfe1.exportar('ej2.nfe')
-print(nfe1.pruebas(' '))
+#print(nfe1.pruebas(' '))

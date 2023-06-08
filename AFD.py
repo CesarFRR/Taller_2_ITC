@@ -159,7 +159,7 @@ class AFD:
         with open(archivo, "w") as f:
             f.write(self.toString())
 
-    def procesarCadena(self, cadena):   #Procesar cadena con delta como un diccionario
+    def procesarCadena(self, cadena: str)->bool:   #Procesar cadena con delta como un diccionario
         actual = self.q0
         estados=self.delta.keys()
         for i in cadena:
@@ -178,7 +178,7 @@ class AFD:
             return False   
             
 
-    def procesarCadenaConDetalles(self, cadena):
+    def procesarCadenaConDetalles(self, cadena: str)-> bool:
         actual = self.q0
         estados=self.delta.keys()
         out=''
@@ -213,6 +213,7 @@ class AFD:
         out=''
 
         for cadena in listaCadenas:
+            out+=cadena+'\t'
             actual = self.q0
             aceptada=None
             for index, char in enumerate(cadena): #     [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q1,b]-> Aceptacion | [Q0,aabb]->[Q1,abb]->[Q2,bb] -> [Q2,b]-> No Aceptacion
@@ -223,13 +224,14 @@ class AFD:
                 if(actual in estados):
                     out+= f'[{actual},{cadena[index:]}]-> ' 
                     actual = list(self.delta[actual][char])[0] if len(self.delta[actual][char])==1 else '('+','.join(self.delta[actual][char])+')'
+                    
             if actual in self.F : #verificar si el estado actual es de aceptacion
                 if(aceptada==None):
-                    out+= 'Aceptacion'
+                    out+= 'Aceptacion\tyes'
                 aceptada= True
             else:
                 if(aceptada==None):
-                    out+= 'No Aceptacion'
+                    out+= 'No Aceptacion\tno'
                 aceptada= False
             out+='\n'
   

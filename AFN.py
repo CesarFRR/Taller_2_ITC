@@ -220,6 +220,7 @@ class AFN:
                 return False
         if proc:
             return False
+        
     def procesarCadena(self, cadena):
         return self.procesamiento(cadena, self.q0, False, True)
 
@@ -251,7 +252,6 @@ class AFN:
         return len(self.aceptacion+self.rechazadas+self.abortadas)
 
     def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str, imprimirPantalla:bool):
-
         with open(nombreArchivo, 'r+') as archivo:
             archivo.truncate(0)
 
