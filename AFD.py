@@ -12,6 +12,15 @@ class AFD:
 
     Ésta clase modela y simula el Autómata Finito determinista AFD el cual puede poseer cero o una transición para un símbolo perteneciente al Alfabeto
 
+        >>> AFD('nombreDeArchivo.nfa')
+        # Lee un archivo de entrada afd.
+        
+        >>> AFD(alfabeto: Alfabeto, estados: set, estadoInicial: str, estadosAceptacion: set, Delta: dict)
+        # Recibe los 5 atributos del autómata
+        
+        >>> AFD(instanciaAfd: AFD)
+        # Recibe como parámetro una instancia de la misma clase creando una copia exacta de ésta gracias a la librería copy
+        
     """
     Sigma = None
     Q = None
@@ -145,7 +154,7 @@ class AFD:
                     
         return self.Q.difference(visitados)
 
-    def toString(self, graficar: bool=False):
+    def toString(self, graficar: bool=False)-> str:
         """método para imprimir donde se vean los estados, estado inicial, estados de aceptación, estados inaccesibles, estados limbo y tabla de transiciones. """
         if self.instanciaVacia: return 'Instancia AFD vacía, no se le asigno un archivo o argumentos'
         simb=''
@@ -412,20 +421,29 @@ class AFD:
 
     def AFD_simplificarAFD(afdinput ):
         """Dado un AFD llamado afdInput, eliminar los estados inaccesibles (a través de un método de la clase AFD) y calcular un AFD equivalente con el mínimo número de estados de acuerdo al algoritmo estudiado en clase"""
-        # nombres_campos=['{p,q}', 'δ(p,a),δ(q,a)', 'δ(p,b),δ(q,b)']
-        # tabla = PrettyTable()
-        # tabla.field_names=nombres_campos
-        # pares = sorted(list(self.Q))
-        # print(pares)
+        simpDelta=copy.deepcopy(afdinput.delta)
+        simpQ= afdinput.Q.difference(afdinput.estadosInaccesibles)
+        simpF= afdinput.F.difference(afdinput.estadosInaccesibles)
+        for q in afdinput.delta:
+            if(q in afdinput.estadosLimbo):
+                simpDelta.pop(q)
+                continue
+            for simb in afdinput.delta[q]:
+                deltaSet= list(afdinput.delta[q][simb])[0]
+                if(deltaSet in afdinput.estadosLimbo):
+                    simpDelta[q].pop(simb)
+                    continue
+        afd1= AFD(afdinput.Sigma, simpQ, afdinput.q0, simpF, simpDelta).graficarAutomata()
+
         # Inicializar conjuntos y diccionarios
-        states = afdinput.Q
-        alphabet = set(afdinput.Sigma.simbolos)
-        for transitions in afdinput.delta.values():
+        states = afd1.Q
+        alphabet = set(afd1.Sigma.simbolos)
+        for transitions in afd1.delta.values():
             alphabet.update(transitions.keys())
 
         # Dividir los estados en finales y no finales
-        final_states = afdinput.F
-        non_final_states = afdinput.Q.difference(afdinput.F)
+        final_states = afd1.F
+        non_final_states = afd1.Q.difference(afd1.F)
 
         # Inicializar la partición inicial de los estados
         partition = [final_states, non_final_states]
@@ -440,7 +458,7 @@ class AFD:
                     # Calcular el conjunto de destinos para el símbolo actual
                     destinations = set()
                     for state in group:
-                        transitions = afdinput.delta[state].get(symbol, set())
+                        transitions = afd1.delta[state].get(symbol, set())
                         destinations.update(transitions)
 
                     # Dividir el grupo actual en subgrupos basados en los destinos
@@ -464,9 +482,33 @@ class AFD:
 
         return minimized_delta
 
-    def imprimirAFDSimplificado(self):
+    def imprimirAFDSimplificado(self,graficar: bool=False)-> str:
         """método para imprimir donde se vean los estados, estado inicial, estados de aceptación, y tabla de transiciones. No se deben mostrar los estados inaccesibles, ni los estados limbo, ni las transiciones que vayan a los estados limbo."""
-        pass
+
+        if self.instanciaVacia: return 'Instancia AFD vacía, no se le asigno un archivo o argumentos'
+        simb=''
+        simpDelta=copy.deepcopy(self.delta)
+        simpQ= self.Q.difference(self.estadosInaccesibles)
+        simpF= self.F.difference(self.estadosInaccesibles)
+        #Ando simp estos dias
+        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(simpQ)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(simpF)))+ '\n'+ self.etiquetas[5]
+        deltaLinea=''
+        for q in self.delta:
+            if(q in self.estadosLimbo):
+                simpDelta.pop(q)
+                continue
+            for simb in self.delta[q]:
+                
+                deltaSet= list(self.delta[q][simb])[0]
+                if(deltaSet in self.estadosLimbo):
+                    simpDelta[q].pop(simb)
+                    continue
+                deltaLinea=f'{q}:{simb}>{deltaSet}'
+                out+='\n'+deltaLinea
+        if(graficar):
+            AFD(self.Sigma, simpQ, self.q0, simpF, simpDelta).graficarAutomata()
+        return out
+    
 
     def graficarAutomata(self):
         """Grafica el automata usando librerias de matplotlib y NetworkX"""
