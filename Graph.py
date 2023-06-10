@@ -4,9 +4,6 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf as pdf_backend
-from AFD import AFD
-from AFN import AFN
-from AFN_e import AFN_Lambda
 class graficarAutomata:
     rad = .1
     def mostrarGrafo(self, automata):
@@ -194,23 +191,24 @@ class graficarAutomata:
 
 
 
-nfa1= AFN("ej1.nfa")
-dfa1 =AFD("ej0.dfa")
-nfe1= AFN_Lambda('ej1.nfe')
-nfeAafd=nfe1.AFN_LambdaToAFD(nfe1)
-nfeAnfa=nfe1.AFN_LambdaToAFN(nfe1)
-for estado, simbolo in nfeAnfa.delta.items():
-    print('estado: ', estado, ' tipo: ', type(estado), 'simbolo:', simbolo, 'tipo: ', type(simbolo))
-graficar = graficarAutomata()
-# graficar.mostrarGrafo(dfa1)
-# graficar.mostrarGrafo(nfa1)
+# nfa1= AFN("ej1.nfa")
+# #dfa1 =AFD("ej0.dfa")
+# anfAafd= nfa1.AFNtoAFD()
+# nfe1= AFN_Lambda('ej1.nfe')
+# nfeAafd=nfe1.AFN_LambdaToAFD(nfe1)
+# nfeAnfa=nfe1.AFN_LambdaToAFN(nfe1)
+# # for estado, simbolo in nfeAnfa.delta.items():
+# #     print('estado: ', estado, ' tipo: ', type(estado), 'simbolo:', simbolo, 'tipo: ', type(simbolo))
+# graficar = graficarAutomata()
+# # graficar.mostrarGrafo(dfa1)
+# # graficar.mostrarGrafo(nfa1)
+# # graficar.mostrarGrafo(nfe1)
+# #graficar.mostrarGrafo(nfeAafd)
+# #print('delta del afne a afd: \n', nfeAafd.delta.items())
+# #graficar.mostrarGrafo(nfeAnfa)
 # graficar.mostrarGrafo(nfe1)
-#graficar.mostrarGrafo(nfeAafd)
-#print('delta del afne a afd: \n', nfeAafd.delta.items())
-graficar.mostrarGrafo(nfeAnfa)
- 
-#graficar.exportarGrafos([dfa1, nfa1, nfe1])
-# print(nfeAnfa.delta,'\n\n')
-# print(nfeAnfa.Sigma.simbolos,'\n\n')
+# #graficar.exportarGrafos([dfa1, nfa1, nfe1])
+# # print(nfeAnfa.delta,'\n\n')
+# # print(nfeAnfa.Sigma.simbolos,'\n\n')
 
-#plt.figure(figsize = (10,10))
+# #plt.figure(figsize = (10,10))

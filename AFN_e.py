@@ -1,7 +1,14 @@
 from AFN import AFN
 from Alfabeto import Alfabeto
+from Graph import graficarAutomata
 import re
 class AFN_Lambda:
+    """
+    # Clase AFN_Lambda
+
+    Ésta clase modela y simula el Autómata Finito No determinista con transiciones lambda AFNe también conocido como AFN epsilon o lambda el cual puede poseer cero, uno o más transiciónes para un símbolo perteneciente al Alfabeto además de las transiciones lambda
+
+    """
     Sigma=None
     Q=None
     q0=None
@@ -50,6 +57,7 @@ class AFN_Lambda:
                     self.F = set(afc['#accepting'])
                     self.delta = dictReader
                     self.nombreArchivo=((args[0]).split('.'+self.extension))[0]
+                    self.estadosInaccesibles= self.hallarEstadosInaccesibles()
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
@@ -60,28 +68,30 @@ class AFN_Lambda:
                 self.Sigma=Alfabeto(simbolos)
             self.Q=set(self.Q)
             self.F=set(self.F)
-
         self.Sigma.simbolos.append('$')
+        self.estadosInaccesibles= self.hallarEstadosInaccesibles()
 
     def hallarEstadosInaccesibles(self):
-        accesibles ={self.q0} #Conjunto accesibles empieza con el inicial
-        if (list(accesibles)[0]==None or list(accesibles)[0]==''): raise Exception("El estado inicial debe existir para hallar los inaccesibles")
-        while True:
-            alteraciones = False
-            #________________________SALE ERROR__________________________
-            for estado in list(accesibles): #recorrer estados accesibles
-                transiciones = self.delta[estado] # obtener los {'simbolo': delta} de un estado
-                for estados_destino in transiciones.values(): #Recorrer los deltas de ese estado, cada estados_destino es un set(  ) de estados
-                    for d in estados_destino: # Recorrer los elementos (estados) de ese set()
-                        if d not in accesibles: # si (d) estado destino no esta en los accesibles se agrega
-                            accesibles.add(d)
-                            alteraciones = True # Se vuelve a iterar el while, pero con conjunto de accesibles alterado (mas grande)
-            if not alteraciones: 
-                break #En este punto ya se recorrio todos los estados accesibles por el estado inicial,
-                        #por lo que no hay alteraciones, y para no entrar en bucles infinitos se hace break
-        estados_totales = set(self.Q)
-        inaccesibles = estados_totales - accesibles #Inaccesibles = Q - Accesibles
-        return inaccesibles
+        """ para determinar los estados inacessibles del autómata y guardarlos en el atributo correspondiente."""
+        visitados = set()  # Conjunto para almacenar los nodos visitados
+        cola = [self.q0]  # Cola para realizar el recorrido en anchura
+            
+        while cola:
+            nodo_actual = cola.pop(0)  # Tomar el primer nodo de la cola
+            
+            if nodo_actual not in visitados:
+                # Procesar el nodo actual
+                
+                visitados.add(nodo_actual)  # Marcar el nodo como visitado
+                
+                # Agregar los vecinos no visitados a la cola
+                for _, trans in self.delta[nodo_actual].items():
+                    for q in trans:
+                        if q not in visitados:
+                            cola.append(q)
+
+                    
+        return self.Q.difference(visitados)
     def toString(self):
         simb=''
         out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]
@@ -100,7 +110,7 @@ class AFN_Lambda:
         with open(archivo, "w") as f:
             f.write(self.toString())
 
-    def lambda_clausura(self, afnl, states):
+    def lambda_clausura(afnl, states):
         clausura = set(states)
         while True:
             # Para cada estado en clausura, añade todos los estados que se pueden alcanzar mediante transiciones lambda.
@@ -112,11 +122,13 @@ class AFN_Lambda:
             clausura = clausura.union(new_states)
         return clausura
 
-    def AFN_LambdaToAFN(self, afnl):
+    def AFN_LambdaToAFN(self, nfe1=None):
+        if(nfe1==None):
+            nfe1=self
         # Copia Sigma, Q, q0 y F desde afnl, pero elimina el símbolo '$' de Sigma.
-        Sigma = [s for s in afnl.Sigma.simbolos if s!='$']
-        Q = afnl.Q
-        q0 = afnl.q0
+        Sigma = [s for s in nfe1.Sigma.simbolos if s!='$']
+        Q = nfe1.Q
+        q0 = nfe1.q0
         F = set()
         delta = {}
 
@@ -125,20 +137,23 @@ class AFN_Lambda:
             delta[state] = {}
             for symbol in Sigma:
                 next_states = set()
-                for target in afnl.delta[state].get(symbol, set()):
-                    next_states = next_states.union(self.lambda_clausura(afnl, {target}))
+                for target in nfe1.delta[state].get(symbol, set()):
+                    next_states = next_states.union(AFN_Lambda.lambda_clausura(nfe1, {target}))
+                if(len(next_states)==0):
+                    continue
                 delta[state][symbol] = next_states
-
         # Actualiza los estados de aceptación para el AFN.
         for state in Q:
             # Si un estado puede llegar a un estado de aceptación a través de transiciones lambda, se convierte en un estado de aceptación.
-            if not afnl.F.isdisjoint(self.lambda_clausura(afnl, {state})):
+            if not nfe1.F.isdisjoint(AFN_Lambda.lambda_clausura(nfe1, {state})):
                 F.add(state)
 
         return AFN(Sigma, Q, q0, F, delta)
 
-    def AFN_LambdaToAFD(self, afnl):
-        afn = self.AFN_LambdaToAFN(afnl)
+    def AFN_LambdaToAFD(self, nfe1=None):
+        if nfe1==None:
+            nfe1=self
+        afn = AFN_Lambda.AFN_LambdaToAFN(nfe1)
         afd = AFN.AFNtoAFD(afn, False)
         return afd
 
@@ -146,7 +161,7 @@ class AFN_Lambda:
     def procesamiento(self,cadena: str, actual, detalles, proc,  out='')-> bool:
         final = False
         breaked = False
-
+        #print('Estado actual: ', actual)
         for index, char in enumerate(cadena):
             if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
                 out += f'[{actual},{cadena[index:]}]-> Procesamiento abortado'
@@ -158,8 +173,13 @@ class AFN_Lambda:
                     if '$' in self.delta[actual].keys():
                         if len(list(self.delta[actual]['$'])) > 1:
                             out += f'[{actual},{cadena[index:]}]-> '
-                            for i in sorted(self.delta[actual]['$']):
-                                # print(sorted(self.delta[actual][char]))
+                            transLambda= list(self.delta[actual]['$'])
+                            for i in sorted(transLambda):
+                                #print(sorted(self.delta[actual][char]))
+                                #print('Estado actual: ', actual, 'i:  ', i)
+                                if(actual==i):
+                                    continue
+                                
                                 actual = i
                                 procesamiento = self.procesamiento(cadena[index:], i, detalles, proc, out)
                                 if proc:
@@ -291,33 +311,28 @@ class AFN_Lambda:
         return afd1.procesarCadenaConDetalles(cadena)
 
     def procesarListaCadenasConversion(self, listaCadenas: list,nombreArchivo: str, imprimirPantalla: bool):
+        """Convierte ésta instancia a un AFD y luego procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo; si este es inválido se asigna un nombre por defecto. Además todo esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla. Los campos deben estar separados por tabulación y son:           
+            1. cadena, 
+            2. sucesión de parejas (estado, símbolo) de cada paso del procesamiento . 
+            3. sí o no dependiendo de si la cadena es aceptada o no"""
         afd1 = self.AFN_LambdaToAFD(self)
         afd1.procesarListaCadenas(listaCadenas,nombreArchivo,imprimirPantalla)
-
-    def pruebas(self, cadena: str):
-        out=''
-        print("usando delta: \n")
-        limbo = { 'L':{  s: set('L') for s in self.Sigma.simbolos} }
-        print('limbo: ', limbo)
-        for estado in self.delta:
-            for simb in self.Sigma.simbolos:
-                if(self.delta[estado].get(simb)==None):
-                    self.delta[estado][simb] = limbo
-
-        out = self.toString() #.get() retorna el conjunto del simbolo dado, si no existe retorna un conjunto vacío (esto es para evitar errores de KeyError: clave no encontrada)
-        return out
+    def graficarAutomata(self):
+        """Grafica el automata usando librerias de matplotlib y NetworkX"""
+        graficarAutomata.mostrarGrafo(self)
+  
 
     #================================================
 
-print('Ejecutando:...\n')
-nfe1= AFN_Lambda("ej1.nfe")
+#print('Ejecutando AFN_e.py:...\n')
+# nfe1= AFN_Lambda("ej1.nfe")
 
-print('Ejecutando:...\n')
+# print('Ejecutando:...\n')
 
-listacadenas= ['aaaba', 'bba', 'ababaa', 'aaabbb', 'ab', 'bb', 'aa']
-nfe1.procesarCadena('aaa')
-#nfe1.procesarCadenaConDetalles('aab')
-#nfe1.procesarListaCadenas(listacadenas)
+# listacadenas= ['aaaba', 'bba', 'ababaa', 'aaabbb', 'ab', 'bb', 'aa']
+# print(nfe1.procesarCadena('aaa'))
+# nfe1.procesarCadenaConDetalles('aaa')
+# nfe1.procesarListaCadenas(listacadenas)
 
 
 #print(nfe1.delta)

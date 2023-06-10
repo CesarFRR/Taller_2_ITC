@@ -102,33 +102,22 @@
 
 # print(a)  # Output: 10
 # print(b)  # Output: 20
+from AFD import AFD
+from AFN_e import AFN_Lambda
+from AFN import AFN
+#print('Ejecutando:...\n')
+nfa1= AFN("ej1.nfa")
+# nfa1.graficarAFN()
+dfa1 = nfa1.AFNtoAFD(nfa1)
+nfe1= AFN_Lambda('ej1.nfe')
+print('\n')
+#print('PROBANDO:\n', nfe1.toString())
+print('\n')
+nfe1= nfe1.AFN_LambdaToAFN()
+print('\nnfeA AFN sin simplificar')
+print(nfe1.toString())
+print('\nnfeA AFN simplificado nfe1\n')
+print(nfe1.imprimirAFNSimplificado())
 
-
-def procesarListaCadenas(listaCadenas, nombreArchivo, imprimirPantalla):
-    if not nombreArchivo:
-        nombreArchivo = "default.txt"
-
-    with open(nombreArchivo, "w") as f:
-        for cadena in listaCadenas:
-            # Realizar procesamiento de la cadena y obtener los resultados
-            aceptacion = True
-            num_posibles_procesamientos = 10
-            num_procesamientos_aceptacion = 5
-            num_procesamientos_rechazo = 5
-
-            # Construir la línea de salida con los campos separados por tabulación
-            linea = f"{cadena}\t{aceptacion}\t{num_posibles_procesamientos}\t{num_procesamientos_aceptacion}\t{num_procesamientos_rechazo}\t{'yes' if aceptacion else 'no'}\n"
-
-            # Escribir la línea en el archivo
-            f.write(linea)
-
-            # Imprimir la línea en pantalla si imprimirPantalla es True
-            if imprimirPantalla:
-                print(linea, end="")
-
-# Ejemplo de uso
-listaCadenas = ["abc", "def", "xyz"]
-nombreArchivo = "resultados.txt"
-imprimirPantalla = True
-
-procesarListaCadenas(listaCadenas, nombreArchivo, imprimirPantalla)
+print(dfa1.toString())
+print('\n')

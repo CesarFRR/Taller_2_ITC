@@ -1,4 +1,8 @@
 class AF2P:
+    """ 
+    # Clase AF2P
+    Ésta clase modela y simula el Autómata Finito con dos Pilas  AF2P el cual  posee 2 pilas como principal característica
+    """
     Q = None
     q0 =None
     F =None

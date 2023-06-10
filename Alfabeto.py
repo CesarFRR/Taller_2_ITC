@@ -11,6 +11,10 @@ import re
 
 
 class Alfabeto:
+    """
+    # Clase Alfabeto
+    Ésta clase tiene en cuenta todos los casos de entra y de posibles erorres, además posee métodos de filtracion de cadenas por expresiones regularies y generación de cadenas aleatorias de longitud (n) para el alfabeto de la instancia de la clase.
+    """
     simbolos = None
     formato_entrada=None
 
@@ -34,6 +38,8 @@ class Alfabeto:
             (self.simbolos).sort()
 
     def generarListaSimbolos(self, min, max):
+        """Dado un conjunto de entradas, por ejemplo: a, b-c, h-z
+        Genera todo el conjunto de simbolos de cada rango establecido usando como base la numeración del codigo ASCII"""
         if(ord(max) - ord(min)==1):
             self.simbolos=[min, max]
         else:
@@ -41,6 +47,7 @@ class Alfabeto:
                 self.simbolos.append(chr(i))
 
     def generarCadenaAleatoria(self, n: int):
+        """Genera una cadena aleatoria con simbolos de tamaño (n) y pertenecientes al lenguaje de la instancia actual """
         string = ""
         for i in range(n):
             string += self.simbolos[random.randint(0, len(self.simbolos)-1)]
@@ -48,9 +55,11 @@ class Alfabeto:
 
     @staticmethod
     def validate_regex(cadena, expresion_regular) -> bool:
+        """Dada una expresion regular retorna una lista con la expresión regular aplicada"""
         return (re.match(expresion_regular, cadena))
 
     def toStringEntrada(self) -> str:
+        """Genera exactamente el mismo formato de alfabeto para archivos de entrada de autómatas"""
         S=""
         for i in self.formato_entrada:
             if(self.formato_entrada.index(i)==0):

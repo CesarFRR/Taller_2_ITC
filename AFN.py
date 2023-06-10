@@ -1,9 +1,17 @@
 from AFD import AFD
 from Alfabeto import Alfabeto
+from Graph import graficarAutomata
+from prettytable import PrettyTable, ALL
 import re
 #from visual_automata.fa.nfa import VisualNFA
 
 class AFN:
+    """
+    # Clase AFN
+
+    Ésta clase modela y simula el Autómata Finito No determinista AFN el cual puede poseer cero, uno o más transiciónes para un símbolo perteneciente al Alfabeto
+
+    """
     Sigma = None
     Q = None
     q0 = None
@@ -20,6 +28,18 @@ class AFN:
     abortadas = []
     deltaParaGraficar={}
     def __init__(self, *args):
+        """Este único constructor utiliza artificios de python para simular sobrecarga de constructores ya que python no tiene esa característica, como resultado se puede instanciar una clase AFN de las siguientes maneras:
+
+        >>> AFN('nombreDeArchivo.nfa')
+        # Lee un archivo de entrada afn.
+        
+        >>> AFN(alfabeto, estados: set, estadoInicial, estadosAceptacion,Delta)
+        # Recibe los 5 atributos del autómata
+        
+        
+
+        
+        """
         if (len(args) == 1):  # Inicializar por archivo txt
             if (not args[0].endswith("." + self.automata_tipo)):
                 raise ValueError(
@@ -51,8 +71,8 @@ class AFN:
                     self.Q = set(afc['#states'])
                     self.q0 = afc['#initial'][0]
                     self.F = set(afc['#accepting'])
-                    self.delta = dictReader    
-                    self.deltaParaGraficar=dictReader.copy()   
+                    self.delta = dictReader
+                    self.deltaParaGraficar=dictReader.copy()
                     self.nombreArchivo=((args[0]).split('.'+self.extension))[0]
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
@@ -64,106 +84,145 @@ class AFN:
                 self.Sigma=Alfabeto(simbolos)
             self.Q=set(self.Q)
             self.F=set(self.F)
+        
+        self.estadosInaccesibles= self.hallarEstadosInaccesibles()
     def hallarEstadosInaccesibles(self):
-        accesibles=set()
-        for q in self.delta:
-            for simb in self.delta[q]:
-                accesibles.add(self.delta[q][simb])
-        inaccesibles=self.Q.difference(accesibles)  #inaccesibles = Q - accesibles
+        """ para determinar los estados inacessibles del autómata y guardarlos en el atributo correspondiente."""
+        visitados = set()  # Conjunto para almacenar los nodos visitados
+        cola = [self.q0]  # Cola para realizar el recorrido en anchura
+            
+        while cola:
+            nodo_actual = cola.pop(0)  # Tomar el primer nodo de la cola
+            
+            if nodo_actual not in visitados:
+              # Procesar el nodo actual
+                
+                visitados.add(nodo_actual)  # Marcar el nodo como visitado
+                
+                # Agregar los vecinos no visitados a la cola
+                for _, trans in self.delta[nodo_actual].items():
+                    for q in trans:
+                        if q not in visitados:
+                            cola.append(q)
 
+                    
+        return self.Q.difference(visitados)
 
-    pass
-
-    def toString(self): 
+    def toString(self, graficar:bool=False):
+        """método para imprimir donde se vean los estados, estado inicial, estados de aceptación, estados inaccesibles, y tabla de transiciones."""
         simb=''
-        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]+'\n'+'\n'.join(sorted((list(self.hallarEstadosInaccesibles()))))+'\n'+self.etiquetas[6]
+        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]#+'\n'+'\n'.join(sorted((list(self.hallarEstadosInaccesibles()))))
         deltaLinea=''
-        for q in self.delta:
+        for q in sorted(self.delta.keys()):
             for simb in self.delta[q]:
                 deltaSet= sorted(list(self.delta[q][simb]))
                 deltaSet= deltaSet[0] if len(deltaSet)==1 else ';'.join(deltaSet)
                 deltaLinea=f'{q}:{simb}>{deltaSet}'
                 out+='\n'+deltaLinea
-        return print(out)
+        if(graficar):
+            self.graficarAutomata()
+        return out
 
     def imprimirAFNSimplificado(self): #Similar al anterior sin estados inaccesibles
+        """método para imprimir donde se vean los estados, estado inicial, estados de aceptación,y tabla de transiciones. No se deben mostrar los estados inaccesibles."""
         simb=''
-        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+'\n'+self.etiquetas[6]
+        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q.difference(self.estadosInaccesibles))))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F.difference(self.estadosInaccesibles))))+'\n'+self.etiquetas[5]
         deltaLinea=''
         for q in self.delta:
+            if(q in self.estadosInaccesibles):
+                continue
             for simb in self.delta[q]:
                 deltaSet= sorted(list(self.delta[q][simb]))
                 deltaSet= deltaSet[0] if len(deltaSet)==1 else ';'.join(deltaSet)
                 deltaLinea=f'{q}:{simb}>{deltaSet}'
                 out+='\n'+deltaLinea
-        return print(out)
+        return out
 
     def exportar(self, archivo):
+        """Guardar el autómata en un archivo con el formatoespecificado """
         with open(archivo, "w") as f:
                 f.write(self.toString())
 
-    def AFNtoAFD(afn, imprimir = True):
-        states = list(afn.Q)
-        delta = afn.delta
-        accepting= afn.F
+    def AFNtoAFD(afn1, imprimir = True):
+        """ recibe un AFN y retorna el AFD equivalente. Debe imprimir la tabla que muestra los estados (antiguos y nuevos) con las transiciones definidas para cada símbolo del alfabeto. Debe eliminar los estados inaccesibles (a través de un método de la clase AFD)"""
+        states = list(afn1.Q)
+        delta = afn1.delta
+        accepting= afn1.F
 
-        for state, transition in delta.items():
-            for symbol, destiny in transition.items():
+        for state, transitions in delta.items():
+            for symbol, destiny in transitions.items():
                 if len(destiny)>1:           #Comprobar si un simbolo lleva a mas de un estado
                     states.append(tuple(destiny))    #Agregar tupla de todos los estados a los que lleva
 
         #Recorrer lista de estados una vez realizadas las modificaciones anteriores
-        for actual in states:
+        for estado in states:
             transitions = dict()    #diccionario con transiciones para los nuevos estados
-            if type(actual) is tuple:       #Verificar que el estado actual sea una tupla
-                for state in actual:
-                    if len(state) > 1 and afn.delta.get(state) is not None:      #Verificar que la tupla contenga mas de un elemento    
-                        for symbol in afn.delta.get(state):                      #Verificar transiciones de cada simbolo con cada estado de la tupla             
+            if type(estado) is tuple:       #Verificar que el estado actual sea una tupla
+                for state in estado:
+                    if len(state) > 1 and afn1.delta.get(state) is not None:      #Verificar que la tupla contenga mas de un elemento    
+                        for symbol in afn1.delta.get(state):                      #Verificar transiciones de cada simbolo con cada estado de la tupla             
                             if transitions.get(symbol) is not None:              #Si ya se agregaron las transiciones de uno de los estados, actualizar con las de los demas
                                 transitions.update({str(symbol):set(sorted(set(transitions[symbol]).union(delta[state][symbol])))})
                             else:                                                #Aun no se han agregado las transiciones de ningun estado
                                 transitions.update({str(symbol):set(sorted(delta[state][symbol]))})
 
-                delta.update({actual:transitions})
+                delta.update({estado:transitions})
 
                 #Agregar los estados que vayan surgiendo durante el proceso
-                for symbol in afn.delta.get(actual):            
-                    newState = tuple(afn.delta[actual][symbol])
+                for symbol in afn1.delta.get(estado):            
+                    newState = tuple(afn1.delta[estado][symbol])
                     if newState not in states and len(newState)>1:
                         states.append(newState)
-
-        #Imprimir tabla de trancisiones
-        if imprimir:
-            out = ''
-            for q in afn.delta:
-                for simb in afn.delta[q]:
-                    deltaSet= sorted(list(afn.delta[q][simb]))
-                    deltaSet= deltaSet[0] if len(deltaSet)==1 else ';'.join(deltaSet)
-                    deltaLinea=f'{q}:{simb}>{deltaSet}'
-                    out+='\n'+deltaLinea
-            print(out)
-            print('\n')
             
         strStates = set()
         for state in states:        #Agregar todos los estados que contengan alguno de aceptacion
             if type(state) is tuple:
-                x = ','.join(state)     
-                strStates.add(f'({x})')     #Convertir tupla a string
+                x = '{'+','.join(sorted(list(state)))+'}'     
+                strStates.add(f'{x}')     #Convertir tupla a string
                 for i in state:
-                    if i in afn.F:
-                        accepting.add(f'({x})')
+                    if i in afn1.F:
+                        accepting.add(f'{x}')
             else:
-                strStates.add(f'{state})')
-
+                strStates.add(f'{state}')
         strDelta = dict()
-        for actual, transition in delta.items():    #Cambiar keys del diccionario por strings
-            x = '{'+','.join(sorted(list(actual)))+'}' if type(actual) is tuple else actual
-            strDelta[f'{x}'] = delta[actual]
-        print('sigma: ', type(afn.Sigma), ' strStates: ', type(strStates), ' q0: ', type(afn.q0))  
+        for estado, transitions in delta.items():
+            
+            #print('transiciones y tipo: ', transitions, type(transitions.get('a')))    #Cambiar keys del diccionario por strings
+            x = '{'+','.join(sorted(list(estado)))+'}' if type(estado) is tuple else estado
+            strDelta[f'{x}'] = { simb: dict() for simb in sorted(delta[estado].keys()) }
+            for simb, trans in delta[estado].items():
+                strTrans=None
+                if(len(trans)>1):
+                    strTrans = '{'+','.join( (sorted(list(trans))) )+'}'
+                    strTrans= {strTrans}
+                else: 
+                    strTrans=trans
+                strDelta[f'{x}'][simb]=strTrans
 
-        return AFD(afn.Sigma, strStates, afn.q0, set(accepting), strDelta) #Retornar AFD equivalente
+        afd1= AFD(afn1.Sigma, strStates, afn1.q0, set(accepting), strDelta)
+        #Imprimir tabla de trancisiones
+        #print(afd1.toString())
+        if imprimir:
+            tabla = PrettyTable()
+            # Agregar encabezados
+            estados=sorted(list(afd1.Q))
+            simbolos=sorted(afd1.Sigma.simbolos)
+            #print('estados: ', estados, '\nsimbolos: ', simbolos)
+            tabla.field_names = ["Δ"] + simbolos
+            for q in estados:
+                if(afd1.delta.get(q)==None):
+                    continue
+                fila=[q]
+                for simb in simbolos:
+                    trans=list(afd1.delta[q].get(simb, ['∅']))
+                    fila.append(trans[0])
+                tabla.add_row(fila)
+            print(tabla)
 
-    def procesamiento(self,cadena, actual, detalles, proc,  out=''):
+        return  afd1 #Retornar AFD equivalente
+
+    def procesamiento(self,cadena: str, actual, detalles, proc,  out=''):
+        """Función encargada del procesamiento teniendo en cuenta todos los caminos posibles cuando se está en (  q  ) estado y se va a consumir 'a' simbolo, se tendrán en cuenta las {a + lambda} transiciones"""
         final = False
         breaked = False
 
@@ -222,12 +281,16 @@ class AFN:
             return False
         
     def procesarCadena(self, cadena):
+        """procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata"""
         return self.procesamiento(cadena, self.q0, False, True)
 
     def procesarCadenaConDetalles(self, cadena):
+        """realiza lo mismo que el método `procesarCadena()` pero aparte imprime los estados que va tomando al procesar cada símbolo de uno de los procesamientos que lleva a la cadena a ser aceptada. """
         return self.procesamiento(cadena, self.q0, True, True)
 
     def computarTodosLosProcesamientos(self, cadena, nombreArchivo):
+        """Debe imprimir cada uno de los posibles procesamientos de la cadena indicando de qué estado a qué estado pasa al procesar cada símbolo e indicando si al final de cada procesamiento se llega a aceptación o rechazo. Debe llenar una lista de todos procesamientos de aceptación, una lista de todos los procesamientos abortados y una lista de todos los procesamientos de rechazo. Debe guardar los contenidos de estas listas cada una en un archivo(cuyos nombres son nombreArchivoAceptadas.txt, nombreArchivoRechazadas.txt y nombreArchivoAbortadas.txt) y además imprimirlas en pantalla. Se debe retornar el número de procesamientos realizados."""
+
         self.aceptacion = []
         self.rechazadas = []
         self.abortadas = []
@@ -252,6 +315,13 @@ class AFN:
         return len(self.aceptacion+self.rechazadas+self.abortadas)
 
     def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str, imprimirPantalla:bool):
+        """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo; si este es inválido se asigna un nombre por defecto. Además,todo esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.Los campos deben estar separados por tabulación y son: ▪cadena, ▪sucesión de parejas (estado, símbolo) de cada paso del procesamientomás corto de aceptación (si lo hay, si no el más corto de rechazo)
+        
+        1. número de posibles procesamientos
+        2. número de procesamientos de aceptación
+        3. número de procesamientos abortados
+        4. número de procesamientos de rechazo
+        5. sí o no dependiendo de si la cadena es aceptada o no."""
         with open(nombreArchivo, 'r+') as archivo:
             archivo.truncate(0)
 
@@ -286,66 +356,37 @@ class AFN:
                     print(line)
 
     def procesarCadenaConversion(self, cadena):
+        """procesa la cadena, haciendo una previa conversión a AFD, y retorna verdadero si es aceptada y falso si es rechazada por el autómata."""
         afd = self.AFNtoAFD(self, False)
-        return afd.procesarCadena(cadena) 
+        return afd.procesarCadena(cadena)
     
     def  procesarCadenaConDetallesConversion(self, cadena):
+        """realiza lo mismo que el método `procesarCadenaConversion()` pero aparte imprime los estados (del AFD) que va tomando al procesar cada símbolo"""
         afd = self.AFNtoAFD(self, False)
         return afd.procesarCadenaConDetalles(cadena) 
 
     
     def procesarListaCadenasConversion(self, listaCadenas,nombreArchivo, imprimirPantalla):
+        """rocesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo; si este es inválido se asigna un nombre por defecto.Además todo esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla. Los campos deben estar separados por tabulación y son:
+ 1. cadena
+ 2. sucesión de parejas (estado, símbolo) de cada paso del procesamiento
+ 3. sí o no dependiendo de si la cadena es aceptada o no."""
+
         afd = self.AFNtoAFD(self, False)
         return afd.procesarListaCadenas(listaCadenas, nombreArchivo, imprimirPantalla)
     
-    
-    # def graficarAFN(self):
-    #     print('GRAFICAR\n\n\n')
-    #     #print(self.deltaParaGraficar.items())
-    #     gEstados=dict()
-    #     for q in self.deltaParaGraficar:
-    #         est=q
-    #         if(est=='L'):
-    #             est='q30'
-    #         gEstados.update({est:dict()})
 
-    #         for simb in self.deltaParaGraficar[q]:
-                
-    #             deltaSet= list(self.deltaParaGraficar[est][simb])
-    #             print(f'{q}:{simb}>{deltaSet}')
-    #             if simb=='$':
-    #                 gEstados[est].update({"":deltaSet})    
-                
-    #             gEstados[est].update({simb:deltaSet})
-                
-    #             #print ('deltaLinea: ',deltaLinea)
-    #     # nfa = VisualNFA(
-    #     #     states=self.Q,
-    #     #     input_symbols=set(self.Sigma.simbolos),
-    #     #     transitions=gEstados,
-    #     #     initial_state=self.q0,
-    #     #     final_states=self.F,
-    #     # )
-    #     nfaprueba = VisualNFA(
-    #     states={"q0", "q1", "q2"},
-    #     input_symbols={"0", "1"},
-    #     transitions={
-    #     "q0": {"": {"q2"}, "1": {"q1"}},
-    #     "q1": {"1": {"q2"}, "0": {"q0", "q2"}},
-    #     "q2": {},
-    #     },
-    #     initial_state="q0",
-    #     final_states={"q0"},
-    #     )
-    #     nfaprueba.show_diagram(view=True)#.render('afnGraficar', format='png', cleanup=True, view=True)
-
+    def graficarAutomata(self):
+        """Grafica el automata usando librerias de matplotlib y NetworkX"""
+        graficarAutomata.mostrarGrafo(self)
 #================================================
 
 # print('Ejecutando:...\n')
 # nfa1= AFN("ej1.nfa")
-# nfa1.graficarAFN()
-# nda = nfa1.AFNtoAFD(nfa1)
-# print(nda.toString())
+# # nfa1.graficarAFN()
+# dfa1 = nfa1.AFNtoAFD(nfa1)
+# nfe1= AFN_Lambda('ej1.nfe').AFN_LambdaToAFD()
+#print(dfa1.toString())
 # print('\n')
 
 #print(nfa1.toString())

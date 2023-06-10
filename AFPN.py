@@ -1,4 +1,10 @@
 class AFPN:
+    """
+    # Clase AFPN
+
+    Ésta clase modela y simula el Autómata Finito de Pila No determinista AFN el cual puede poseer cero, uno o más transiciónes para un símbolo perteneciente al Alfabeto
+
+    """
     Q = None
     q0 =None
     F =None
@@ -6,6 +12,7 @@ class AFPN:
     PSigma = None
     delta = None
     def __init__(self, estados, estadoInicial, estadosAceptacion, alfabetoCinta, alfabetoPila, delta):
+
         self.Q = estados
         self.q0 = estadoInicial
         self.F = estadosAceptacion

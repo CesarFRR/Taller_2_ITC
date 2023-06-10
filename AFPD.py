@@ -3,6 +3,12 @@ import copy
 import re
 from Alfabeto import Alfabeto
 class AFPD:
+    """
+    # Clase AFPD
+
+    Ésta clase modela y simula el Autómata Finito con Pila determinista AFPD el cual puede poseer cero o una transición para un símbolo perteneciente al Alfabeto, además de que la Pila posee su propio alfabeto
+
+    """
     Q = None
     q0 =None
     F =None

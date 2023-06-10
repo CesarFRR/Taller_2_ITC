@@ -1,4 +1,10 @@
 class MT:
+    """ 
+    # Clase MT 
+    ## Máquina de Turing
+    Ésta clase modela y simula la Máquina de Turing MT de una sola Cinta 
+
+    """
     Q = None
     q0 =None
     F =None
