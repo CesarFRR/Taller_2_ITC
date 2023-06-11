@@ -286,6 +286,47 @@ class AFN_Lambda:
                 return False
         if proc:
             return False
+    def procesar_cadena_afn_lambda(self, cadena):
+        delta= self.delta
+        estado_inicial=self.q0
+        estados_aceptacion=self.F
+        estados_actuales = set(estado_inicial)  # Conjunto de estados actuales
+        estados_visitados = set()  # Conjunto de estados visitados
+        
+        for simbolo in cadena:
+            nuevos_estados = set()  # Conjunto de nuevos estados alcanzados
+            
+            # Consultar transiciones regulares
+            for estado in estados_actuales:
+                if simbolo in delta.get(estado, {}):
+                    nuevos_estados |= delta[estado].get(simbolo, set())  # Unión de estados alcanzados
+                    print(delta[estado].get(simbolo, set()))
+            
+            # Consultar transiciones lambda
+            while True:
+                nuevos_estados_lambda = set()  # Conjunto de nuevos estados alcanzados por transiciones lambda
+                
+                for estado in sorted(list(estados_actuales)):
+                    if not delta.get(estado, {}): continue
+                    if '$' in delta[estado].keys():
+                        nuevos_estados_lambda |= delta[estado].get('$', set())  # Unión de estados alcanzados por transiciones lambda
+                
+                nuevos_estados_lambda -= estados_visitados  # Excluir estados visitados previamente
+                
+                if not nuevos_estados_lambda:
+                    break  # No hay nuevos estados alcanzados por transiciones lambda
+                
+                estados_actuales |= nuevos_estados_lambda  # Agregar nuevos estados alcanzados por transiciones lambda
+                estados_visitados |= nuevos_estados_lambda  # Marcar nuevos estados como visitados
+            
+            estados_actuales = nuevos_estados  # Actualizar estados actuales
+        
+        # Verificar si algún estado actual es un estado de aceptación
+        if estados_actuales & estados_aceptacion:
+            return True  # Cadena aceptada
+        else:
+            return False  # Cadena rechazada
+
 
     def procesarCadena(self, cadena: str)-> bool:
         """procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. """
@@ -382,7 +423,8 @@ class AFN_Lambda:
         afd1.procesarListaCadenas(listaCadenas,nombreArchivo,imprimirPantalla)
     def graficarAutomata(self):
         """Grafica el automata usando librerias de matplotlib y NetworkX"""
-        graficarAutomata.mostrarGrafo(self)
+        graficar = graficarAutomata()
+        graficar.mostrarGrafo(self)
   
 
     #================================================

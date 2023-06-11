@@ -109,9 +109,14 @@ from AFN import AFN
 nfa1= AFN("ej1.nfa")
 # nfa1.graficarAFN()
 #dfa1 = nfa1.AFNtoAFD(nfa1)
+#nfa1.graficarAutomata()
 nfe1= AFN_Lambda('ej1.nfe')
-print('\nAFN_Lambda  a  AFD:\n')
-dfa0= nfe1.AFN_LambdaToAFD()
+print(nfe1.procesar_cadena_afn_lambda('aab'))
+#nfe1.graficarAutomata()
+
+
+# print('\nAFN_Lambda  a  AFD:\n')
+# dfa0= nfe1.AFN_LambdaToAFD()
 #print('PROBANDO:\n', nfe1.toString())
 # print('\n')
 # nfe1= nfe1.AFN_LambdaToAFN()

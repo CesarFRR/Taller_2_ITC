@@ -512,7 +512,8 @@ class AFD:
 
     def graficarAutomata(self):
         """Grafica el automata usando librerias de matplotlib y NetworkX"""
-        graficarAutomata.mostrarGrafo(self)
+        graficar = graficarAutomata()
+        graficar.mostrarGrafo(self)
 
 
 #================================================
