@@ -12,6 +12,7 @@ class graficarAutomata:
         Args:
             automata (AFD, AFN, AFN_Lambda): Para pilas y MT usar sus respectivos métodos
         """
+
         #Crear un dataframe vacío
         data = pd.DataFrame(columns=['source', 'to', 'label'])
         delta2 = {}

@@ -17,18 +17,32 @@ class AF2P:
         self.PSigma = alfabetoPila
         self.delta = delta
     
-    def modificarPila(self, pila, operacion, parametro):
+    def modificarPila(self, pila: list, operacion: str, parametro: str):
         """Para ejecutar los cambios en la pila realizados por las transiciones, incluyendo los básicos así como la inserción/reemplazamiento de cadenas en el tope de la pila vistos en clase."""
-        pass
-        
-    def procesarCadena(self, cadena):
+        parametro=list(parametro)
+        if operacion == 'push':
+            for simb in parametro:
+                if(simb!= '$'):
+                    pila.append(simb)
+        elif operacion == 'pop':
+            for simb in parametro:
+                if(simb!= '$'):
+                    if(len(pila)==0):
+                        return False
+                    pila.pop()
+        elif operacion == 'swap':
+            for simb in parametro:
+                pila.pop()
+                pila.append(simb)
+
+    def procesarCadena(self, cadena: str)-> bool:
         """ procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. """
                     
         return True
-    def procesarCadenaConDetalles(self, cadena):
+    def procesarCadenaConDetalles(self, cadena: str)-> bool:
         """ realiza  lo  mismo  que  el  método  anterior aparte imprime más detalles. En específico, si la cadena es aceptada debe imprimir uno de los procesamientos de aceptación y si es rechazada debe imprimir todos los procesamientos posibles  de  la  cadena.  En  particular,  cada  procesamiento  debe  ser  impreso de  acuerdo  al formato indicado en el archivo AF2P.pdf"""
         return True
-    def  computarTodosLosProcesamientos(cadena,  nombreArchivo):  
+    def  computarTodosLosProcesamientos(cadena,  nombreArchivo: str)-> int:  
         """Debe  imprimir  cada  uno de los posibles procesamientos de acuerdo al formato establecido en el archivo AF2P.pdfe indicando si al final de cada procesamiento se llega a aceptación o rechazo. Debe llenar una lista  de  todos  procesamientos  de  aceptación,  una  lista  de  todos  los  procesamientos rechazados.  Debe  guardar  los  contenidos  de  estas  listas  cada  una  en  un  archivo(cuyos nombres  son  nombreArchivoAceptadasAF2P.txtynombreArchivoRechazadasAF2P.txt)  y además imprimirlas en pantalla. Se debe retornar el número de procesamientos realizados."""
         return 0
     def procesarListaCadenas(self, listaCadenas,nombreArchivo, imprimirPantalla): 
@@ -41,6 +55,6 @@ class AF2P:
         6. “yes”o “no”dependiendo de si la cadena es aceptada o no."""
         pass
     def toString(self):
-        """Representar el AF2Pcon el formato de los archivos de entrada de AF2P (AF2P.pdf) de manera que se pueda imprimir fácilmente."""
+        """Representar el AF2P con el formato de los archivos de entrada de AF2P (AF2P.pdf) de manera que se pueda imprimir fácilmente."""
         pass
     
