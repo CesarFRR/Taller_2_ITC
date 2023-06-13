@@ -2,6 +2,7 @@ from AFD import AFD
 import copy
 import re
 from Alfabeto import Alfabeto
+from Graph import graficarAutomata
 class AFPD:
     """
     # Clase AFPD
@@ -87,6 +88,8 @@ class AFPD:
 
     def modificarPila(self, pila: list, operacion: str, parametro: str):
         """Para ejecutar los cambios en la pila realizados por las transiciones, incluyendo los básicos así como la inserción/reemplazamiento de cadenas en el tope de la pila vistos en clase."""
+        simplePar=parametro
+        simplePila= ''.join(pila)
         parametro=list(parametro)
         if operacion == 'push':
             for simb in parametro:
@@ -97,7 +100,14 @@ class AFPD:
                 if(simb!= '$'):
                     if(len(pila)==0):
                         return False
-                    pila.pop()
+                    elif(simplePila.count(simplePar)==1 and simplePila.endswith(simplePar)):
+                        # Este caso es muy extraño que suceda pero puede suceder:
+                        # Si la A (Él parametro) está inicialmente colocada en el fondo de la pila,
+                        # entonces la pila se vacía y la unidad de control queda 
+                        # escaneando el fondo vacío.
+                        pila=[]
+                    else:
+                        pila.pop()
         elif operacion == 'swap':
             for simb in parametro:
                 pila.pop()
@@ -122,8 +132,11 @@ class AFPD:
                 if(self.delta.get(actual)==None):
                     break # estado {actual} sin transiciones, posible estado limbo o estado final
                 elif(self.delta[actual].get(simbolo)==None):
-                    aceptada = False # transicion con simbolo actual no disponible, por lo tanto se aborta el procesamiento
-                    break
+                    if('$' in self.delta[actual].keys()): # Si no existe transiciones para el (simbolo) pero existe una transicion lambda, se hace esa transición (Esto no viola el determinismo del AFPD)
+                        simbolo='$'
+                    else:
+                        aceptada = False # transicion con simbolo actual no disponible, por lo tanto se aborta el procesamiento (tampoco hay trans lambda)
+                        return False
                 if len(self.delta[actual][simbolo])>1: raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
                 transicion= self.delta[actual][simbolo][0]
                 pop, push, actual = transicion
@@ -146,7 +159,7 @@ class AFPD:
                 if(self.modificarPila(pila, 'pop', pop)==False):
                     aceptada = False #Pila vacía al momento de hacer pop(), procesamiento abortado
                 self.modificarPila(pila, 'push', push)
-        
+
         if actual in self.F and len(pila)==0: #verificar si el estado actual es de aceptacion
             if(aceptada==None):
                 aceptada=True
@@ -164,7 +177,7 @@ class AFPD:
         aceptada=None
         out=''
         for index, simbolo in enumerate(cadena):
-            if  simbolo not in self.Sigma.simbolos:  
+            if  simbolo not in self.Sigma.simbolos:
                 out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
                 print(out)
                 return False # El simbolo no se encuentre en el alfabeto entrada {Sigma}, procesamiento abortado
@@ -173,16 +186,19 @@ class AFPD:
                     out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
                     break # estado {actual} sin transiciones, posible estado limbo o estado final
                 elif(self.delta[actual].get(simbolo)==None):
-                    aceptada = False # transicion con simbolo actual no disponible, por lo tanto se aborta el procesamiento
-                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
-                    print(out)
-                    return False
+                    if('$' in self.delta[actual].keys()): # Si no existe transiciones para el (simbolo) pero existe una transicion lambda, se hace esa transición (Esto no viola el determinismo del AFPD)
+                        simbolo='$'
+                    else:
+                        aceptada = False # transicion con simbolo actual no disponible, por lo tanto se aborta el procesamiento (tampoco hay trans lambda)
+                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
+                        print(out)
+                        return False
                 if len(self.delta[actual][simbolo])>1:
                     raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
                 transicion= self.delta[actual][simbolo][0]
                 pop, push, actual = transicion
                 if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
-                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} ∉ #stackAlphabet) V ({push} ∉ #stackAlphabet)'
+                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} not in #stackAlphabet) V ({push} not in #stackAlphabet)'
                     print(out)
                     return False # simbolo no se encuentre en el alfabeto de la pila {PSigma}, abortar
                 out+=  f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
@@ -195,7 +211,18 @@ class AFPD:
                         return False#Pila vacía al momento de hacer pop(), procesamiento abortado
                         #aceptada = False 
                     self.modificarPila(pila, 'push', push)
-
+        
+        if('$' in self.delta[actual].keys()): # Si existe una transición cuando la cadena ya se ha consumido toda, ej $,$|$
+            pop, push, actual = self.delta[actual]['$'][0]
+        if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
+            aceptada = False # simbolo no se encuentre en el alfabeto de la pila {PSigma}
+        if('$' != pop and '$' !=push):
+            self.modificarPila(pila, 'swap',push)
+        else:
+            if(self.modificarPila(pila, 'pop', pop)==False):
+                aceptada = False #Pila vacía al momento de hacer pop(), procesamiento abortado
+            self.modificarPila(pila, 'push', push)
+    
         out+=  f'({actual},$,{"$" if len(pila)==0 else "".join(pila) })>>'
         if actual in self.F and len(pila)==0: #verificar si el estado actual es de aceptacion
             if(aceptada==None):
@@ -234,14 +261,19 @@ class AFPD:
                         out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
                         break # estado {actual} sin transiciones, posible estado limbo o estado final
                     elif(self.delta[actual].get(simbolo)==None):
-                        aceptada = False # transicion con simbolo actual no disponible, por lo tanto se aborta el procesamiento
-                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
+                        if('$' in self.delta[actual].keys()): # Si no existe transiciones para el (simbolo) pero existe una transicion lambda, se hace esa transición (Esto no viola el determinismo del AFPD)
+                            simbolo='$'
+                        else:
+                            aceptada = False # transicion con simbolo actual no disponible, por lo tanto se aborta el procesamiento (tampoco hay trans lambda)
+                            out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted'
+                            print(out)
+                            return False
                     if len(self.delta[actual][simbolo])>1:
                         raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
                     transicion= self.delta[actual][simbolo][0]
                     pop, push, actual = transicion
                     if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
-                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} ∉ #stackAlphabet) V ({push} ∉ #stackAlphabet)'
+                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} not in #stackAlphabet) V ({push} no in #stackAlphabet)'
                         break# simbolo no se encuentre en el alfabeto de la pila {PSigma}, abortar
                     out+=  f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
                     if('$' != pop and '$' !=push):
@@ -277,7 +309,7 @@ class AFPD:
     def hallarProductoCartesianoConAFD(afd):
         """: debe calcular y retornar el producto cartesiano con un AFD dado como parámetro."""
         pass
-    def toString(self):
+    def toString(self, graficar:bool=False):
         """Representar  el  AFPD  con  el  formato  de  los  archivos  de  entrada  de  AFPD (AFPD.pdf)de manera que se pueda imprimir fácilmente"""
         if self.instanciaVacia: return 'Instancia AFD vacía, no se le asigno un archivo o argumentos'
         simb=''
@@ -289,7 +321,14 @@ class AFPD:
                 deltaLinea=f'{q}:{simb}:{deltaSet[0]}>{deltaSet[2]}:{deltaSet[1]}'
                 out+='\n'+deltaLinea
                 #print ('deltaLinea: ',deltaLinea)
+        if graficar:
+            self.gra
         return out
+    
+    def graficarAutomata(self):
+        """Grafica el automata usando librerias de matplotlib y NetworkX"""
+        graficar = graficarAutomata()
+        graficar.mostrarGrafo(self)
     
 
 pila1= AFPD('ej1.dpda')

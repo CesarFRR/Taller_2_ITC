@@ -200,6 +200,7 @@ class AFN:
                 strDelta[f'{x}'][simb]=strTrans
 
         afd1= AFD(afn1.Sigma, strStates, afn1.q0, set(accepting), strDelta)
+        afd1.nombreArchivo=afn1.nombreArchivo+'ToAFD'
         #Imprimir tabla de trancisiones
         #print(afd1.toString())
         if imprimir:

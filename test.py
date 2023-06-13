@@ -106,15 +106,17 @@ from AFD import AFD
 from AFN_e import AFN_Lambda
 from AFN import AFN
 from MT import MT
+from AFPD import AFPD
 import random
+from Graph import graficarAutomata
 #print('Ejecutando:...\n')
 nfa1= AFN('ej1.nfa')
 # nfa1.graficarAFN()
-#dfa1 = nfa1.AFNtoAFD(nfa1)
+dfa1 = nfa1.AFNtoAFD(nfa1)
 #dfa1.graficarAutomata()
 #nfa1.graficarAutomata()
 nfe1= AFN_Lambda('ej1.nfe')
-#print(nfe1.procesar_cadena_afn_lambda('aab'))
+#print(nfe1.procesarCadena('aab'))
 #nfe1.graficarAutomata()
 # for i in range(700):
 #     cadena= nfe1.Sigma.generarCadenaAleatoria(random.randint(0, 10))
@@ -155,3 +157,13 @@ print('procesarListaCadenas\n')
 tm1.procesarListaCadenas(listaCadenas=listaCadena,nombreArchivo='salidaDeImprimirlistaMT', imprimirPantalla=True)
 print('graficarAutomata\n')
 tm1.graficarAutomata()
+
+dpda1 = AFPD('ej1.dpda')
+dpda1.graficarAutomata()
+print()
+nfa1.graficarAutomata()
+graf1= graficarAutomata()
+graf1.exportarGrafo(automata=nfa1)
+listaM=[dfa1, nfa1, dpda1, tm1]
+
+graf1.exportarGrafos(listaAutomatas=listaM)
