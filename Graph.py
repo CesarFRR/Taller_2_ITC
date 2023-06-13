@@ -73,12 +73,13 @@ class graficarAutomata:
             delta2[estado] = {}
             for simbolo, tripla in transiciones.items():
                 # tripla -> [ 'escritura', 'desplazamiento', 'nextQ' ]
-                delta2[estado][tripla[0][2]] = f'{simbolo.replace("!", "□")}|{tripla[0][0]} {tripla[0][1]}'
+                print(tripla)
+                delta2[estado][tripla[0][2]] = f'{simbolo}|{tripla[0][0]} {tripla[0][1]}'
 
         for estado, transiciones in delta2.items():
             for destino, simbolos in transiciones.items():
                 #print('simb========: ',simbolos,'tipo:',type(simbolos))
-                new_row = pd.Series({'source': estado, 'to': destino, 'label': simbolos})
+                new_row = pd.Series({'source': estado, 'to': destino, 'label': simbolos.replace("!", "□")})
                 data.loc[len(data)] = new_row
         print(data)
         return data
