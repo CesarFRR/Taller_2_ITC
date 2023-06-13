@@ -105,15 +105,27 @@
 from AFD import AFD
 from AFN_e import AFN_Lambda
 from AFN import AFN
+from MT import MT
+import random
 #print('Ejecutando:...\n')
-nfa1= AFN("ej1.nfa")
+nfa1= AFN('ej1.nfa')
 # nfa1.graficarAFN()
 #dfa1 = nfa1.AFNtoAFD(nfa1)
+#dfa1.graficarAutomata()
 #nfa1.graficarAutomata()
 nfe1= AFN_Lambda('ej1.nfe')
-print(nfe1.procesar_cadena_afn_lambda('aab'))
+#print(nfe1.procesar_cadena_afn_lambda('aab'))
 #nfe1.graficarAutomata()
+# for i in range(700):
+#     cadena= nfe1.Sigma.generarCadenaAleatoria(random.randint(0, 10))
+#     print(cadena, nfe1.procesarCadena(cadena))
 
+# mi_lista = ['elemento1', 'elemento2', 'elemento3']
+# index=0
+# if index == 0:
+#     mi_lista.insert(0, '!')  # Agregar '!' en la primera posición
+
+# print(mi_lista)
 
 # print('\nAFN_Lambda  a  AFD:\n')
 # dfa0= nfe1.AFN_LambdaToAFD()
@@ -128,3 +140,18 @@ print(nfe1.procesar_cadena_afn_lambda('aab'))
 # print(dfa1.toString())
 # print('\nAFD (dfa1) simplificado:\n')
 # print(dfa1.imprimirAFDSimplificado())
+
+tm1= MT('ej1.tm')
+#print(tm1.toString())
+cadena2 = 'aabb'
+listaCadena= ['aabb', 'ab', 'bbbba', 'bbbaaa', 'abababa', 'a', 'b']
+print('procesarCadena:\n')
+print(tm1.procesarCadena(cadena2))
+print('procesarCadenaConDetalles\n')
+print(tm1.procesarCadenaConDetalles(cadena2))
+print('procesarFunción\n')
+print(tm1.procesarFunción(cadena2))
+print('procesarListaCadenas\n')
+tm1.procesarListaCadenas(listaCadenas=listaCadena,nombreArchivo='salidaDeImprimirlistaMT', imprimirPantalla=True)
+print('graficarAutomata\n')
+tm1.graficarAutomata()

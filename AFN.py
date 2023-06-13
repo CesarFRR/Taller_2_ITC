@@ -47,7 +47,7 @@ class AFN:
             try:
                 afc = {}
                 key = ''
-                with open(args[0], 'r', newline='', encoding='utf-8') as file:
+                with open(f'./archivosEntrada/{args[0]}', 'r', newline='', encoding='utf-8') as file:
                     file = file.read().replace('\r\n', '\n').replace('\r', '\n')  # problema de saltos de linea solucionados
                     string= f'''{file}'''
                     dictReader={}
@@ -140,7 +140,7 @@ class AFN:
 
     def exportar(self, archivo):
         """Guardar el autómata en un archivo con el formatoespecificado """
-        with open(archivo, "w") as f:
+        with open(f'./archivosSalida/{archivo}', "w") as f:
                 f.write(self.toString())
 
     def AFNtoAFD(afn1, imprimir = True):
@@ -296,17 +296,17 @@ class AFN:
         self.abortadas = []
         self.procesamiento(cadena,  self.q0, False, '')
 
-        with open(f'{nombreArchivo}Abortadas.txt', 'a') as abortadas:
+        with open(f'./archivosSalida/{nombreArchivo}Abortadas.txt', 'a') as abortadas:
             abortadas.truncate(0)
             for i in self.abortadas:
                 abortadas.write(f'{i}\n')
                 print(f'{i}')
-        with open(f'{nombreArchivo}Rechazadas.txt', 'a') as rechazadas:
+        with open(f'./archivosSalida/{nombreArchivo}Rechazadas.txt', 'a') as rechazadas:
             rechazadas.truncate(0)
             for i in self.rechazadas:
                 rechazadas.write(f'{i}\n')
                 print(f'{i}')
-        with open(f'{nombreArchivo}Aceptadas.txt', 'a') as aceptadas:
+        with open(f'./archivosSalida/{nombreArchivo}Aceptadas.txt', 'a') as aceptadas:
             aceptadas.truncate(0)
             for i in self.aceptacion:
                 aceptadas.write(f'{i}\n')
@@ -322,10 +322,15 @@ class AFN:
         3. número de procesamientos abortados
         4. número de procesamientos de rechazo
         5. sí o no dependiendo de si la cadena es aceptada o no."""
-        with open(nombreArchivo, 'r+') as archivo:
-            archivo.truncate(0)
+        try:
+            with open(f'./archivosSalida/{nombreArchivo}', 'r+') as archivo:
+                archivo.truncate(0)
+        except:
+            nombreArchivo= 'procesarListaCadenas_AFN'
+            with open(f'./archivosSalida/{nombreArchivo}', 'r+') as archivo:
+                archivo.truncate(0)
 
-        with open(nombreArchivo, 'a') as archivo:
+        with open(f'./archivosSalida/{nombreArchivo}', 'a') as archivo:
             for cadena in listaCadenas:
                 self.aceptacion = []
                 self.rechazadas = []
@@ -351,7 +356,7 @@ class AFN:
                     archivo.write('No\n\n')
 
         if imprimirPantalla:
-            with open(nombreArchivo, 'r') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}', 'r') as archivo:
                 for line in archivo:
                     print(line)
 

@@ -39,7 +39,7 @@ class AFD:
             try:
                 afc = {}
                 key = ''
-                with open(args[0], 'r', newline='', encoding='utf-8') as file:
+                with open(f'./archivosEntrada/{args[0]}', 'r', newline='', encoding='utf-8') as file:
                     file = file.read().replace('\r\n', '\n').replace('\r', '\n')  # problema de saltos de linea solucionados
                     string= f'''{file}'''
                     dictReader={}
@@ -90,7 +90,7 @@ class AFD:
         elif(len(args) == 1 and isinstance(args[0], AFD)):
             self.Sigma=copy.deepcopy(args[0].Sigma)
             self.Q=copy.deepcopy(args[0].Q)
-            self.qo=args[0].q0
+            self.q0=args[0].q0
             self.F=copy.deepcopy(args[0].F)
             self.delta=copy.deepcopy(args[0].delta)
             self.estadosInaccesibles=copy.deepcopy(args[0].estadosInaccesibles)
@@ -172,7 +172,7 @@ class AFD:
     def exportar(self, archivo):
         """ Guardar el autómata en un archivo con el formatoespecificado"""
 
-        with open(archivo, "w") as f:
+        with open(f'./archivosSalida/{archivo}', "w") as f:
             f.write(self.toString())
 
     def procesarCadena(self, cadena: str)->bool:
@@ -250,9 +250,12 @@ class AFD:
                     out+= 'No Aceptacion\tno'
                 aceptada= False
             out+='\n'
-  
-        with open(f'{nombreArchivo}procesarListaCadenas.txt', "w") as f:
-            f.write(out)
+        try:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', "w") as f:
+                f.write(out)
+        except:
+            with open(f'./archivosSalida/procesarListaCadenas_AFD.txt', "w") as f:
+                f.write(out)
         if(imprimirPantalla):
             print(out)
 

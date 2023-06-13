@@ -26,7 +26,7 @@ class AFPD:
             try:
                 afc = {}
                 key = ''
-                with open(args[0], 'r', newline='', encoding='utf-8') as file:
+                with open(f'./archivosEntrada/{args[0]}', 'r', newline='', encoding='utf-8') as file:
                     file = file.read().replace('\r\n', '\n').replace('\r', '\n')  # problema de saltos de linea solucionados
                     string= f'''{file}'''
                     dictReader={}
@@ -68,7 +68,7 @@ class AFPD:
             self.Q=set(self.Q)
         elif(len(args) == 1 and isinstance(args[0], AFPD)):
             self.Q=copy.deepcopy(args[0].Q)
-            self.qo=args[0].q0
+            self.q0=args[0].q0
             self.F=copy.deepcopy(args[0].F)
             self.Sigma=copy.deepcopy(args[0].Sigma)
             self.PSigma=copy.deepcopy(args[0].PSigma)
@@ -81,7 +81,7 @@ class AFPD:
             self.PSigma = Alfabeto('')
             self.delta = {}
 
-        self.PSigma.simbolos.append('$')
+        #self.PSigma.simbolos.append('$')
 
 
 
@@ -127,7 +127,7 @@ class AFPD:
                 if len(self.delta[actual][simbolo])>1: raise ValueError('No puede haber mas de una transición para un simbolo, no corresponde al comportamiento de un AFPD')
                 transicion= self.delta[actual][simbolo][0]
                 pop, push, actual = transicion
-                if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):  
+                if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
                     aceptada = False # simbolo no se encuentre en el alfabeto de la pila {PSigma}
                 if('$' != pop and '$' !=push):
                     self.modificarPila(pila, 'swap',push)
@@ -135,6 +135,18 @@ class AFPD:
                     if(self.modificarPila(pila, 'pop', pop)==False):
                         aceptada = False #Pila vacía al momento de hacer pop(), procesamiento abortado
                     self.modificarPila(pila, 'push', push)
+
+        if('$' in self.delta[actual].keys()): # Si existe una transición cuando la cadena ya se ha consumido toda, ej $,$|$
+            pop, push, actual = self.delta[actual]['$'][0]
+            if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
+                aceptada = False # simbolo no se encuentre en el alfabeto de la pila {PSigma}
+            if('$' != pop and '$' !=push):
+                self.modificarPila(pila, 'swap',push)
+            else:
+                if(self.modificarPila(pila, 'pop', pop)==False):
+                    aceptada = False #Pila vacía al momento de hacer pop(), procesamiento abortado
+                self.modificarPila(pila, 'push', push)
+        
         if actual in self.F and len(pila)==0: #verificar si el estado actual es de aceptacion
             if(aceptada==None):
                 aceptada=True
@@ -252,8 +264,12 @@ class AFPD:
                 aceptada= False
             out+=f'\t{"yes" if aceptada else "no"}\n'
 
-        with open(f'{nombreArchivo}procesarListaCadenasAFPD.txt', "w") as f:
-            f.write(out)
+        try:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', "w") as f:
+                f.write(out)
+        except:
+            with open(f'./archivosSalida/procesarListaCadenas_AFPD.txt', "w") as f:
+                f.write(out)
         if(imprimirPantalla):
             print(out)
 

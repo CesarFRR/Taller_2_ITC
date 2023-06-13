@@ -36,7 +36,7 @@ class AFN_Lambda:
             try:
                 afc = {}
                 key = ''
-                with open(args[0], 'r', newline='', encoding='utf-8') as file:
+                with open(f'./archivosEntrada/{args[0]}', 'r', newline='', encoding='utf-8') as file:
                     file = file.read().replace('\r\n', '\n').replace('\r', '\n')  # problema de saltos de linea solucionados
                     string= f'''{file}'''
                     dictReader={}
@@ -66,7 +66,7 @@ class AFN_Lambda:
             except Exception as e:
                 print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 5):  # Inicializar por los 5 parametros: alfabeto, estados, estadoInicial, estadosAceptacion, delta
-            simbolos, self.Q, self.qo, self.F, self.delta = args
+            simbolos, self.Q, self.q0, self.F, self.delta = args
             if(isinstance(simbolos, Alfabeto)):
                 self.Sigma=simbolos
             else:
@@ -126,7 +126,7 @@ class AFN_Lambda:
 
     def exportar(self, archivo: str):
         """Guardar el autómata en un archivo con el formato especificado (Formato de Entrada.pdf)"""
-        with open(archivo, "w") as f:
+        with open(f'./archivosSalida/{archivo}', "w") as f:
             f.write(self.toString())
 
     def l_clausura(nfe1, states):
@@ -343,17 +343,17 @@ class AFN_Lambda:
         self.abortadas = []
         self.procesamiento(cadena, self.q0, False, '')
 
-        with open(f'{nombreArchivo}Abortadas.txt', 'a') as abortadas:
+        with open(f'./archivosSalida/{nombreArchivo}Abortadas_AFNe.txt', 'a') as abortadas:
             abortadas.truncate(0)
             for i in self.abortadas:
                 abortadas.write(f'{i}\n')
                 print(f'{i}')
-        with open(f'{nombreArchivo}Rechazadas.txt', 'a') as rechazadas:
+        with open(f'./archivosSalida/{nombreArchivo}Rechazadas_AFNe.txt', 'a') as rechazadas:
             rechazadas.truncate(0)
             for i in self.rechazadas:
                 rechazadas.write(f'{i}\n')
                 print(f'{i}')
-        with open(f'{nombreArchivo}Aceptadas.txt', 'a') as aceptadas:
+        with open(f'./archivosSalida/{nombreArchivo}Aceptadas_AFNe.txt', 'a') as aceptadas:
             aceptadas.truncate(0)
             for i in self.aceptacion:
                 aceptadas.write(f'{i}\n')
@@ -371,10 +371,15 @@ class AFN_Lambda:
         5. número de procesamientos abortados.
         6. número de procesamientos de rechazo
         7. sí o no dependiendo de si la cadena es aceptada o no."""
-        with open(nombreArchivo, 'r+') as archivo:
-            archivo.truncate(0)
+        try:
+            with open(f'./archivosSalida/{nombreArchivo}', 'r+') as archivo:
+                archivo.truncate(0)
+        except:
+            nombreArchivo= 'procesarListaCadenas_AFNe'
+            with open(f'./archivosSalida/{nombreArchivo}', 'r+') as archivo:
+                archivo.truncate(0)
 
-        with open(nombreArchivo, 'a') as archivo:
+        with open(f'./archivosSalida/{nombreArchivo}', 'a') as archivo:
             for cadena in listaCadenas:
                 self.aceptacion = []
                 self.rechazadas = []
@@ -400,7 +405,7 @@ class AFN_Lambda:
                     archivo.write('No\n\n')
 
         if imprimirPantalla:
-            with open(nombreArchivo, 'r') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}', 'r') as archivo:
                 for line in archivo:
                     print(line)
 

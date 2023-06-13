@@ -4,6 +4,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf as pdf_backend
+#from MT import MT
 class graficarAutomata:
     rad = .1
     def mostrarGrafo(self, automata):
@@ -12,26 +13,29 @@ class graficarAutomata:
         Args:
             automata (AFD, AFN, AFN_Lambda): Para pilas y MT usar sus respectivos métodos
         """
-
+        data= None
+        if automata.extension=='tm':
+            data=self.deltaForMT(automata)
         #Crear un dataframe vacío
-        data = pd.DataFrame(columns=['source', 'to', 'label'])
-        delta2 = {}
-        for estado, transiciones in automata.delta.items():
+        else:
+            data = pd.DataFrame(columns=['source', 'to', 'label'])
+            delta2 = {}
+            for estado, transiciones in automata.delta.items():
 
-            delta2[estado] = {}
-            for simbolo, destinos in transiciones.items():
-                for destino in destinos:
-                    if destino in delta2[estado]:
-                        delta2[estado][destino].add(simbolo)
-                    else:
-                        delta2[estado][destino] = {simbolo}
+                delta2[estado] = {}
+                for simbolo, destinos in transiciones.items():
+                    for destino in destinos:
+                        if destino in delta2[estado]:
+                            delta2[estado][destino].add(simbolo)
+                        else:
+                            delta2[estado][destino] = {simbolo}
 
-        for estado, transiciones in delta2.items():
-            for destino, simbolos in transiciones.items():
-                #print('simb========: ',simbolos,'tipo:',type(simbolos))
-                new_row = pd.Series({'source': estado, 'to': destino, 'label': ', '.join(sorted(list(simbolos)))})
-                data.loc[len(data)] = new_row
-        print(data)
+            for estado, transiciones in delta2.items():
+                for destino, simbolos in transiciones.items():
+                    #print('simb========: ',simbolos,'tipo:',type(simbolos))
+                    new_row = pd.Series({'source': estado, 'to': destino, 'label': ', '.join(sorted(list(simbolos)))})
+                    data.loc[len(data)] = new_row
+            print(data)
 
         
         conn_style = f'arc3,rad={self.rad}'
@@ -58,6 +62,26 @@ class graficarAutomata:
         plt.gcf().canvas.manager.set_window_title(tituloVentana)
 
         plt.show()
+    def deltaForMT(self, automata:object)-> pd.DataFrame:
+        if automata.extension!='tm':
+            return None
+             #Crear un dataframe vacío
+        data = pd.DataFrame(columns=['source', 'to', 'label'])
+        delta2 = {}
+        for estado, transiciones in automata.delta.items():
+
+            delta2[estado] = {}
+            for simbolo, tripla in transiciones.items():
+                # tripla -> [ 'escritura', 'desplazamiento', 'nextQ' ]
+                delta2[estado][tripla[0][2]] = f'{simbolo.replace("!", "□")}|{tripla[0][0]} {tripla[0][1]}'
+
+        for estado, transiciones in delta2.items():
+            for destino, simbolos in transiciones.items():
+                #print('simb========: ',simbolos,'tipo:',type(simbolos))
+                new_row = pd.Series({'source': estado, 'to': destino, 'label': simbolos})
+                data.loc[len(data)] = new_row
+        print(data)
+        return data
     def mostrarGrafos(self, listaAutomatas):
         for M in listaAutomatas:
             self.mostrarGrafo(M)
