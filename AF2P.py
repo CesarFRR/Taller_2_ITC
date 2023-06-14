@@ -12,7 +12,7 @@ class AF2P:
     q0 =None
     F =None
     Sigma =None
-    CSigma = None
+    PSigma = None
     delta = None
     nombreArchivo='archivo2pda'
     extension = "msm"
@@ -72,7 +72,7 @@ class AF2P:
         elif (len(args) == 6):  # Inicializar por los 6 parametros: alfabeto,alfabetoPila estados, estadoInicial, estadosAceptacion, delta
             self.Q, self.q0, self.F,self.Sigma, self.PSigma, self.delta = args
             self.Q=set(self.Q)
-        elif(len(args) == 1 and isinstance(args[0], AFPD)):
+        elif(len(args) == 1 and isinstance(args[0], AF2P)):
             self.Q=copy.deepcopy(args[0].Q)
             self.q0=args[0].q0
             self.F=copy.deepcopy(args[0].F)
