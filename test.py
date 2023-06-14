@@ -107,6 +107,7 @@ from AFN_e import AFN_Lambda
 from AFN import AFN
 from MT import MT
 from AFPD import AFPD
+from AF2P import AF2P
 import random
 from Graph import graficarAutomata
 #print('Ejecutando:...\n')
@@ -144,26 +145,30 @@ nfe1= AFN_Lambda('ej1.nfe')
 # print(dfa1.imprimirAFDSimplificado())
 
 tm1= MT('ej1.tm')
-#print(tm1.toString())
-cadena2 = 'aabb'
-listaCadena= ['aabb', 'ab', 'bbbba', 'bbbaaa', 'abababa', 'a', 'b']
-print('procesarCadena:\n')
-print(tm1.procesarCadena(cadena2))
-print('procesarCadenaConDetalles\n')
-print(tm1.procesarCadenaConDetalles(cadena2))
-print('procesarFunción\n')
-print(tm1.procesarFunción(cadena2))
-print('procesarListaCadenas\n')
-tm1.procesarListaCadenas(listaCadenas=listaCadena,nombreArchivo='salidaDeImprimirlistaMT', imprimirPantalla=True)
-print('graficarAutomata\n')
-tm1.graficarAutomata()
+# #print(tm1.toString())
+# cadena2 = 'aabb'
+# listaCadena= ['aabb', 'ab', 'bbbba', 'bbbaaa', 'abababa', 'a', 'b']
+# print('procesarCadena:\n')
+# print(tm1.procesarCadena(cadena2))
+# print('procesarCadenaConDetalles\n')
+# print(tm1.procesarCadenaConDetalles(cadena2))
+# print('procesarFunción\n')
+# print(tm1.procesarFunción(cadena2))
+# print('procesarListaCadenas\n')
+# tm1.procesarListaCadenas(listaCadenas=listaCadena,nombreArchivo='salidaDeImprimirlistaMT', imprimirPantalla=True)
+# print('graficarAutomata\n')
+# tm1.graficarAutomata()
 
 dpda1 = AFPD('ej1.dpda')
 dpda1.graficarAutomata()
-print()
-nfa1.graficarAutomata()
-graf1= graficarAutomata()
-graf1.exportarGrafo(automata=nfa1)
-listaM=[dfa1, nfa1, dpda1, tm1]
+# print()
+# nfa1.graficarAutomata()
+# graf1= graficarAutomata()
+# graf1.exportarGrafo(automata=nfa1)
+# listaM=[dfa1, nfa1, dpda1, tm1]
 
-graf1.exportarGrafos(listaAutomatas=listaM)
+# graf1.exportarGrafos(listaAutomatas=listaM)
+
+pda2p_1= AF2P('ej1.msm')
+print('\n To string y graficar: \n')
+print(pda2p_1.toString(graficar=True))

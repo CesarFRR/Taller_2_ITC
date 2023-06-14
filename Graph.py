@@ -67,16 +67,19 @@ class graficarAutomata:
                     if (len(destino)-1)%2==0: # Múltiples pilas, ojo que aqui se puede graficar más de una pila, bastante versátil
                         for i in range(0, (len(destino)-1) , 2):
                             out+=f'{destino[i]}|{destino[i+1]},'
+                        out = out.rstrip(',')
                         if destino[-1] in delta2[estado]:
-                            delta2[estado][destino[-1]].add( f'{simbolo},{destino[0]}|{destino[1]}')
+                            delta2[estado][destino[-1]].add( f'{out}')
                         else:
-                            delta2[estado][destino[-1]] = {f'{simbolo},{destino[0]}|{destino[1]}'}
+                            delta2[estado][destino[-1]] = {f'{out}'}
+                    
+                    print('AQUI OUT: ', out)
 
         for estado, transiciones in delta2.items():
             for destino, simbolos in transiciones.items():
                 new_row = pd.Series({'source': estado, 'to': destino, 'label': simbolos.pop()})
                 data.loc[len(data)] = new_row
-        #print(data)
+        print(data)
         return data
     
     def deltaForMT(self, automata: object)-> pd.DataFrame:
