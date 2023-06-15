@@ -111,7 +111,7 @@ class MT:
                 # Calcular la transición: Siguiente estado + instrucciones lectura/escritura
                 escritura, desplazamiento, estadoDestino  = trans[q][simb][0]
                 # Actualizar el símbolo en la posición actual de la cinta
-                cinta[index] = simb if escritura=='!' else escritura
+                cinta[index] = escritura
                 # Desplazamiento de la posición actual según el movimiento
                 if desplazamiento == '>':  # Desplazamiento a la derecha
                     index += 1

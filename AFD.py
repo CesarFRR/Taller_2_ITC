@@ -110,6 +110,8 @@ class AFD:
 
     def verificarCorregirCompletitudAFD(self):
         """Revisa si el AFD leído está completo y sino agrega un estado limbo y ajusta las transiciones para que quede completo."""
+        if self.estadosLimbo==None:
+            self.estadosLimbo=set()
         limbo = { 'L':{  s:'L' for s in self.Sigma.simbolos} }
         faltalimbo=False
         for estado in self.delta:
@@ -124,7 +126,7 @@ class AFD:
     def hallarEstadosLimbo(self):
         """ para determinar los estados limbo del autómata y guardarlos en el atributocorrespondiente. """
         if (self.estadosLimbo==None):
-            self.estadoslimbo =set()
+            self.estadosLimbo =set()
         for estado in self.delta:
             if all( self.delta[estado].get(simb, set())=={estado} for simb in self.Sigma.simbolos):
                 #estado limbo encontrado!

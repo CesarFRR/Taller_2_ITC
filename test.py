@@ -111,17 +111,27 @@ from AF2P import AF2P
 import random
 from Graph import graficarAutomata
 #print('Ejecutando:...\n')
-nfa1= AFN('ej1.nfa')
+#nfa1= AFN('ej1.nfa')
 # nfa1.graficarAFN()
-dfa1 = nfa1.AFNtoAFD(nfa1)
+#dfa1 = nfa1.AFNtoAFD(nfa1)
 #dfa1.graficarAutomata()
 #nfa1.graficarAutomata()
-nfe1= AFN_Lambda('ej1.nfe')
+#nfe1= AFN_Lambda('ej1.nfe')
 #print(nfe1.procesarCadena('aab'))
 #nfe1.graficarAutomata()
-# for i in range(700):
-#     cadena= nfe1.Sigma.generarCadenaAleatoria(random.randint(0, 10))
-#     print(cadena, nfe1.procesarCadena(cadena))
+# cadenasx= []
+# for i in range(70):
+#     cadena= nfa1.Sigma.generarCadenaAleatoria(random.randint(0, 10))
+#     cadenasx.append(cadena)
+
+# for c in cadenasx:
+#     print(c)
+
+# print('ordenadas: \n')
+
+
+# for c in sorted(cadenasx):
+#     print(c)
 
 # mi_lista = ['elemento1', 'elemento2', 'elemento3']
 # index=0
@@ -144,23 +154,25 @@ nfe1= AFN_Lambda('ej1.nfe')
 # print('\nAFD (dfa1) simplificado:\n')
 # print(dfa1.imprimirAFDSimplificado())
 
-tm1= MT('ej1.tm')
-# #print(tm1.toString())
+# tm1= MT('ej1.tm')
+# # #print(tm1.toString())
 # cadena2 = 'aabb'
 # listaCadena= ['aabb', 'ab', 'bbbba', 'bbbaaa', 'abababa', 'a', 'b']
-# print('procesarCadena:\n')
+# # print('procesarCadena:\n')
+# for c in listaCadena:
+#     print(tm1.procesarCadena(c))
 # print(tm1.procesarCadena(cadena2))
-# print('procesarCadenaConDetalles\n')
-# print(tm1.procesarCadenaConDetalles(cadena2))
-# print('procesarFunción\n')
-# print(tm1.procesarFunción(cadena2))
-# print('procesarListaCadenas\n')
-# tm1.procesarListaCadenas(listaCadenas=listaCadena,nombreArchivo='salidaDeImprimirlistaMT', imprimirPantalla=True)
-# print('graficarAutomata\n')
-# tm1.graficarAutomata()
+# # print('procesarCadenaConDetalles\n')
+# # print(tm1.procesarCadenaConDetalles(cadena2))
+# # print('procesarFunción\n')
+# # print(tm1.procesarFunción(cadena2))
+# # print('procesarListaCadenas\n')
+# # tm1.procesarListaCadenas(listaCadenas=listaCadena,nombreArchivo='salidaDeImprimirlistaMT', imprimirPantalla=True)
+# # print('graficarAutomata\n')
+# # tm1.graficarAutomata()
 
-dpda1 = AFPD('ej1.dpda')
-dpda1.graficarAutomata()
+# dpda1 = AFPD('ej1.dpda')
+# dpda1.graficarAutomata()
 # print()
 # nfa1.graficarAutomata()
 # graf1= graficarAutomata()
@@ -169,6 +181,11 @@ dpda1.graficarAutomata()
 
 # graf1.exportarGrafos(listaAutomatas=listaM)
 
-pda2p_1= AF2P('ej1.msm')
-print('\n To string y graficar: \n')
-print(pda2p_1.toString(graficar=True))
+# pda2p_1= AF2P('ej1.msm')
+# print('\n To string y graficar: \n')
+# print(pda2p_1.toString(graficar=True))
+
+
+
+afdSimp = AFD('ej4_simplificar_.dfa')
+afdSimp.toString(graficar=True)
