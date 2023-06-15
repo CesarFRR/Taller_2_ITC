@@ -331,9 +331,9 @@ class AFPD:
         graficar.mostrarGrafo(self)
     
 
-pila1= AFPD('ej1.dpda')
-#print(pila1.toString())
-cadena1= 'aa'
-# print('procesando ', cadena1, '--> ',pila1.procesarCadena(cadena1))
-# print('procesando ', 'aaabbbb', '--> ',pila1.procesarCadenaConDetalles('aaabbbb'))
-pila1.procesarListaCadenas(['aabb', 'aab', 'aaabcbb', 'bb', 'aaaa'], 'intento1', True)
+# pila1= AFPD('ej1.dpda')
+# #print(pila1.toString())
+# cadena1= 'aa'
+# # print('procesando ', cadena1, '--> ',pila1.procesarCadena(cadena1))
+# # print('procesando ', 'aaabbbb', '--> ',pila1.procesarCadenaConDetalles('aaabbbb'))
+# pila1.procesarListaCadenas(['aabb', 'aab', 'aaabcbb', 'bb', 'aaaa'], 'intento1', True)

@@ -40,10 +40,14 @@ class Alfabeto:
     def generarListaSimbolos(self, min, max):
         """Dado un conjunto de entradas, por ejemplo: a, b-c, h-z
         Genera todo el conjunto de simbolos de cada rango establecido usando como base la numeración del codigo ASCII"""
-        if(ord(max) - ord(min)==1):
+        ordMax = ord(max)
+        ordMin= ord(min)
+        if ordMax < ordMin:
+            ordMin, ordMax = ordMax, ordMin #SWAP
+        if(ordMax - ordMin==1):
             self.simbolos=[min, max]
         else:
-            for i in range(ord(min), ord(max)+1):
+            for i in range(ordMin, ordMax+1):
                 self.simbolos.append(chr(i))
 
     def generarCadenaAleatoria(self, n: int):
