@@ -1,3 +1,6 @@
+from Alfabeto import Alfabeto
+import re
+
 class AFPN:
     """
     # Clase AFPN
@@ -11,23 +14,102 @@ class AFPN:
     Sigma =None
     PSigma = None
     delta = None
-    def __init__(self, estados, estadoInicial, estadosAceptacion, alfabetoCinta, alfabetoPila, delta):
+    extension = 'pda'
+    etiquetas=['#!pda', '#states', '#initial', '#accepting','#tapeAlphabet', '#stackAlphabet',  '#transitions']
+    instanciaVacia=False
 
-        self.Q = estados
-        self.q0 = estadoInicial
-        self.F = estadosAceptacion
-        self.Sigma = alfabetoCinta
-        self.PSigma = alfabetoPila
-        self.delta = delta
+    def __init__(self, *args):
+        if (len(args) == 1 and isinstance(args[0], str)):  # Inicializar por archivo txt
+            if (not args[0].endswith("." + self.extension)):raise ValueError("El archivo proporcioando no es de formato ", self.extension)
+            #try:
+            afc = {}
+            key = ''
+            with open(f'./archivosEntrada/{args[0]}', 'r', newline='', encoding='utf-8') as file:
+                file = file.read().replace('\r\n', '\n').replace('\r', '\n')  # problema de saltos de linea solucionados
+                string= f'''{file}'''
+                dictReader={}
+                afc={}
+                for i in string.strip().split('\n'):
+                    if i in self.etiquetas[1:]:
+                        key = i
+                    elif i != '' or not i.isspace():
+                        if(key!='#transitions' and Alfabeto.validate_regex(i,r"^[^#;\n]+$")): # regex para que los estados no contengan ";", "#" ni \n
+                            afc.setdefault(key, []).append(i)
+                        elif key== '#transitions': # AFPD: no contiene transiciones lambda
+                            trans=re.split(r"[:>;]", i)
+                            if(len(trans)<5): raise ValueError("transicion invalida: ", i) # "; " q no puede tener varias salidas con un simbolo
+                            estado, simbolo, pop = trans[0], trans[1], trans[2]
+                            estadoDestino = []
+                            push = []
+                            for j in range(len(trans[3:])):
+                                if j%2 == 0:
+                                    estadoDestino.append(trans[j+3]) 
+                                else:
+                                    push.append(trans[j+3])
+                            
+                            #print('trans: ', trans)
+                            #===================================================================#
+                            valor=dictReader.get(estado)
+                            #print("i: ", i, " key: ", key, " trans", trans, " valor: ", valor)
+                            if(valor==None): #No existe el estado? crearlo y agregar { simbolo:deltaResultado }
+                                dictReader[estado]={(simbolo, pop):{(i,j) for i,j in zip(estadoDestino, push)}}
+                            else:
+                                if(dictReader[estado].get(simbolo)==None):
+                                    dictReader[estado][(simbolo, pop)]={(i,j) for i,j in zip(estadoDestino, push)} 
+                                else:
+                                    dictReader[estado][(simbolo, pop)].add((i,j) for i,j in zip(estadoDestino, push))
+                
+                self.Sigma = Alfabeto(afc['#tapeAlphabet'])
+                self.PSigma= Alfabeto(afc['#stackAlphabet'])
+                self.Q = set(afc['#states'])
+                self.q0 = afc['#initial'][0]
+                self.F = set(afc['#accepting'])
+                self.delta = dictReader
+                #print('delta: ', self.delta)
+                self.nombreArchivo=((args[0]).split('.'+self.extension))[0]
+            # except Exception as e:
+            #     print("Error en la lectura y procesamiento del archivo: ", e)
+        elif (len(args) == 6):  # Inicializar por los 6 parametros: alfabeto,alfabetoPila estados, estadoInicial, estadosAceptacion, delta
+            self.Q, self.q0, self.F,self.Sigma, self.PSigma, self.delta = args
+            self.Q=set(self.Q)
 
 
-    def modificarPila(self, pila, operacion, parametro):
+    def modificarPila(self, pila: list, operacion: str, parametro: str):
         """Para ejecutar los cambios en la pila realizados por las transiciones, incluyendo los básicos así como la inserción/reemplazamiento de cadenas en el tope de la pila vistos en clase."""
+        """Para ejecutar los cambios en la pila realizados por las transiciones, incluyendo los básicos así como la inserción/reemplazamiento de cadenas en el tope de la pila vistos en clase."""
+        simplePar=parametro
+        simplePila= ''.join(pila)
+        parametro=list(parametro)
+        if operacion == 'push':
+            for simb in parametro:
+                if(simb!= '$'):
+                    pila.append(simb)
+        elif operacion == 'pop':
+            for simb in parametro:
+                if(simb!= '$'):
+                    if(len(pila)==0):
+                        return False
+                    elif(simplePila.count(simplePar)==1 and simplePila.endswith(simplePar)):
+                        # Este caso es muy extraño que suceda pero puede suceder:
+                        # Si la A (Él parametro) está inicialmente colocada en el fondo de la pila,
+                        # entonces la pila se vacía y la unidad de control queda 
+                        # escaneando el fondo vacío.
+                        pila=[]
+                    else:
+                        pila.pop()
+        elif operacion == 'swap':
+            for simb in parametro:
+                pila.pop()
+                pila.append(simb)
+                    
+        return True
         pass
         
     def procesarCadena(self, cadena):
         """ procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. """
-                    
+        
+
+        
         return True
     def procesarCadenaConDetalles(self, cadena):
         """realiza  lo  mismo  que  el  método  anterior aparte  imprime  losdetalles  del  procesamiento  con  el  formato  que se  indica  en  el  archivo AFPD.pdf."""
@@ -44,10 +126,33 @@ class AFPN:
         5. número de procesamientos de rechazo 
         6. “yes”o “no”dependiendo de si la cadena es aceptada o no."""
         pass
+
     def hallarProductoCartesianoConAFD(afd):
         """: debe calcular y retornar el producto cartesiano con un AFD dado como parámetro."""
         pass
-    def toString(self):
+
+    def toString(self, graficar:bool = False):
         """Representar  el  AFPNcon  el  formato  de  los  archivos  de  entrada  de  AFPN (AFPN.pdf) de manera que se pueda imprimir fácilmente."""
-        pass
+        if self.instanciaVacia: return 'Instancia AFD vacía, no se le asigno un archivo o argumentos'
+        simb=''
+        out=self.etiquetas[0] + '\n' + self.etiquetas[1] + '\n'+ '\n'.join(sorted(list(self.Q)))+ '\n'+self.etiquetas[2]+'\n'+self.q0+'\n'+self.etiquetas[3] + '\n'.join(sorted(list(self.F)))+  '\n'+self.etiquetas[4]+'\n'+self.Sigma.toStringEntrada()+ '\n'+ self.etiquetas[5]+ '\n'+ self.PSigma.toStringEntrada()+'\n'+self.etiquetas[6]
+        deltaLinea=''
+        for q in self.delta:
+            for simb in self.delta[q]:
+                deltaSet= list(self.delta[q][simb])
+                deltaLinea = f'{q}:{simb[0]}:{simb[1]}>'
+                for i in deltaSet:
+                    deltaLinea+= f'{i[0]}:{i[1]};'
+                deltaLinea = deltaLinea.rstrip(deltaLinea[-1])
+                out+='\n'+deltaLinea
+                #print ('deltaLinea: ',deltaLinea)
+        if graficar:
+            self.gra
+        return out
     
+        pass
+
+#----------------------------------------------------------------
+
+pda1 = AFPN('ej1.pda')
+print(pda1.toString())
