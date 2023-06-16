@@ -1,136 +1,93 @@
 from AFD import AFD
 
-def minimizar_dfa(delta, estados_finales):
-    """
-    Minimiza un DFA dado utilizando el algoritmo de minimización de estados.
 
-    Args:
-        delta (dict): Delta del DFA representado como un diccionario.
-        estados_finales (set): Conjunto de estados finales del DFA.
+def simplificar(afd: AFD):
+    delta = afd.delta
+    F= afd.F
+    estados= sorted(list(afd.Q))
+    n = len(estados)  # Tamaño de la matriz
+    matriz = [['E'] * n for _ in range(n)]  # Inicializar matriz con 'E'
 
-    Returns:
-        dict: DFA minimizado representado como un diccionario.
+    # Paso 1: Crear los pares de estados involucrados en el DFA dado
+    
 
-    """
-    # Manipulacion de entrada, convertir conjuntos a strings
-    new_delta ={}
-    for estado in delta:
-        new_delta[estado] = {}
-    for simbolo in delta[estado]:
-        new_delta[estado][simbolo] = delta[estado][simbolo].pop()
-    # Paso 1: Crear pares de todos los estados involucrados
-    delta = new_delta
-    pares = []
-    for estado1 in delta:
-        for estado2 in delta:
-            if estado1 != estado2:
-                pares.append((estado1, estado2))
+    # Paso 2: Marcar los pares (Qa, Qb) donde Qa está en F y Qb no está en F
+    for i in range(n):
+        for j in range(n):
+            if (estados[i] in F) != (estados[j] in F):
+                matriz[i][j] = '1'
+                matriz[j][i] = '1'
+    # print(estados, type(estados))
+    # for i in matriz:
+    #     print(f'[ {"  ,  ".join(i)} ]')
 
-    marcados = set()  # Conjunto de pares marcados
+    # Paso 3: Marcar los pares (Qa, Qb) que cumplen la condición de transición marcada
+    marcados = set()
+    ciclo = 2
 
-    # Paso 2: Marcar pares donde uno es final y el otro no es final
-    for par in pares:
-        estado1, estado2 = par
-        if (estado1 in estados_finales and estado2 not in estados_finales) or (estado2 in estados_finales and estado1 not in estados_finales):
-            marcados.add(par)
+    while True:
+        nuevos_marcados = set()
 
-    cambios = True
+        for i in range(n):
+            for j in range(n):
+                if matriz[i][j] == 'E':
+                    qa = estados[i]
+                    qb = estados[j]
+                    marcado = None
+                    for simb in afd.Sigma.simbolos:
+                        transQa= delta.get(qa, None)
+                        transQb = delta.get(qb, None)
+                        if(not transQa) or (not transQb): # Cualquier estado o cualquier simbolo que...
+                            marcado = False
+                            break
+                        transQa = transQa.get(simb, None)
+                        transQb = transQb.get(simb, None)
+                        if(not transQa) or (not transQb): # ...no exista, significa que esto conduce a un estado de no aceptación,
+                            # por lo que el caso (qa, qb) de ese instante se descarta inmediatamente
+                            marcado=False
+                            break
+                        if(transQa== transQb): # Se descarta tambien si el par es igual, ej: (q3,q3), esto no se usa en la matriz
+                            marcado=False
+                            break
+                        indexQa= estados.index(transQa.pop())
+                        indexQb= estados.index(transQb.pop())
+                        if (matriz[indexQa][indexQb] !='E'): # Con comparar uno de los dos sectores de un q1,q2 de la matriz basta
+                            cycle= str(ciclo)
+                            matriz[i][j] = cycle
+                            matriz[j][i] = cycle
+                            marcado=True
+                            break
 
-    # Paso 3: Marcar pares transitivamente
-    while cambios:
-        cambios = False
-        for par in pares:
-            estado1, estado2 = par
+                    if marcado and (qa, qb) not in nuevos_marcados and (qb,qa) not in nuevos_marcados:
+                        nuevos_marcados.add((qa, qb)) # se agrega a los nuevos (i,j) no se agrega (j,i) por redundancia
 
-            for simbolo in delta[estado1]:
-                if simbolo in delta[estado2]:
-                    transicion1 = delta[estado1][simbolo]
-                    transicion2 = delta[estado2][simbolo]
-                    nuevo_par = (transicion1, transicion2)
+        if len(nuevos_marcados) == 0:
+            break
 
-                    if nuevo_par in marcados:
-                        if par not in marcados:
-                            marcados.add(par)
-                            cambios = True
+        marcados.update(nuevos_marcados)
+        ciclo += 1
 
-    # Paso 4: Construir el DFA minimizado
-    dfa_minimizado = {}
+    return matriz, marcados
 
-    for par in pares:
-        if par not in marcados:
-            estado1, estado2 = par
-            nuevo_estado = f'{estado1},{estado2}'
-            dfa_minimizado[nuevo_estado] = {}
-            for simbolo in delta[estado1]:
-                if simbolo in delta[estado2]:
-                    dfa_minimizado[nuevo_estado][simbolo] = f'{delta[estado1].get(simbolo, "")},{delta[estado2].get(simbolo, "")}'
-                else:
-                    dfa_minimizado[nuevo_estado][simbolo] = ""
-    for x in dfa_minimizado:
-        print(x)
-    return dfa_minimizado
-def imprimir_tabla(tabla):
-    estados = sorted(list(set([estado for estado_pair in tabla for estado in estado_pair])))
-    print('estados: \n', estados)
-    # Imprimir encabezado de la tabla
-    header = ' | '.join(estados)
-    print(f'  | {header} ')
-
-    # Imprimir separador de encabezado y contenido
-    separator = '-' * (len(header) + 4)
-    print(f'--|{separator}')
-
-    # Imprimir contenido de la tabla
-    for estado1 in estados:
-        row = [estado1]
-        for estado2 in estados:
-            pair = (estado1, estado2)
-            marcado = tabla.get(pair, 'nada')
-            row.append(marcado)
-        row_str = ' | '.join(row)
-        print(row_str)
+def imprimir_matriz_adyacencia_triangular(matriz):
+    n = len(matriz)  # Tamaño de la matriz
+    #print('q0')
+    #estados= ['q0','q1', 'q2', 'q3']
+    #print(estados[0], end='')
+    for i in range(n):
+        
+        for j in range(n):  # Solo imprime elementos hasta la diagonal principal
+            #print('indexs: ', i,j)
+            print(matriz[i][j], end=" ")
+        #print(estados[i], end='')
+        print()  # Salto de línea después de cada fila
 
 
-def imprimir_tabla2(tabla, afd):
-    if tabla is None:
-        print("La tabla es nula.")
-        return
-    print('keys de tabla: \n', tabla.keys())
-    print('key/value de la tabla:\n')
-    for clave, valor in tabla.items():
-        print(clave,valor)
-    estados = sorted(list(set([estado for estado_pair in tabla.keys() for estado in estado_pair.split(",")])))
-    print('estados de imprimir2: \n', estados)
-    # Imprimir encabezados de columnas
-    print("| Estado  |  ", end="")
-    simbolos = sorted(list(afdSimp.delta[estados[0]].keys()))
-    for simbolo in simbolos:
-        print(f"  {simbolo}  |", end="")
-    print()
 
-    # Imprimir separador de encabezados
-    print("+---------", end="")
-    for _ in simbolos:
-        print("+-------", end="")
-    print("+")
-
-    # Imprimir filas de la tabla
-    for estado in estados:
-        print(f"|  {estado}   |", end="")
-        for simbolo in simbolos:
-            transicion = tabla[estado].get(simbolo, "")
-            print(f"  {transicion}   |", end="")
-        print()
-
-    # Imprimir separador de filas
-    print("+---------", end="")
-    for _ in simbolos:
-        print("+-------", end="")
-    print("+")
-
-afdSimp = AFD('ej4_simplificar_.dfa')
-afdSimp.toString(graficar=True)
-
-tabla = minimizar_dfa(afdSimp.delta, afdSimp.F)
-
-imprimir_tabla2(tabla=tabla, afd=afdSimp)
+afd1 = AFD('ej4_simplificar_.dfa')
+matriz, marcados = simplificar(afd=afd1)
+imprimir_matriz_adyacencia_triangular(matriz=matriz)
+# Imprimir la matriz
+# for i in matriz:
+    # print(i)
+#imprimir_matriz_adyacencia_triangular(matriz=matriz)
