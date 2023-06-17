@@ -3,6 +3,7 @@ from Alfabeto import Alfabeto
 from Graph import graficarAutomata
 from prettytable import PrettyTable, ALL
 import re
+from Tree import nonBinaryTree
 #from visual_automata.fa.nfa import VisualNFA
 
 class AFN:
@@ -27,6 +28,7 @@ class AFN:
     rechazadas = []
     abortadas = []
     deltaParaGraficar={}
+    rutas = []
     def __init__(self, *args):
         """Este único constructor utiliza artificios de python para simular sobrecarga de constructores ya que python no tiene esa característica, como resultado se puede instanciar una clase AFN de las siguientes maneras:
 
@@ -221,73 +223,101 @@ class AFN:
             print(tabla)
 
         return  afd1 #Retornar AFD equivalente
-
-    def procesamiento(self,cadena: str, actual, detalles, proc,  out=''):
-        """Función encargada del procesamiento teniendo en cuenta todos los caminos posibles cuando se está en (  q  ) estado y se va a consumir 'a' simbolo, se tendrán en cuenta las {a + lambda} transiciones"""
-        final = False
-        breaked = False
-
-        for index, char in enumerate(cadena):
-            if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-                out+= f'[{actual},{cadena[index:]}]-> Procesamiento abortado'
-                if out not in self.abortadas:
-                    self.abortadas.append(out)
-                break
-            if(actual in self.Q):
-                if self.delta.get(actual) is not None and self.delta.get(actual).get(char) is not None: 
-                    if len(list(self.delta[actual][char])) > 1:
-                        out+= f'[{actual},{cadena[index:]}]-> '
-                        for i in sorted(self.delta[actual][char]):
-                            #print(sorted(self.delta[actual][char]))
-                            actual = i
-                            procesamiento = self.procesamiento(cadena[index+1:],i,detalles, proc,  out)
-                            if proc:
-                                if procesamiento:
-                                    return True
-                    elif len(list(self.delta[actual][char])) == 1:
-                        out+= f'[{actual},{cadena[index:]}]-> '
-                        actual = list(self.delta[actual][char])[0]
+    
+    def recorrerCadena(self, cadena, tree):
+        for index, simbolo in enumerate(cadena):
+            if self.delta.get(tree.val) is not None:
+                if self.delta[tree.val].get(simbolo) is not None:
+                    for i in sorted(self.delta[tree.val][simbolo]):
+                        tree.insert(i)
+                    for child in tree.children:
+                        self.recorrerCadena(cadena[index+1:], child)
+                    return 0
+                    
                 else:
-                    out+= f'[{actual},{cadena[index:]}]-> '
-                    breaked = True
                     break
-            if index == len(cadena)-1:
-                final = True
+            else:
+                break
 
-        if actual in self.F and final: #verificar si el estado actual es de aceptacion
-            out+= f'[{actual},]-> '
-            out+= 'Aceptacion'  
-            if out not in self.aceptacion:
-                self.aceptacion.append(out)
-            if proc:
-                if detalles:
-                    print(out)
-                return True
+    def procesamiento(self, cadena, rutas = None): #cadena: str, actual, detalles, proc,  out=''
+        """Función encargada del procesamiento teniendo en cuenta todos los caminos posibles cuando se está en (  q  ) estado y se va a consumir 'a' simbolo, se tendrán en cuenta las {a + lambda} transiciones"""
+        self.rutas = []
+        self.aceptacion = []
+        self.abortadas = []
+        self.rechazadas = []
+        
+        if rutas is None:
+            rutas = nonBinaryTree(self.q0)
 
-        elif actual not in self.F:
-            out+= f'[{actual},]-> '
-            out+= 'No aceptacion'
-            if out not in self.rechazadas:
-                self.rechazadas.append(out)
-            if proc:
-                return False
+        self.recorrerCadena(cadena, rutas)#crear todos los procesamientos
+        self.rutas = rutas.recorrer(rutas) #recorrer los procesamientos y almacenarlos
+        for procesamiento in self.rutas:    #Calsificar los procesamientos
+            if type(procesamiento) == list:
+                
+                if len(procesamiento) == len(cadena)+1:
+                    if procesamiento[-1] in self.F:
+                        out = ''
+                        for estado, (index, simbolo) in zip(procesamiento, enumerate(cadena)):
+                            out += f'[{estado},{cadena[index:]}]->'
+                        out+='Aceptacion'
+                        if out not in self.aceptacion:
+                            self.aceptacion.append(out)
+                    else:
+                        out = ''
+                        for estado, (index, simbolo) in zip(procesamiento, enumerate(cadena)):
+                            out += f'[{estado},{cadena[index:]}]->'
+                        out+='No aceptacion'
+                        if out not in self.rechazadas:
+                            self.rechazadas.append(out)
+                else:
+                    out = ''
+                    for estado, index in zip(procesamiento, range(len(procesamiento))):
+                        out += f'[{estado},{cadena[index:]}]->'
+                    out+='Procesamiento Abortado'
+                    if out not in self.abortadas:
+                        self.abortadas.append(out)
+            elif type(procesamiento) == str:
+                if len(procesamiento) == len(cadena)+1:
+                    if procesamiento[-1] in self.F:
+                        out = ''
+                        out += f'[{procesamiento},{cadena}]->'
+                        out+='Aceptacion'
+                        if out not in self.aceptacion:
+                            self.aceptacion.append(out)
+                    else:
+                        out = ''
+                        out += f'[{procesamiento},{cadena}]->'
+                        out+='No aceptacion'
+                        if out not in self.rechazadas:
+                            self.rechazadas.append(out)
+                else:
+                    out = ''
+                    out += f'[{procesamiento},{cadena}]->'
+                    out+='Procesamiento Abortado'
+                    if out not in self.abortadas:
+                        self.abortadas.append(out)
 
-        elif breaked is True:
-            out+= 'Procesamiento abortado'
-            if out not in self.abortadas:
-                self.abortadas.append(out)
-            if proc:
-                return False
-        if proc:
-            return False
+        rutas.children = []
+
+        if len(self.aceptacion) > 0:
+            return self.aceptacion[0]
+        else:
+            return None
         
     def procesarCadena(self, cadena):
         """procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata"""
-        return self.procesamiento(cadena, self.q0, False, True)
+        aceptada = self.procesamiento(cadena)
+        if aceptada is not None:
+            return True
+        return False
 
     def procesarCadenaConDetalles(self, cadena):
         """realiza lo mismo que el método `procesarCadena()` pero aparte imprime los estados que va tomando al procesar cada símbolo de uno de los procesamientos que lleva a la cadena a ser aceptada. """
-        return self.procesamiento(cadena, self.q0, True, True)
+        aceptada = self.procesamiento(cadena)
+        if aceptada is not None:
+            print(aceptada)
+            return True
+        return False
 
     def computarTodosLosProcesamientos(self, cadena, nombreArchivo):
         """Debe imprimir cada uno de los posibles procesamientos de la cadena indicando de qué estado a qué estado pasa al procesar cada símbolo e indicando si al final de cada procesamiento se llega a aceptación o rechazo. Debe llenar una lista de todos procesamientos de aceptación, una lista de todos los procesamientos abortados y una lista de todos los procesamientos de rechazo. Debe guardar los contenidos de estas listas cada una en un archivo(cuyos nombres son nombreArchivoAceptadas.txt, nombreArchivoRechazadas.txt y nombreArchivoAbortadas.txt) y además imprimirlas en pantalla. Se debe retornar el número de procesamientos realizados."""
@@ -295,23 +325,23 @@ class AFN:
         self.aceptacion = []
         self.rechazadas = []
         self.abortadas = []
-        self.procesamiento(cadena,  self.q0, False, '')
+        self.procesamiento(cadena)
 
         with open(f'./archivosSalida/{nombreArchivo}Abortadas.txt', 'a') as abortadas:
             abortadas.truncate(0)
-            for i in self.abortadas:
-                abortadas.write(f'{i}\n')
-                print(f'{i}')
+            for procesamiento in self.abortadas:
+                abortadas.write(f'{procesamiento}\n')
+                print(f'{procesamiento}')
         with open(f'./archivosSalida/{nombreArchivo}Rechazadas.txt', 'a') as rechazadas:
             rechazadas.truncate(0)
-            for i in self.rechazadas:
-                rechazadas.write(f'{i}\n')
-                print(f'{i}')
+            for procesamiento in self.rechazadas:
+                rechazadas.write(f'{procesamiento}\n')
+                print(f'{procesamiento}')
         with open(f'./archivosSalida/{nombreArchivo}Aceptadas.txt', 'a') as aceptadas:
             aceptadas.truncate(0)
-            for i in self.aceptacion:
-                aceptadas.write(f'{i}\n')
-                print(f'{i}')
+            for procesamiento in self.aceptacion:
+                aceptadas.write(f'{procesamiento}\n')
+                print(f'{procesamiento}')
 
         return len(self.aceptacion+self.rechazadas+self.abortadas)
 
@@ -324,21 +354,16 @@ class AFN:
         4. número de procesamientos de rechazo
         5. sí o no dependiendo de si la cadena es aceptada o no."""
         try:
-            with open(f'./archivosSalida/{nombreArchivo}', 'r+') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
                 archivo.truncate(0)
         except:
             nombreArchivo= 'procesarListaCadenas_AFN'
-            with open(f'./archivosSalida/{nombreArchivo}', 'r+') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
                 archivo.truncate(0)
 
-        with open(f'./archivosSalida/{nombreArchivo}', 'a') as archivo:
+        with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
             for cadena in listaCadenas:
-                self.aceptacion = []
-                self.rechazadas = []
-                self.abortadas = []
-                actual = self.q0
-                self.procesamiento(cadena, actual, True, True)
-
+                self.procesamiento(cadena)
                 archivo.write(f'{cadena}\n')
                 try:
                     archivo.write(f'{self.aceptacion[0]}\n')
@@ -386,10 +411,13 @@ class AFN:
         """Grafica el automata usando librerias de matplotlib y NetworkX"""
         graficar = graficarAutomata()
         graficar.mostrarGrafo(self)
+
 #================================================
 
-# print('Ejecutando:...\n')
-# nfa1= AFN("ej1.nfa")
+#print('Ejecutando:...\n')
+#nfa1= AFN("ej2.nfa")
+#print(nfa1.computarTodosLosProcesamientos('bbbabababac','AFNprocesamientos'))
+#print(nfa1.procesarListaCadenas(['aab','bbcba', 'babbbcbb', 'bbccbab'], 'ProcesarLista', False))
 # # nfa1.graficarAFN()
 # dfa1 = nfa1.AFNtoAFD(nfa1)
 # nfe1= AFN_Lambda('ej1.nfe').AFN_LambdaToAFD()

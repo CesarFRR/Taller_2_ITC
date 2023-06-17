@@ -1,0 +1,48 @@
+aab
+[s0,aab]->Procesamiento Abortado
+Numero de procesamientos
+1
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+1
+Numero de procesamientos rechazados
+0
+No
+
+bbcba
+[s0,bbcba]->[s1,bcba]->[s3,cba]->[s1,ba]->[s2,a]->Aceptacion
+Numero de procesamientos
+6
+Numero de procesamientos de aceptacion
+1
+Numero de procesamientos abortados
+4
+Numero de procesamientos rechazados
+1
+Si
+
+babbbcbb
+[s0,babbbcbb]->[s1,abbbcbb]->[s0,bbbcbb]->[s0,bbcbb]->[s1,bcbb]->[s3,cbb]->[s1,bb]->[s3,b]->Aceptacion
+Numero de procesamientos
+10
+Numero de procesamientos de aceptacion
+1
+Numero de procesamientos abortados
+7
+Numero de procesamientos rechazados
+2
+Si
+
+bbccbab
+[s0,bbccbab]->[s0,bccbab]->[s0,ccbab]->Procesamiento Abortado
+Numero de procesamientos
+4
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+4
+Numero de procesamientos rechazados
+0
+No
+
