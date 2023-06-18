@@ -1,5 +1,6 @@
 from Alfabeto import Alfabeto
 import re
+from Tree import nonBinaryTree, nonBinaryTreePila
 
 class AFPN:
     """
@@ -17,6 +18,12 @@ class AFPN:
     extension = 'pda'
     etiquetas=['#!pda', '#states', '#initial', '#accepting','#tapeAlphabet', '#stackAlphabet',  '#transitions']
     instanciaVacia=False
+    nonPila = {}
+    modPila = {}
+    pilas = []
+    aceptacion = []
+    rechazadas = []
+    abortadas = []
 
     def __init__(self, *args):
         if (len(args) == 1 and isinstance(args[0], str)):  # Inicializar por archivo txt
@@ -53,11 +60,15 @@ class AFPN:
                             #print("i: ", i, " key: ", key, " trans", trans, " valor: ", valor)
                             if(valor==None): #No existe el estado? crearlo y agregar { simbolo:deltaResultado }
                                 dictReader[estado]={(simbolo, pop):{(i,j) for i,j in zip(estadoDestino, push)}}
+                                self.nonPila[estado]= {simbolo: {i for i in estadoDestino}}
                             else:
                                 if(dictReader[estado].get(simbolo)==None):
-                                    dictReader[estado][(simbolo, pop)]={(i,j) for i,j in zip(estadoDestino, push)} 
+                                    dictReader[estado][(simbolo, pop)]={(i,j) for i,j in zip(estadoDestino, push)}
+                                    self.nonPila[estado][simbolo] = {i for i in estadoDestino}
                                 else:
                                     dictReader[estado][(simbolo, pop)].add((i,j) for i,j in zip(estadoDestino, push))
+                                    self.nonPila[estado][simbolo].add(i for i in estadoDestino)
+                
                 
                 self.Sigma = Alfabeto(afc['#tapeAlphabet'])
                 self.PSigma= Alfabeto(afc['#stackAlphabet'])
@@ -67,6 +78,7 @@ class AFPN:
                 self.delta = dictReader
                 #print('delta: ', self.delta)
                 self.nombreArchivo=((args[0]).split('.'+self.extension))[0]
+                
             # except Exception as e:
             #     print("Error en la lectura y procesamiento del archivo: ", e)
         elif (len(args) == 6):  # Inicializar por los 6 parametros: alfabeto,alfabetoPila estados, estadoInicial, estadosAceptacion, delta
@@ -103,14 +115,129 @@ class AFPN:
                 pila.append(simb)
                     
         return True
-        pass
+    
+    def recorrerCadena(self,tree):
+        cadena = tree.val[2]
+        for index, simbolo in enumerate(cadena):
+            inserted = False
+            if self.delta.get(tree.val[0]) is not None:
+                for char, parametro1 in sorted(self.delta[tree.val[0]]):
+                    if char == simbolo:
+                        for result, parametro2 in sorted(self.delta[tree.val[0]][(char, parametro1)]):
+                            pila = tree.val[1]
+                            if len(pila) > 0:
+                                if parametro1 != '$' and parametro2 != '$':
+                                    if parametro1 == pila[-1]:
+                                        pila[-1] = parametro2
+                                        tree.insert(result, pila, cadena[index+1:])
+                                        inserted = True
+                                elif parametro1 != '$' and parametro2 =='$':
+                                    if parametro1 == pila[-1]:
+                                        pila = pila[:-1]
+                                        tree.insert(result, pila, cadena[index+1:])
+                                        inserted = True
+                                    else:break
+                                elif parametro1 == '$' and parametro2 != '$':
+                                    
+                                    pila+=parametro2
+                                    tree.insert(result, pila, cadena[index+1:])
+                                    inserted = True
+                                elif parametro1 == '$' and parametro2 == '$':
+                                    tree.insert(result, pila, cadena[index+1:])
+                                    inserted = True
+                            else:
+                                if parametro1 == '$' and parametro2 != '$':
+                                    pila+=parametro2
+                                    tree.insert(result, pila, cadena[index+1:])
+                                    inserted = True
+                                elif parametro1 == '$' and parametro2 == '$':
+                                    tree.insert(result, pila, cadena[index+1:])
+                                    inserted = True
+                        if inserted == True:    
+                            for child in tree.children:
+                                self.recorrerCadena(child)
+                    elif char == '$':
+                        for result, parametro2 in sorted(self.delta[tree.val[0]][(char, parametro1)]):
+                            pila = tree.val[1]
+                            if len(pila) > 0:
+                                if parametro1 != '$' and parametro2 != '$':
+                                    if parametro1 == pila[-1]:
+                                        pila[-1] = parametro2
+                                        tree.insert(result, pila, cadena[index:])
+                                        inserted = True
+                                elif parametro1 != '$' and parametro2 =='$':
+                                    if parametro1 == pila[-1]:
+                                        
+                                        pila = pila[:-1]
+                                        tree.insert(result, pila, cadena[index:])
+                                        inserted = True
+                                    
+                                elif parametro1 == '$' and parametro2 != '$':
+                                    pila+=parametro2
+                                    tree.insert(result, pila, cadena[index:])
+                                    inserted = True
+                                elif parametro1 == '$' and parametro2 == '$':
+                                    tree.insert(result, pila, cadena[index:])
+                                    inserted = True
+                            else:
+                                if parametro1 == '$' and parametro2 != '$':
+                                    pila+=parametro2
+                                    tree.insert(result, pila, cadena[index:])
+                                    inserted = True
+                                elif parametro1 == '$' and parametro2 == '$':
+                                    tree.insert(result, pila, cadena[index:])
+                                    inserted = True
+
+                        if inserted == True:    
+                            for child in tree.children:
+                                self.recorrerCadena(child)
+                    
+                else:
+                    break
+            else:
+                break
+            
+
+    def procesamiento(self,cadena):
+        pila = ''
+        tree = nonBinaryTreePila(self.q0, pila, cadena)
+        self.rutas = []
         
-    def procesarCadena(self, cadena):
-        """ procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. """
+        pila = self.recorrerCadena(tree)
         
 
-        
-        return True
+        self.rutas = tree.recorrer(tree)
+        for ruta in self.rutas:
+            if ruta[-1][2] == '':
+                if ruta[-1][1] == '':
+                    if ruta[-1][0] in self.F:
+                        if ruta not in self.aceptacion:
+                            self.aceptacion.append(ruta)
+                    else:
+                        if ruta not in self.rechazadas:
+                            self.rechazadas.append(ruta)
+                else:
+                    if ruta not in self.rechazadas:
+                        self.rechazadas.append(ruta)
+            else:
+                if ruta not in self.abortadas:
+                    self.abortadas.append(ruta)
+
+        if len(self.aceptacion) > 0:
+            return self.aceptacion[0]
+        return None
+        # print('aceptacion \n',self.aceptacion) 
+        # print('rechazadas \n',self.rechazadas)           
+        # print('abortadas \n',self.abortadas)           
+
+        #print(tree)
+
+    def procesarCadena(self, cadena):
+        """ procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. """
+        aceptada = self.procesamiento(cadena)
+        if aceptada is not None:
+            return True
+        return False
     def procesarCadenaConDetalles(self, cadena):
         """realiza  lo  mismo  que  el  método  anterior aparte  imprime  losdetalles  del  procesamiento  con  el  formato  que se  indica  en  el  archivo AFPD.pdf."""
         return True
@@ -154,5 +281,5 @@ class AFPN:
 
 #----------------------------------------------------------------
 
-pda1 = AFPN('ej1.pda')
-print(pda1.toString())
+pda1 = AFPN('ej2.pda')
+print(pda1.procesarCadena('aaabbbbbbbbbcccccc'))
