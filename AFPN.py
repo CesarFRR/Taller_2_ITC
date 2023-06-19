@@ -1,6 +1,9 @@
 from Alfabeto import Alfabeto
 import re
 from Tree import nonBinaryTree, nonBinaryTreePila
+from itertools import product as productoCartesiano
+from AFD import AFD
+from Graph import graficarAutomata
 
 class AFPN:
     """
@@ -86,34 +89,15 @@ class AFPN:
             self.Q=set(self.Q)
 
 
-    def modificarPila(self, pila: list, operacion: str, parametro: str):
+    def modificarPila(self, pila: str, operacion: str, parametro: str):
         """Para ejecutar los cambios en la pila realizados por las transiciones, incluyendo los básicos así como la inserción/reemplazamiento de cadenas en el tope de la pila vistos en clase."""
-        """Para ejecutar los cambios en la pila realizados por las transiciones, incluyendo los básicos así como la inserción/reemplazamiento de cadenas en el tope de la pila vistos en clase."""
-        simplePar=parametro
-        simplePila= ''.join(pila)
-        parametro=list(parametro)
+        if operacion == 'pop':
+            pila = pila[:-1]
         if operacion == 'push':
-            for simb in parametro:
-                if(simb!= '$'):
-                    pila.append(simb)
-        elif operacion == 'pop':
-            for simb in parametro:
-                if(simb!= '$'):
-                    if(len(pila)==0):
-                        return False
-                    elif(simplePila.count(simplePar)==1 and simplePila.endswith(simplePar)):
-                        # Este caso es muy extraño que suceda pero puede suceder:
-                        # Si la A (Él parametro) está inicialmente colocada en el fondo de la pila,
-                        # entonces la pila se vacía y la unidad de control queda 
-                        # escaneando el fondo vacío.
-                        pila=[]
-                    else:
-                        pila.pop()
+            pila += parametro
         elif operacion == 'swap':
-            for simb in parametro:
-                pila.pop()
-                pila.append(simb)
-                    
+            pila[-1] == parametro
+
         return True
     
     def recorrerCadena(self,tree):
@@ -128,69 +112,62 @@ class AFPN:
                             if len(pila) > 0:
                                 if parametro1 != '$' and parametro2 != '$':
                                     if parametro1 == pila[-1]:
-                                        pila[-1] = parametro2
+                                        self.modificarPila(pila, 'swap', parametro2)
                                         tree.insert(result, pila, cadena[index+1:])
-                                        inserted = True
+                                        
                                 elif parametro1 != '$' and parametro2 =='$':
                                     if parametro1 == pila[-1]:
-                                        pila = pila[:-1]
+                                        self.modificarPila(pila, 'pop', parametro2)
                                         tree.insert(result, pila, cadena[index+1:])
-                                        inserted = True
+                                        
                                     else:break
                                 elif parametro1 == '$' and parametro2 != '$':
-                                    
-                                    pila+=parametro2
+                                    self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, pila, cadena[index+1:])
-                                    inserted = True
+                                    
                                 elif parametro1 == '$' and parametro2 == '$':
                                     tree.insert(result, pila, cadena[index+1:])
-                                    inserted = True
+                                    
                             else:
                                 if parametro1 == '$' and parametro2 != '$':
-                                    pila+=parametro2
+                                    self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, pila, cadena[index+1:])
-                                    inserted = True
+                                    
                                 elif parametro1 == '$' and parametro2 == '$':
-                                    tree.insert(result, pila, cadena[index+1:])
-                                    inserted = True
-                        if inserted == True:    
-                            for child in tree.children:
-                                self.recorrerCadena(child)
+                                    tree.insert(result, pila, cadena[index+1:])   
+                        for child in tree.children:
+                            self.recorrerCadena(child)
                     elif char == '$':
                         for result, parametro2 in sorted(self.delta[tree.val[0]][(char, parametro1)]):
                             pila = tree.val[1]
                             if len(pila) > 0:
                                 if parametro1 != '$' and parametro2 != '$':
                                     if parametro1 == pila[-1]:
-                                        pila[-1] = parametro2
+                                        self.modificarPila(pila, 'swap', parametro2)
                                         tree.insert(result, pila, cadena[index:])
-                                        inserted = True
+                                        
                                 elif parametro1 != '$' and parametro2 =='$':
                                     if parametro1 == pila[-1]:
-                                        
-                                        pila = pila[:-1]
+                                        self.modificarPila(pila, 'pop', parametro2)
                                         tree.insert(result, pila, cadena[index:])
-                                        inserted = True
-                                    
+                                        
+                                    else:break
                                 elif parametro1 == '$' and parametro2 != '$':
-                                    pila+=parametro2
+                                    self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, pila, cadena[index:])
-                                    inserted = True
+                                    
                                 elif parametro1 == '$' and parametro2 == '$':
                                     tree.insert(result, pila, cadena[index:])
-                                    inserted = True
+                                    
                             else:
                                 if parametro1 == '$' and parametro2 != '$':
-                                    pila+=parametro2
+                                    self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, pila, cadena[index:])
-                                    inserted = True
+                                    
                                 elif parametro1 == '$' and parametro2 == '$':
-                                    tree.insert(result, pila, cadena[index:])
-                                    inserted = True
-
-                        if inserted == True:    
-                            for child in tree.children:
-                                self.recorrerCadena(child)
+                                    tree.insert(result, pila, cadena[index:])   
+                        for child in tree.children:
+                            self.recorrerCadena(child)
                     
                 else:
                     break
@@ -199,6 +176,9 @@ class AFPN:
             
 
     def procesamiento(self,cadena):
+        self.aceptacion = []
+        self.rechazadas = []
+        self.abortadas = []
         pila = ''
         tree = nonBinaryTreePila(self.q0, pila, cadena)
         self.rutas = []
@@ -207,28 +187,49 @@ class AFPN:
         
 
         self.rutas = tree.recorrer(tree)
-        for ruta in self.rutas:
-            if ruta[-1][2] == '':
-                if ruta[-1][1] == '':
-                    if ruta[-1][0] in self.F:
-                        if ruta not in self.aceptacion:
-                            self.aceptacion.append(ruta)
-                    else:
-                        if ruta not in self.rechazadas:
-                            self.rechazadas.append(ruta)
-                else:
-                    if ruta not in self.rechazadas:
-                        self.rechazadas.append(ruta)
-            else:
-                if ruta not in self.abortadas:
-                    self.abortadas.append(ruta)
 
+        for ruta in range(len(self.rutas)):
+            self.rutas[ruta] = list(self.rutas[ruta])
+            for i in range(len(self.rutas[ruta])):
+                self.rutas[ruta][i] = list(self.rutas[ruta][i])
+                for j in range(len(self.rutas[ruta][i])):
+                    if self.rutas[ruta][i][j] == '':
+                        self.rutas[ruta][i][j] = '$'
+
+        for ruta in self.rutas:
+            out=''
+            if ruta[-1][2] == '$':
+                if ruta[-1][1] == '$':
+                    if ruta[-1][0] in self.F:
+                        for procesamiento in ruta:
+                            out += f'{procesamiento}-> '
+                        out+='Aceptacion'
+                        if out not in self.aceptacion:
+                            self.aceptacion.append(out)
+                    else:
+                        for procesamiento in ruta:
+                            out += f'{procesamiento}->'
+                        out+='No aceptacion'
+                        if out not in self.aceptacion:
+                            self.rechazadas.append(out)
+                else:
+                    for procesamiento in ruta:
+                        out += f'{procesamiento}->'
+                    out+='No aceptacion'
+                    if out not in self.rechazadas:
+                        self.rechazadas.append(out)
+            else:
+                for procesamiento in ruta:
+                    out += f'[{procesamiento}]->'
+                out+='Procesamiento abortado'
+                if out not in self.abortadas:
+                    self.abortadas.append(out)
+        # print('aceptacion \n',self.aceptacion)
+        # print('rechazadas \n',self.rechazadas)           
+        # print('abortadas \n',self.abortadas)
         if len(self.aceptacion) > 0:
             return self.aceptacion[0]
         return None
-        # print('aceptacion \n',self.aceptacion) 
-        # print('rechazadas \n',self.rechazadas)           
-        # print('abortadas \n',self.abortadas)           
 
         #print(tree)
 
@@ -238,13 +239,42 @@ class AFPN:
         if aceptada is not None:
             return True
         return False
+    
     def procesarCadenaConDetalles(self, cadena):
         """realiza  lo  mismo  que  el  método  anterior aparte  imprime  losdetalles  del  procesamiento  con  el  formato  que se  indica  en  el  archivo AFPD.pdf."""
-        return True
-    def  computarTodosLosProcesamientos(cadena,  nombreArchivo):  
+        aceptada = self.procesamiento(cadena)
+        if aceptada is not None:
+            print(aceptada)
+            return True
+        return False
+    
+    def  computarTodosLosProcesamientos(self, cadena,  nombreArchivo):  
         """Debe  imprimir  cada  uno de los posibles procesamientos de acuerdo al formato establecido en el archivo AFPN.pdfe indicando si al final de cada procesamiento se llega a aceptación o rechazo. Debe llenar una lista  de  todos  procesamientos  de  aceptación,  una  lista  de  todos  los  procesamientos rechazados.  Debe  guardar  los  contenidos  de  estas  listas  cada  una  en  un  archivo(cuyos nombres  son  nombreArchivoAceptadasAFPN.txtynombreArchivoRechazadasAFPN.txt)  y además imprimirlas en pantalla. Se debe retornar el número de procesamientos realizados."""
-        return 0
-    def procesarListaCadenas(self, listaCadenas,nombreArchivo, imprimirPantalla): 
+        self.aceptacion = []
+        self.rechazadas = []
+        self.abortadas = []
+        self.procesamiento(cadena)
+
+        with open(f'./archivosSalida/{nombreArchivo}Abortadas.txt', 'a') as abortadas:
+            abortadas.truncate(0)
+            for procesamiento in self.abortadas:
+                abortadas.write(f'{procesamiento}\n')
+                print(f'{procesamiento}')
+        with open(f'./archivosSalida/{nombreArchivo}Rechazadas.txt', 'a') as rechazadas:
+            rechazadas.truncate(0)
+            for procesamiento in self.rechazadas:
+                rechazadas.write(f'{procesamiento}\n')
+                print(f'{procesamiento}')
+        with open(f'./archivosSalida/{nombreArchivo}Aceptadas.txt', 'a') as aceptadas:
+            aceptadas.truncate(0)
+            for procesamiento in self.aceptacion:
+                aceptadas.write(f'{procesamiento}\n')
+                print(f'{procesamiento}')
+
+        return len(self.aceptacion+self.rechazadas+self.abortadas)
+    
+    def procesarListaCadenas(self, listaCadenas, nombreArchivo = None, imprimirPantalla:bool = False): 
+
         """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo;  si  este  es  inválido  se  asigna  un  nombre  por  defecto.  Además,todo  esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.Los campos deben estar separados por tabulación y son: 
         1. cadena, 
         2. un procesamientode aceptación (si lo hay, si no unode rechazo), 
@@ -252,11 +282,80 @@ class AFPN:
         4. número de procesamientos de aceptación 
         5. número de procesamientos de rechazo 
         6. “yes”o “no”dependiendo de si la cadena es aceptada o no."""
-        pass
+        try:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
+                archivo.truncate(0)
+        except:
+            nombreArchivo= 'procesarListaCadenas_AFN'
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
+                archivo.truncate(0)
 
-    def hallarProductoCartesianoConAFD(afd):
+        with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
+            for cadena in listaCadenas:
+                self.procesamiento(cadena)
+                archivo.write(f'{cadena}\n')
+                try:
+                    archivo.write(f'{self.aceptacion[0]}\n')
+                except:
+                    try:
+                        archivo.write(f'{self.rechazadas[0]}\n')
+                    except:
+                        archivo.write(f'{self.abortadas[0]}\n')
+                archivo.write(f'Numero de procesamientos\n{len(self.aceptacion+self.rechazadas+self.abortadas)}\n')
+                archivo.write(f'Numero de procesamientos de aceptacion\n{len(self.aceptacion)}\n')
+                archivo.write(f'Numero de procesamientos abortados\n{len(self.abortadas)}\n')
+                archivo.write(f'Numero de procesamientos rechazados\n{len(self.rechazadas)}\n')
+                if len(self.aceptacion)>=1:
+                    archivo.write('Si\n\n')
+                else:
+                    archivo.write('No\n\n')
+
+        if imprimirPantalla:
+            with open(f'./archivosSalida/{nombreArchivo}', 'r') as archivo:
+                for line in archivo:
+                    print(line)
+
+    def hallarProductoCartesianoConAFD(self, afd):
         """: debe calcular y retornar el producto cartesiano con un AFD dado como parámetro."""
-        pass
+        afpnEstados = sorted(self.Q)
+        afdEstados = sorted(afd.Q)
+        q0 = ''
+        aceptacion = set()
+        estados = [(i,j)for i in afpnEstados for j in afdEstados]
+        q = set()
+        transiciones = dict()
+        for q1, q2 in estados:
+            estadoCreado = f'({q1},{q2})'
+            estadoLista = [q1, q2]
+            q.add(estadoCreado)
+            transiciones.update({estadoCreado:{}})
+            if q1 in self.F and q2 in afd.F:
+                aceptacion.add(estadoCreado)
+            if({q1,q2}=={self.q0, afd.q0}):
+                q0 = estadoCreado
+            for simbolo in self.Sigma.simbolos:
+                print('a')
+                trAFD = list(afd.delta[q2][simbolo])[0]
+                if self.delta.get(q1) is not None:
+                    for char, parametro1 in self.delta[q1]:
+                        if char == simbolo:
+                            for result, parametro2 in sorted(self.delta[q1][(char, parametro1)]):
+                                
+                                if transiciones[estadoCreado].get((char, parametro1)) is None:
+                                    transiciones[estadoCreado][(char, parametro1)] = {(f'({result},{trAFD})', parametro2)}
+                                else:
+                                    transiciones[estadoCreado][(char, parametro1)].add((f'({result},{trAFD})', parametro2))
+                        elif char == '$':
+                            for result, parametro2 in sorted(self.delta[q1][(char, parametro1)]):
+                                
+                                if transiciones[estadoCreado].get((char, parametro1)) is None:
+                                    transiciones[estadoCreado][(char, parametro1)] = {(f'({result},{estadoLista[1]})', parametro2)}
+                    
+                                else:
+                                    transiciones[estadoCreado][(char, parametro1)].add((f'({result},{estadoLista[1]})', parametro2))
+                        #     break
+        return AFPN(q, q0, aceptacion, self.Sigma, self.PSigma, transiciones)
+    
 
     def toString(self, graficar:bool = False):
         """Representar  el  AFPNcon  el  formato  de  los  archivos  de  entrada  de  AFPN (AFPN.pdf) de manera que se pueda imprimir fácilmente."""
@@ -274,12 +373,18 @@ class AFPN:
                 out+='\n'+deltaLinea
                 #print ('deltaLinea: ',deltaLinea)
         if graficar:
-            self.gra
+            self.graficarAutomata()
         return out
-    
-        pass
+
 
 #----------------------------------------------------------------
 
-pda1 = AFPN('ej2.pda')
-print(pda1.procesarCadena('aaabbbbbbbbbcccccc'))
+pda1 = AFPN('ej1.pda')
+# print(pda1.delta)
+# dfa = AFD('ej4.dfa')
+# cartesiano = pda1.hallarProductoCartesianoConAFD(dfa)
+# print(cartesiano.toString())
+# print(cartesiano.procesarCadena('0110'))
+# cartesiano.computarTodosLosProcesamientos('0110', 'cartesianoPrueba')
+print(pda1.computarTodosLosProcesamientos('0110', 'AFPN_rechazadas'))
+# pda1.procesarListaCadenas(['aaab','aabbbbcc','aabbc','abc','abbbbbcccc'], 'ListaDeCadenasPila')

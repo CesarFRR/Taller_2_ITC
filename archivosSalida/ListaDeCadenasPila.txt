@@ -1,0 +1,60 @@
+aaab
+['q0', '$', 'aaab']->['q0', 'A', 'aab']->['q0', 'AA', 'ab']->['q0', 'AAA', 'b']->['q1', 'AA', '$']->No aceptacion
+Numero de procesamientos
+1
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+0
+Numero de procesamientos rechazados
+1
+No
+
+aabbbbcc
+['q0', '$', 'aabbbbcc']-> ['q0', 'A', 'abbbbcc']-> ['q0', 'AA', 'bbbbcc']-> ['q1', 'A', 'bbbcc']-> ['q1', '$', 'bbcc']-> ['q2', 'A', 'bcc']-> ['q2', 'AA', 'cc']-> ['q3', 'A', 'c']-> ['q3', '$', '$']-> Aceptacion
+Numero de procesamientos
+2
+Numero de procesamientos de aceptacion
+1
+Numero de procesamientos abortados
+0
+Numero de procesamientos rechazados
+1
+Si
+
+aabbc
+['q0', '$', 'aabbc']->['q0', 'A', 'abbc']->['q0', 'AA', 'bbc']->['q1', 'A', 'bc']->['q2', 'AA', 'c']->['q3', 'A', '$']->No aceptacion
+Numero de procesamientos
+2
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+1
+Numero de procesamientos rechazados
+1
+No
+
+abc
+[['q0', '$', 'abc']]->[['q0', 'A', 'bc']]->[['q1', '$', 'c']]->Procesamiento abortado
+Numero de procesamientos
+1
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+1
+Numero de procesamientos rechazados
+0
+No
+
+abbbbbcccc
+['q0', '$', 'abbbbbcccc']-> ['q0', 'A', 'bbbbbcccc']-> ['q1', '$', 'bbbbcccc']-> ['q2', 'A', 'bbbcccc']-> ['q2', 'AA', 'bbcccc']-> ['q2', 'AAA', 'bcccc']-> ['q2', 'AAAA', 'cccc']-> ['q3', 'AAA', 'ccc']-> ['q3', 'AA', 'cc']-> ['q3', 'A', 'c']-> ['q3', '$', '$']-> Aceptacion
+Numero de procesamientos
+1
+Numero de procesamientos de aceptacion
+1
+Numero de procesamientos abortados
+0
+Numero de procesamientos rechazados
+0
+Si
+
