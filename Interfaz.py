@@ -26,6 +26,9 @@ class AutomataInterface(tk.Tk):
         self.st = tk.Entry(self, textvariable=self.transiciones_start, width=10)
         self.sy= tk.Entry(self, textvariable=self.transiciones_symbol, width=10)
         self.en = tk.Entry(self, textvariable=self.transiciones_end, width=10)
+        self.main_menu()
+
+    def main_menu(self):
 
         self.create_labels()
         self.create_entries()
@@ -131,8 +134,28 @@ class AutomataInterface(tk.Tk):
         tk.Button(ventana_metodo, text="Imprimir automata", command=lambda:self.prueba.main([tipoAutomata, 'Imprimir'])).grid(row=9, column=0)
         tk.Button(ventana_metodo, text="Mostrar grafo", command=lambda:self.prueba.main([tipoAutomata, 'Graficar'])).grid(row=9, column=1)
         
+        if tipoAutomata == 'AFD':
+            tk.Button(ventana_metodo, text = 'Producto cartesiano', command= lambda:[self.volver_ventana_principal(ventana_metodo)]).grid(row=10, column=0)
+            tk.Button(ventana_metodo, text = 'Simplificar', command= self.prueba.probarSimplificacion).grid(row=10, column=1)
+            tk.Button(ventana_metodo, text = 'Hallar complemento', command= self.prueba.probarComplemento).grid(row=11, column=0, columnspan= 2)
+        
+        elif tipoAutomata == 'AFN':
+            tk.Entry(ventana_metodo, textvariable=self.cadena_entrada).grid(row=10,column=0)
+            tk.Button(ventana_metodo, text = 'AFN a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNtoAFD'], self.cadena_entrada.get())).grid(row=10,column=1)
+        
+        elif tipoAutomata == 'AFNLambda':
+            tk.Entry(ventana_metodo, textvariable=self.cadena_entrada).grid(row=10,column=0)
+            tk.Button(ventana_metodo, text = 'AFNLambda a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNLambdaToAFD'], self.cadena_entrada.get())).grid(row=10,column=0, columnspan=2)
+
         tk.Button(ventana_metodo, text="Salir", command=self.close).grid(row=0, column=1, columnspan=2)
-    
+        
+    def volver_ventana_principal(self, ventana):
+        # Cerrar la ventana actual
+        ventana.destroy()
+        
+        # Mostrar nuevamente la ventana principal
+        self.deiconify()
+
     def close(self):
         '''Cerrar ventana y finalizar programa'''
         self.destroy()

@@ -145,11 +145,11 @@ class AFN:
         with open(f'./archivosSalida/{archivo}', "w") as f:
                 f.write(self.toString())
 
-    def AFNtoAFD(afn1, imprimir = True):
+    def AFNtoAFD(self, afn1, imprimir = True):
         """ recibe un AFN y retorna el AFD equivalente. Debe imprimir la tabla que muestra los estados (antiguos y nuevos) con las transiciones definidas para cada símbolo del alfabeto. Debe eliminar los estados inaccesibles (a través de un método de la clase AFD)"""
-        states = list(afn1.Q)
-        delta = afn1.delta
-        accepting= afn1.F
+        states = list(afn1.Q).copy()
+        delta = afn1.delta.copy()
+        accepting= afn1.F.copy()
 
         for state, transitions in delta.items():
             for symbol, destiny in transitions.items():
@@ -171,11 +171,10 @@ class AFN:
                 delta.update({estado:transitions})
 
                 #Agregar los estados que vayan surgiendo durante el proceso
-                for symbol in afn1.delta.get(estado):            
-                    newState = tuple(afn1.delta[estado][symbol])
+                for symbol in delta.get(estado):            
+                    newState = tuple(delta[estado][symbol].copy())
                     if newState not in states and len(newState)>1:
                         states.append(newState)
-            
         strStates = set()
         for state in states:        #Agregar todos los estados que contengan alguno de aceptacion
             if type(state) is tuple:
@@ -415,13 +414,17 @@ class AFN:
 #================================================
 
 #print('Ejecutando:...\n')
-#nfa1= AFN("ej2.nfa")
-#print(nfa1.computarTodosLosProcesamientos('bbbabababac','AFNprocesamientos'))
-#print(nfa1.procesarListaCadenas(['aab','bbcba', 'babbbcbb', 'bbccbab'], 'ProcesarLista', False))
-# # nfa1.graficarAFN()
+# nfa1= AFN("ej1.nfa")
+# #print(nfa1.computarTodosLosProcesamientos('bbbabababac','AFNprocesamientos'))
+# #print(nfa1.procesarListaCadenas(['aab','bbcba', 'babbbcbb', 'bbccbab'], 'ProcesarLista', False))
+# # # nfa1.graficarAFN()
+# # dfa1 = nfa1.AFNtoAFD(nfa1)
+# # nfe1= AFN_Lambda('ej1.nfe').AFN_LambdaToAFD()
 # dfa1 = nfa1.AFNtoAFD(nfa1)
-# nfe1= AFN_Lambda('ej1.nfe').AFN_LambdaToAFD()
-#print(dfa1.toString())
+# print(nfa1.toString())
+# #print(nfa1.delta)
+# print(dfa1.toString())
+#print(nfa1.toString())
 # print('\n')
 
 #print(nfa1.toString())

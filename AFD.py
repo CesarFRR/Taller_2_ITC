@@ -424,7 +424,7 @@ class AFD:
 
         return AFD
 
-    def AFD_simplificarAFD(afdinput ):
+    def AFD_simplificarAFD(self, afdinput ):
         """Dado un AFD llamado afdInput, eliminar los estados inaccesibles (a través de un método de la clase AFD) y calcular un AFD equivalente con el mínimo número de estados de acuerdo al algoritmo estudiado en clase"""
         simpDelta=copy.deepcopy(afdinput.delta)
         simpQ= afdinput.Q.difference(afdinput.estadosInaccesibles)

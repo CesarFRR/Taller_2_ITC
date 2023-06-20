@@ -10,7 +10,9 @@ from ProcesamientoCadenaAFN import ProcesamientoCadenaAFN
 class ClasePrueba:
     afn = None
     afd = None
+    afd2 = None
     afn_lambda = None
+    afn_conversion = None
 
     def __init__(self, *args):
         #self.interfaz = args[0]
@@ -22,16 +24,29 @@ class ClasePrueba:
         if tipoAutomata == 'AFD':
             self.probarAFD(metodoAutomata, args)
         elif tipoAutomata == 'AFN':
-            self.probarAFN(metodoAutomata, args)
+            if metodoAutomata == 'AFNtoAFD':
+                self.probarAFNtoAFD(args)
+            else:
+                self.probarAFN(metodoAutomata, args)
         elif tipoAutomata == 'AFNLambda':
-            self.probarAFNLambda(metodoAutomata, args)
+            if metodoAutomata == 'AFNLambdaToAFD':
+                self.probarAFNLambdaToAFD(args)
+            else:
+                self.probarAFNLambda(metodoAutomata, args)
 
     def probarAFD(self, metodo = None, args = None):
         if metodo == None:
-            if len(args) == 1:
+            if self.afd is not None:
+                if len(args) == 1:
+                    self.afd2 = AFD(args[0])
+                else:
+                    self.afd2 = AFD(args[0], args[1], args[2], args[3], args[4])
+                self.probarProductoCartesiano()
+            elif len(args) == 1:
                 self.afd = AFD(args[0])
             else:
                 self.afd = AFD(args[0], args[1], args[2], args[3], args[4])
+            
         if metodo == 'Procesar cadena':
             aceptada = self.afd.procesarCadena(args)
             return print(aceptada)
@@ -44,13 +59,16 @@ class ClasePrueba:
         elif metodo == 'Exportar':
             self.afd.exportar(args)
         elif metodo == 'Imprimir':
-            self.afd.toString(False)
+            print(self.afd.toString(False))
         elif metodo == 'Graficar':
             self.afd.toString(True)
     
     def probarAFN(self, metodo = None, args = None):
         if metodo == None:
-            self.afn = AFN(args[0], args[1], args[2], args[3], args[4])
+            if len(args) == 1:
+                self.afn = AFN(args[0])
+            else:
+                self.afn = AFN(args[0], args[1], args[2], args[3], args[4])
         if metodo == 'Procesar cadena':
             aceptada = self.afn.procesarCadena(args)
             return print(aceptada)
@@ -63,40 +81,76 @@ class ClasePrueba:
         elif metodo == 'Exportar':
             self.afn.exportar(args)
         elif metodo== 'Imprimir':
-            self.afn.toString(False)
+            print(self.afn.toString(False))
         elif metodo== 'Graficar':
             self.afn.toString(True)
 
     def probarAFNLambda(self,  metodo = None, args = None):
         if metodo == None:
-            self.afn_lambda = AFN_Lambda(args[0], args[1], args[2], args[3], args[4])
+            if len(args) == 1:
+                self.afn_lambda = AFN_Lambda(args[0])
+            else:
+                self.afn_lambda = AFN_Lambda(args[0], args[1], args[2], args[3], args[4])
         if metodo == 'Procesar cadena':
-            aceptada = self.afn_lambda.procesarCadena(args)
+            cadena = args
+            aceptada = self.afn_lambda.procesarCadena(cadena)
             return print(aceptada)
         elif metodo == 'Procesar cadena con detalles':
-            aceptada = self.afn_lambda.procesarCadenaConDetalles(args)
+            cadena = args
+            aceptada = self.afn_lambda.procesarCadenaConDetalles(cadena)
             return print(aceptada)
         elif metodo == 'Procesar lista de cadenas':
-            print(args[0])
-            self.afn_lambda.procesarListaCadenas(args[0], args[1], True)
+            lista = args[0]
+            archivo = args[1]
+            self.afn_lambda.procesarListaCadenas(lista, archivo, True)
         elif metodo == 'Exportar':
-            self.afn_lambda.exportar(args)
+            archivo = args
+            self.afn_lambda.exportar(archivo)
         elif metodo == 'Imprimir':
-            self.afn_lambda.toString(False)
+            print(self.afn_lambda.toString(False))
         elif metodo == 'Graficar':
             self.afn_lambda.toString(True)
 
-    def probarAFNtoAFD(self):
+    def probarAFNtoAFD(self, args = None):
+        self.afn_conversion = self.afn.AFNtoAFD(self.afn)
+        cadena = args
+        print('AFN \n', self.afn.toString(), '\n')
+        print('procesamiento AFN \n',self.afn_conversion.procesarCadenaConDetalles(cadena), '\n')
+        print('AFN convertido \n', self.afn_conversion.toString(), '\n')
+        print('procesamiento AFN convertido a AFD \n',self.afn.procesarCadena(cadena))
         pass
 
-    def probarAFNLambdaToAFD(self):
-        pass
+    def probarAFNLambdaToAFD(self, args = None):
+        cadena = args
+        
+        self.afn_lambda_conversion_AFN = self.afn_lambda.AFN_LambdaToAFN(self.afn_lambda)
+        print('Convertido a AFN \n',self.afn_lambda_conversion_AFN.toString(), '\n')
+        
+        self.afn_lambda_conversion_AFD = self.afn_lambda.AFN_LambdaToAFD(self.afn_lambda)
+        print('Convertido a AFD \n',self.afn_lambda_conversion_AFD.toString(), '\n')
+
+        print('Procesamiento AFN_ lambda \n', self.afn_lambda.procesarCadenaConDetalles(cadena), '\n')
+        print('procesamiento AFN \n',self.afn_lambda_conversion_AFN.procesarCadenaConDetalles(cadena), '\n')
+        print('procesamiento AFD \n',self.afn_lambda_conversion_AFD.procesarCadenaConDetalles(cadena))
 
     def probarComplemento(self):
-        pass
+        print(self.afd.toString(False))
+        comp = self.afd.AFD_hallarComplemento(self.afd)
+        print(comp.toString())
 
     def probarProductoCartesiano(self):
-        pass
+        print('---------------------------------------------------------------- \n ∩ \n')
+        y = self.afd.AFD_hallarProductoCartesianoY(self.afd, self.afd2)
+        print(y.toString())
+        print('---------------------------------------------------------------- \n ∪ \n')
+        o = self.afd.AFD_hallarProductoCartesianoO(self.afd, self.afd2)
+        print(o.toString())
+        print('---------------------------------------------------------------- \n − \n')
+        dif = self.afd.AFD_hallarProductoCartesianoDiferencia(self.afd, self.afd2)
+        print(dif.toString())
+        print('---------------------------------------------------------------- \n △ \n')
+        sim = self.afd.AFD_hallarProductoCartesianoDiferenciaSimetrica(self.afd, self.afd2)
+        print(sim.toString())
     
     def probarSimplificacion(self):
-        pass
+        print(self.afd.AFD_simplificarAFD(self.afd))

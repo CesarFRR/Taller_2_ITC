@@ -195,14 +195,14 @@ class AFN_Lambda:
 
         return AFN(Sigma, Q, q0, F, delta)
 
-    def AFN_LambdaToAFD(self, nfe1=None, imprimir=True):
+    def AFN_LambdaToAFD(self, nfe1=None, imprimir=False):
         """recibe un AFN-λ y retorna el AFD equivalente. imprime las tablas y cálculos especificados para los dos procesos que se harán anf_lambda --> afn y luego afn --> afd,  separando claramente las dos fases de la conversión"""
         if nfe1==None:
             nfe1=self
         print('convirtiendo AFN_lambda --> AFN:\n')
-        afn = AFN_Lambda.AFN_LambdaToAFN(nfe1, imprimir)
+        afn = self.AFN_LambdaToAFN(nfe1, imprimir)
         print('convirtiendo AFN --> AFD:\n')
-        afd = AFN.AFNtoAFD(afn, imprimir)
+        afd = afn.AFNtoAFD(afn, imprimir)
         return afd
 
 
