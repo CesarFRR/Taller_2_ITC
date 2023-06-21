@@ -35,13 +35,6 @@ pip install prettytable
 
 pip install networkx
 ```
-## Authors
-
-- [Juan Montoya (Hallip)](https://github.com/Hallip)
-- [César Rincon (CesarFRR)](https://github.com/CesarFRR)
-- [Johan Rodriguez (Homeroso)](https://github.com/Homeroso)
-- [Anzola Tachak (ganzola)](https://github.com/ganzola)
-
 
 ## Clases main
 Las clases main o clases principales,son aquellas a las que se puede acceder al control de todo el proyecto, asi como también para las pruebas de las funcionalidades.
@@ -64,7 +57,10 @@ InterfazCLI.py --> Es una interfaz de consola, diseñada para ejecutar y probar 
 5. Mostrar los grafos (se exportará un archivo pdf a /archivosSalida)
 ```
 
+## Authors
 
-
-[Documentation](https://linktodocumentation)
+- [Juan Montoya (Hallip)](https://github.com/Hallip)
+- [César Rincon (CesarFRR)](https://github.com/CesarFRR)
+- [Johan Rodriguez (Homeroso)](https://github.com/Homeroso)
+- [Anzola Tachak (ganzola)](https://github.com/ganzola)
 
