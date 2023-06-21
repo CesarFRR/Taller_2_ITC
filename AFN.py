@@ -210,7 +210,7 @@ class AFN:
             estados=sorted(list(afd1.Q))
             simbolos=sorted(afd1.Sigma.simbolos)
             #print('estados: ', estados, '\nsimbolos: ', simbolos)
-            tabla.field_names = ["Δ"] + simbolos
+            tabla.field_names = ["d"] + simbolos
             for q in estados:
                 if(afd1.delta.get(q)==None):
                     continue

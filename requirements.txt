@@ -1,2 +1,4 @@
 prettytable==3.7.0
 networkx
+pandas
+matplotlib

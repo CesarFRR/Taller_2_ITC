@@ -293,9 +293,9 @@ class AFD:
             if({q1,q2}=={afd1.q0, afd2.q0}):
                 nuevoq0 =nuevoEstado
             for simbolo in afd1.Sigma.simbolos: 
-                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
+                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = d(qn, simbolo)
                 qAFD2= list(afd2.delta[q2][simbolo])[0]
-                out.append(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                out.append(f'd(({q1},{q2}),{simbolo}) = (d1({q1},{simbolo}),d2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
                 nuevoDelta[nuevoEstado][simbolo]={f'{qAFD1},{qAFD2}'}
 
         print('\n'.join(out))
@@ -335,9 +335,9 @@ class AFD:
                 #print('estado q0 elegido, es:', nuevoEstado)
 
             for simbolo in afd1.Sigma.simbolos: 
-                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
+                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = d(qn, simbolo)
                 qAFD2= list(afd2.delta[q2][simbolo])[0]
-                out.append(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                out.append(f'd(({q1},{q2}),{simbolo}) = (d1({q1},{simbolo}),d2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
                 #print(out[-1])
                 nuevoDelta[nuevoEstado][simbolo]={f'{qAFD1},{qAFD2}'}
         # print('\nAlfabeto (Sigma) del nuevoAFD: ', nuevoSigma.simbolos)
@@ -370,9 +370,9 @@ class AFD:
                 nuevoq0 =nuevoEstado
 
             for simbolo in afd1.Sigma.simbolos: 
-                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
+                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = d(qn, simbolo)
                 qAFD2= list(afd2.delta[q2][simbolo])[0]
-                out.append(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                out.append(f'd(({q1},{q2}),{simbolo}) = (d1({q1},{simbolo}),d2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
                 #print(out[-1])
                 nuevoDelta[nuevoEstado][simbolo]={f'{qAFD1},{qAFD2}'}
         print('\n'.join(out))
@@ -399,9 +399,9 @@ class AFD:
             if({q1,q2}=={afd1.q0, afd2.q0}):
                 nuevoq0 =nuevoEstado
             for simbolo in afd1.Sigma.simbolos: 
-                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = δ(qn, simbolo)
+                qAFD1= list(afd1.delta[q1][simbolo])[0] # qAFD1 = d(qn, simbolo)
                 qAFD2= list(afd2.delta[q2][simbolo])[0]
-                out.append(f'δ(({q1},{q2}),{simbolo}) = (δ1({q1},{simbolo}),δ2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
+                out.append(f'd(({q1},{q2}),{simbolo}) = (d1({q1},{simbolo}),d2({q2},{simbolo})) = ({qAFD1},{qAFD2})')
                 #print(out[-1])
                 nuevoDelta[nuevoEstado][simbolo]={f'{qAFD1},{qAFD2}'}
         print('\n'.join(out))
@@ -414,7 +414,7 @@ class AFD:
         union=['union', 'u', '+', '∪']
         inters=['intersección','interseccion', 'and', '^', '∩']
         dif=['diferencia', 'difference', 'diff', 'dif', '-']
-        difSimetrica=['diferencia simétrica', 'diferencia simetrica', 'Δ']
+        difSimetrica=['diferencia simétrica', 'diferencia simetrica', 'd']
         if(StringOperacion in union):
             AFD = AFD.AFD_hallarProductoCartesianoO(afd1,afd2)
         elif(StringOperacion in inters):
@@ -513,7 +513,7 @@ class AFD:
         simbolos=sorted(afd.Sigma.simbolos)
         encabezado=['{p,q}']
         for simb in simbolos:
-            encabezado.append('{' + f'δ(p,{simb}),δ(q,{simb})' + '}')
+            encabezado.append('{' + f'd(p,{simb}),d(q,{simb})' + '}')
         tabla.field_names = encabezado
         n= len(matriz)
         for i in range(n):

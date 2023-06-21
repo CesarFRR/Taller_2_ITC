@@ -162,7 +162,7 @@ class AFN_Lambda:
                 estadosDestino= sorted(list(set().union(*estadosDestino)))
                 clausuraEstadosDest = sorted(list(AFN_Lambda.l_clausura(nfe1, estadosDestino)))
                 clausuraEstadosDest = '∅' if clausuraEstadosDest is None or not clausuraEstadosDest else '{'+','.join(clausuraEstadosDest)+'}'
-                out+=f"Δ'({q},{simb}) = λ[Δ({strClausura[index][0]},{simb})] =λ[Δ({'{'+','.join(sorted(list(strClausura[index][1])))+'}' if strClausura[index][1] else '∅'},{simb})] = λ[{'{'+','.join(estadosDestino)+'}' if estadosDestino else '∅'}] = {clausuraEstadosDest}\n"
+                out+=f"d'({q},{simb}) = λ[d({strClausura[index][0]},{simb})] =λ[d({'{'+','.join(sorted(list(strClausura[index][1])))+'}' if strClausura[index][1] else '∅'},{simb})] = λ[{'{'+','.join(estadosDestino)+'}' if estadosDestino else '∅'}] = {clausuraEstadosDest}\n"
         if imprimir:
             print(out)
         return clausura if type(clausura) ==set else set(*clausura)

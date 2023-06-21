@@ -1,5 +1,6 @@
 from MT import MT
 from AF2P import AF2P
+from AFD import AFD
 mt1=None
 af2p1=None
 #===================================================================#
@@ -60,3 +61,11 @@ def MT_procesar_funcion(mt1:MT, nombreArchivo):
 #MT_construirDeArchivo('ej1.tm')
 
 #===================================================================#
+
+
+
+afd1= AFD('noContieneBB.dfa')
+afd2= AFD('impares.dfa')
+
+
+afdCartesianoY = afd1.AFD_hallarProductoCartesianoY(afd1,afd2)
