@@ -186,7 +186,7 @@ input ()
 input ()
  
 print("Factor 37 to afd y procesar lista con detalles:")
-nfe.procesarListaCadenasConversion(listaCadenas=lista)
+nfe.procesarListaCadenasConversion(listaCadenas=lista, nombreArchivo='listaCadenaConversion', imprimirPantalla=True)
 
 input ()
  
