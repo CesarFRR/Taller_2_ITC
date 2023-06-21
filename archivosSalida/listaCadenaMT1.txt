@@ -1,11 +1,11 @@
 		yes
-b	B	no
-bb	Bb	no
-bab	BAB	no
-bbba	BBbA	no
-bbaba	BBABA	no
-aaabbb	AAABBB	yes
-aabbaaa	AABBAaa	no
-babbbabb	BABBbAbb	no
-bababbaba	BABABBABA	no
-bbaabaaaaa	BBAABAAaaa	no
+a	A	no
+ba	BA	yes
+bba	BBA	no
+bbbb	Bbbb	no
+aabaa	AABaa	no
+aaabab	AAABaB	no
+abbbbaa	ABBBBAA	no
+bbbabbbb	BBbAbbbb	no
+abbababba	ABBABABBA	no
+abaabbbbaa	ABAABBBBAA	yes
