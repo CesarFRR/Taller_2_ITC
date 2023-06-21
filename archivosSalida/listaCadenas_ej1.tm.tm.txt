@@ -1,9 +1,0 @@
-babaaaabb	BABAAAABB	no
-bbbaababa	BBBAABABA	no
-abbabbbba	ABBABBbbA	no
-aaabbaaaa	AAABBaaaa	no
-ababbabaa	ABABBABAA	no
-aabaabbaa	AABAABBaa	no
-bbbabbbaa	BBBABbbAA	no
-aababaaaa	AABABaaaa	no
-aaaaaaabb	AAAaaaaBB	no

@@ -1,9 +1,0 @@
-aaababbab	[q0,aaababbab]-> [q0,aababbab]-> [q0,ababbab]-> [q0,babbab]-> [q1,abbab]-> [q1,bbab]-> [q2,bab]-> [q3,ab]-> [q3,b]-> No Aceptacion	no
-baababbaa	[q0,baababbaa]-> [q1,aababbaa]-> [q1,ababbaa]-> [q1,babbaa]-> [q2,abbaa]-> [q2,bbaa]-> [q3,baa]-> [q3,aa]-> [q3,a]-> No Aceptacion	no
-ababbaaab	[q0,ababbaaab]-> [q0,babbaaab]-> [q1,abbaaab]-> [q1,bbaaab]-> [q2,baaab]-> [q3,aaab]-> [q3,aab]-> [q3,ab]-> [q3,b]-> No Aceptacion	no
-ababbbbab	[q0,ababbbbab]-> [q0,babbbbab]-> [q1,abbbbab]-> [q1,bbbbab]-> [q2,bbbab]-> [q3,bbab]-> [q3,bab]-> [q3,ab]-> [q3,b]-> No Aceptacion	no
-bbbbbaaaa	[q0,bbbbbaaaa]-> [q1,bbbbaaaa]-> [q2,bbbaaaa]-> [q3,bbaaaa]-> [q3,baaaa]-> [q3,aaaa]-> [q3,aaa]-> [q3,aa]-> [q3,a]-> No Aceptacion	no
-babbbbbbb	[q0,babbbbbbb]-> [q1,abbbbbbb]-> [q1,bbbbbbb]-> [q2,bbbbbb]-> [q3,bbbbb]-> [q3,bbbb]-> [q3,bbb]-> [q3,bb]-> [q3,b]-> No Aceptacion	no
-bbbbabbbb	[q0,bbbbabbbb]-> [q1,bbbabbbb]-> [q2,bbabbbb]-> [q3,babbbb]-> [q3,abbbb]-> [q3,bbbb]-> [q3,bbb]-> [q3,bb]-> [q3,b]-> No Aceptacion	no
-babbbaabb	[q0,babbbaabb]-> [q1,abbbaabb]-> [q1,bbbaabb]-> [q2,bbaabb]-> [q3,baabb]-> [q3,aabb]-> [q3,abb]-> [q3,bb]-> [q3,b]-> No Aceptacion	no
-abababbba	[q0,abababbba]-> [q0,bababbba]-> [q1,ababbba]-> [q1,babbba]-> [q2,abbba]-> [q2,bbba]-> [q3,bba]-> [q3,ba]-> [q3,a]-> No Aceptacion	no

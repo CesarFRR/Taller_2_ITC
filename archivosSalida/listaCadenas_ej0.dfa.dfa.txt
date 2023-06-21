@@ -1,9 +1,0 @@
-aaccbccca	[s0,aaccbccca]-> [s0,accbccca]-> [s0,ccbccca]-> [L,cbccca]-> [L,bccca]-> [L,ccca]-> [L,cca]-> [L,ca]-> [L,a]-> No Aceptacion	no
-abcbcbbbc	[s0,abcbcbbbc]-> [s0,bcbcbbbc]-> [s0,cbcbbbc]-> [L,bcbbbc]-> [L,cbbbc]-> [L,bbbc]-> [L,bbc]-> [L,bc]-> [L,c]-> No Aceptacion	no
-cbcaaaaab	[s0,cbcaaaaab]-> [L,bcaaaaab]-> [L,caaaaab]-> [L,aaaaab]-> [L,aaaab]-> [L,aaab]-> [L,aab]-> [L,ab]-> [L,b]-> No Aceptacion	no
-bcccbbacc	[s0,bcccbbacc]-> [s0,cccbbacc]-> [L,ccbbacc]-> [L,cbbacc]-> [L,bbacc]-> [L,bacc]-> [L,acc]-> [L,cc]-> [L,c]-> No Aceptacion	no
-cccaaacba	[s0,cccaaacba]-> [L,ccaaacba]-> [L,caaacba]-> [L,aaacba]-> [L,aacba]-> [L,acba]-> [L,cba]-> [L,ba]-> [L,a]-> No Aceptacion	no
-cbacbbaca	[s0,cbacbbaca]-> [L,bacbbaca]-> [L,acbbaca]-> [L,cbbaca]-> [L,bbaca]-> [L,baca]-> [L,aca]-> [L,ca]-> [L,a]-> No Aceptacion	no
-acccbbabb	[s0,acccbbabb]-> [s0,cccbbabb]-> [L,ccbbabb]-> [L,cbbabb]-> [L,bbabb]-> [L,babb]-> [L,abb]-> [L,bb]-> [L,b]-> No Aceptacion	no
-aaaacaccb	[s0,aaaacaccb]-> [s0,aaacaccb]-> [s0,aacaccb]-> [s0,acaccb]-> [s0,caccb]-> [L,accb]-> [L,ccb]-> [L,cb]-> [L,b]-> No Aceptacion	no
-cbacbbaba	[s0,cbacbbaba]-> [L,bacbbaba]-> [L,acbbaba]-> [L,cbbaba]-> [L,bbaba]-> [L,baba]-> [L,aba]-> [L,ba]-> [L,a]-> No Aceptacion	no
