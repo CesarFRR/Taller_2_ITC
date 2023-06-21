@@ -353,14 +353,14 @@ class AFN:
         4. número de procesamientos de rechazo
         5. sí o no dependiendo de si la cadena es aceptada o no."""
         try:
-            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
                 archivo.truncate(0)
         except:
             nombreArchivo= 'procesarListaCadenas_AFN'
-            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
                 archivo.truncate(0)
 
-        with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
+        with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
             for cadena in listaCadenas:
                 self.procesamiento(cadena)
                 archivo.write(f'{cadena}\n')
@@ -381,7 +381,7 @@ class AFN:
                     archivo.write('No\n\n')
 
         if imprimirPantalla:
-            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'r') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'r') as archivo:
                 for line in archivo:
                     print(line)
 

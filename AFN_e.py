@@ -28,6 +28,7 @@ class AFN_Lambda:
     aceptacion = []
     rechazadas = []
     abortadas = []
+    recount=None
     def __init__(self, *args):
         if (len(args) == 1):  # Inicializar por archivo txt
             if (not args[0].endswith("." + self.automata_tipo)):
@@ -75,6 +76,7 @@ class AFN_Lambda:
             self.F=set(self.F)
         self.Sigma.simbolos.append('$')
         self.estadosInaccesibles= self.hallarEstadosInaccesibles()
+        self.recount=0
 
     def hallarEstadosInaccesibles(self):
         """ para determinar los estados inacessibles del autómata y guardarlos en el atributo correspondiente."""
@@ -208,83 +210,93 @@ class AFN_Lambda:
 
     def procesamiento(self,cadena: str, actual, detalles, proc,  out='')-> bool:
         """Código 'núcleo' del procesamiento de cadenas para el AFN_lambda, modulado y reutilizado para cada tipo de procesamiento"""
-        final = False
-        breaked = False
-        #print('Estado actual: ', actual)
-        for index, char in enumerate(cadena):
-            if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
-                out += f'[{actual},{cadena[index:]}]-> Procesamiento abortado'
+        if(self.recount>300):
+            return False
+        else:
+            self.recount+=1
+        try:
+            final = False
+            breaked = False
+            #print('Estado actual: ', actual)
+            for index, char in enumerate(cadena):
+                if char not in self.Sigma.simbolos:  #Comprobar que el simbolo leido se encuentre en el alfabeto
+                    out += f'[{actual},{cadena[index:]}]-> Procesamiento abortado'
+                    if out not in self.abortadas:
+                        self.abortadas.append(out)
+                    break
+                if(actual in self.Q):
+                    if self.delta.get(actual) is not None:
+                        if '$' in self.delta[actual].keys():
+                            if len(list(self.delta[actual]['$'])) > 1:
+                                out += f'[{actual},{cadena[index:]}]-> '
+                                transLambda= list(self.delta[actual]['$'])
+                                for i in sorted(transLambda):
+                                    #print(sorted(self.delta[actual][char]))
+                                    #print('Estado actual: ', actual, 'i:  ', i)
+                                    if(actual==i):
+                                        continue
+                                    
+                                    actual = i
+                                    try:
+                                        procesamiento = self.procesamiento(cadena[index:], i, detalles, proc, out)
+                                    except:
+                                        return False
+                                    if proc:
+                                        if procesamiento:
+                                            return True
+
+                            elif len(list(self.delta[actual]['$'])) == 1:
+                                out += f'[{actual},{cadena[index:]}]-> '
+                                actual = list(self.delta[actual]['$'])[0]
+
+                        if self.delta.get(actual).get(char) is not None:
+                            if len(list(self.delta[actual][char])) > 1:
+                                out += f'[{actual},{cadena[index:]}]-> '
+                                for i in sorted(self.delta[actual][char]):
+                                    # print(sorted(self.delta[actual][char]))
+                                    actual = i
+                                    procesamiento = self.procesamiento(cadena[index+1:], i, detalles, proc, out)
+                                    if proc:
+                                        if procesamiento:
+                                            return True
+
+                            elif len(list(self.delta[actual][char])) == 1:
+                                out+= f'[{actual},{cadena[index:]}]-> '
+                                actual = list(self.delta[actual][char])[0]
+                        else:
+                            out+= f'[{actual},{cadena[index:]}]-> '
+                            breaked = True
+                            break
+                if index == len(cadena)-1:
+                    final = True
+
+            if actual in self.F and final: #verificar si el estado actual es de aceptacion
+                out+= f'[{actual},]-> '
+                out+= 'Aceptacion'
+                if out not in self.aceptacion:
+                    self.aceptacion.append(out)
+                if proc:
+                    if detalles:
+                        print(out)
+                    return True
+
+            elif actual not in self.F:
+                out+= f'[{actual},]-> '
+                out+= 'No aceptacion'
+                if out not in self.rechazadas:
+                    self.rechazadas.append(out)
+                if proc:
+                    return False
+
+            elif breaked is True:
+                out+= 'Procesamiento abortado'
                 if out not in self.abortadas:
                     self.abortadas.append(out)
-                break
-            if(actual in self.Q):
-                if self.delta.get(actual) is not None:
-                    if '$' in self.delta[actual].keys():
-                        if len(list(self.delta[actual]['$'])) > 1:
-                            out += f'[{actual},{cadena[index:]}]-> '
-                            transLambda= list(self.delta[actual]['$'])
-                            for i in sorted(transLambda):
-                                #print(sorted(self.delta[actual][char]))
-                                #print('Estado actual: ', actual, 'i:  ', i)
-                                if(actual==i):
-                                    continue
-                                
-                                actual = i
-                                procesamiento = self.procesamiento(cadena[index:], i, detalles, proc, out)
-                                if proc:
-                                    if procesamiento:
-                                        return True
-
-                        elif len(list(self.delta[actual]['$'])) == 1:
-                            out += f'[{actual},{cadena[index:]}]-> '
-                            actual = list(self.delta[actual]['$'])[0]
-
-                    if self.delta.get(actual).get(char) is not None:
-                        if len(list(self.delta[actual][char])) > 1:
-                            out += f'[{actual},{cadena[index:]}]-> '
-                            for i in sorted(self.delta[actual][char]):
-                                # print(sorted(self.delta[actual][char]))
-                                actual = i
-                                procesamiento = self.procesamiento(cadena[index+1:], i, detalles, proc, out)
-                                if proc:
-                                    if procesamiento:
-                                        return True
-
-                        elif len(list(self.delta[actual][char])) == 1:
-                            out+= f'[{actual},{cadena[index:]}]-> '
-                            actual = list(self.delta[actual][char])[0]
-                    else:
-                        out+= f'[{actual},{cadena[index:]}]-> '
-                        breaked = True
-                        break
-            if index == len(cadena)-1:
-                final = True
-
-        if actual in self.F and final: #verificar si el estado actual es de aceptacion
-            out+= f'[{actual},]-> '
-            out+= 'Aceptacion'
-            if out not in self.aceptacion:
-                self.aceptacion.append(out)
-            if proc:
-                if detalles:
-                    print(out)
-                return True
-
-        elif actual not in self.F:
-            out+= f'[{actual},]-> '
-            out+= 'No aceptacion'
-            if out not in self.rechazadas:
-                self.rechazadas.append(out)
+                if proc:
+                    return False
             if proc:
                 return False
-
-        elif breaked is True:
-            out+= 'Procesamiento abortado'
-            if out not in self.abortadas:
-                self.abortadas.append(out)
-            if proc:
-                return False
-        if proc:
+        except:
             return False
     def procesar_cadena_afn_lambda(self, cadena):
         delta= self.delta
@@ -377,14 +389,14 @@ class AFN_Lambda:
         6. número de procesamientos de rechazo
         7. sí o no dependiendo de si la cadena es aceptada o no."""
         try:
-            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
                 archivo.truncate(0)
         except:
             nombreArchivo= 'procesarListaCadenas_AFNe'
-            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
                 archivo.truncate(0)
         try:
-            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
                 for cadena in listaCadenas:
                     self.aceptacion = []
                     self.rechazadas = []
@@ -411,7 +423,7 @@ class AFN_Lambda:
         except:
             pass
         if imprimirPantalla:
-            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'r') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'r') as archivo:
                 for line in archivo:
                     print(line)
 
