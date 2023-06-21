@@ -85,7 +85,8 @@ class MT:
         
     def procesarCadena(self, cadena: str='', imprimir=False, procesarFuncion=False, modoProcesarListas=False):
         """procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por la MT."""
-        cinta = ['!'] if len(cadena.strip())==0 else list(cadena)
+        cadena=cadena.strip()
+        cinta = ['!'] if len(cadena)==0 else list(cadena)
         index=0
         q=self.q0
         alfabeto= self.Sigma.simbolos + self.CSigma.simbolos
