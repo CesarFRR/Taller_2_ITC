@@ -73,13 +73,13 @@ class graficarAutomata:
                         else:
                             delta2[estado][destino[-1]] = {f'{out}'}
                     
-                    print('AQUI OUT: ', out)
+                    #print('AQUI OUT: ', out)
 
         for estado, transiciones in delta2.items():
             for destino, simbolos in transiciones.items():
                 new_row = pd.Series({'source': estado, 'to': destino, 'label': simbolos.pop()})
                 data.loc[len(data)] = new_row
-        print(data)
+        #print(data)
         return data
     
     def deltaForMT(self, automata: object)-> pd.DataFrame:

@@ -186,7 +186,7 @@ from Graph import graficarAutomata
 # print('\n To string y graficar: \n')
 # print(pda2p_1.toString(graficar=True))
 import os, string, time
-
+from Graph import graficarAutomata
 
 class InterfazConsola:
     automatas=None
@@ -215,7 +215,6 @@ class InterfazConsola:
             print("3. procesarListaCadenas")
             print('4. Mostrar la información del autómata (toString)')
             print('5. Mostrar los grafos (se exportará un archivo pdf a /archivosSalida)')
-            print("6. seleccionar un solo autómata")
             print("0. SALIR")
             opcion = self.filter(mode='int', args=[0, 6])
 
@@ -248,8 +247,7 @@ class InterfazConsola:
                         c= M.Sigma.generarCadenaAleatoria(l)
                         print(c, M.procesarCadenaConDetalles(c))
                     print()
-                pass
-                pass
+
             elif opcion == 3:
                 print("\nEscriba cuantas cadenas quiere que cada autómata procese (numero positivo de máximo 1 millón):")
                 n=   self.filter(mode='int', args=[0, 1000000])
@@ -265,6 +263,18 @@ class InterfazConsola:
                     print(string.ascii_lowercase[i]+'. Autómata: ', M.nombreArchivo, M.extension)
                     print(c, M.procesarListaCadenas(listaCadenas=c, imprimirPantalla=True, nombreArchivo=f'listaCadenas_{M.nombreArchivo}.{M.extension}'))
                     print()
+            elif opcion ==4: #toString a todos
+                print('Se van a ejecutar el método toString() para ', len(self.listaAutomatas), ' autómata(s) en los próximos 3 segundos:')
+                time.sleep(3)
+                for i,M in enumerate(self.listaAutomatas):
+                    print(string.ascii_lowercase[i]+'. Autómata: ', M.nombreArchivo, M.extension)
+                    print(M.toString())
+                    print()
+            elif opcion ==5: #toString a todos
+                print('Se van a mostrar los grafos para ', len(self.listaAutomatas), ' autómata(s), en un pdf grafos.pdf disponible en /archivosSalida en los próximos 3 segundos:')
+                time.sleep(3)
+                gf= graficarAutomata()
+                gf.exportarGrafos(listaAutomatas=self.listaAutomatas)
             elif opcion ==0:
                 print('\nPrograma Terminado.\n')
                 break
