@@ -1,7 +1,7 @@
 from AFD import AFD
 from Alfabeto import Alfabeto
 from Graph import graficarAutomata
-from prettytable import PrettyTable, ALL
+from prettytable import PrettyTable
 import re
 from Tree import nonBinaryTree
 #from visual_automata.fa.nfa import VisualNFA

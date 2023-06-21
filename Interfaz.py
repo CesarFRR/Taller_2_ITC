@@ -60,7 +60,7 @@ class AutomataInterface(tk.Tk):
         
     def create_selector(self):
         '''Crear selector para el tipo de automata a crear'''
-        options = ["AFD", "AFN", "AFNLambda"]
+        options = ["AFD", "AFN", "AFNLambda", 'AFPD', 'AFPN', 'AF2P', 'MT']
         tk.OptionMenu(self, self.tipo_automata, *options).grid(row=6, column=1, columnspan= 3, sticky="w")
         
     def create_button(self):
@@ -72,7 +72,7 @@ class AutomataInterface(tk.Tk):
     
     def importar(self):
         '''Crear automata desde archivo'''
-        archivo = self.archivo_importar.get()
+        archivo = self.archivo_importar.get().strip(' ')
         tipo_automata = self.tipo_automata.get()
         self.prueba.main([tipo_automata, None], [archivo])
         self.mostrar_ventana_metodo(tipo_automata)

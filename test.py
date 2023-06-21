@@ -108,6 +108,7 @@ from AFN import AFN
 from MT import MT
 from AFPD import AFPD
 from AF2P import AF2P
+from AFPN import AFPN
 import random
 from Graph import graficarAutomata
 #print('Ejecutando:...\n')
@@ -184,8 +185,148 @@ from Graph import graficarAutomata
 # pda2p_1= AF2P('ej1.msm')
 # print('\n To string y graficar: \n')
 # print(pda2p_1.toString(graficar=True))
+import os, string, time
+
+
+class InterfazConsola:
+    automatas=None
+    listaAutomatas=None
+    listaNombreArchivos=None
+    listaNombreArchivos2=None
+    def __init__(self):
+        self.automatas = []
+        self.importarArchivosEntrada()
+
+
+    def mostrar_menu(self):
+        while True:
+            menu= "\n----- MENÚ -----\nBienvenido, ésta interfaz se encarga de una rápida manipulación de todos los autómatas que usted ingrese a la carpeta /archivosEntrada, los autómatas son:\n"
+            listaA=[]
+            for i, elemento in enumerate(self.listaNombreArchivos):
+                opcion = string.ascii_lowercase[i]
+                listaA.append(f"{opcion}. {elemento}")
+            self.listaNombreArchivos2
+            menu+='\n'.join(listaA)
+            print(menu)
+
+            print("\nQue desea hacer?")
+            print("1. procesarCadena")
+            print("2. procesarCadenaConDetalles")
+            print("3. procesarListaCadenas")
+            print('4. Mostrar la información del autómata (toString)')
+            print('5. Mostrar los grafos (se exportará un archivo pdf a /archivosSalida)')
+            print("6. seleccionar un solo autómata")
+            print("0. SALIR")
+            opcion = self.filter(mode='int', args=[0, 6])
+
+            if opcion == 1: #procesar cadena
+                print("\nEscriba cuantas cadenas quiere que cada autómata procese (numero positivo de máximo 1 millón):")
+                n=   self.filter(mode='int', args=[0, 1000000])
+                print("\nEscriba que tan larga quiere que sea la cadena (numero positivo de máximo 1 millón):")
+                l=   self.filter(mode='int', args=[0, 1000000])
+                print('Se van a generar ',n, ' cadenas de tamaño ', l, ' para ', len(self.listaAutomatas), ' autómata(s) en los próximos 3 segundos:')
+                time.sleep(3)
+
+                for i,M in enumerate(self.listaAutomatas):
+                    print(string.ascii_lowercase[i]+'. Autómata: ', M.nombreArchivo, M.extension)
+                    for i in range(n):
+                        c= M.Sigma.generarCadenaAleatoria(l)
+                        print(c, M.procesarCadena(c))
+                    print()
+                pass
+            elif opcion == 2:  #procesar cadena con detalles
+                print("\nEscriba cuantas cadenas quiere que cada autómata procese (numero positivo de máximo 1 millón):")
+                n=   self.filter(mode='int', args=[0, 1000000])
+                print("\nEscriba que tan larga quiere que sea la cadena (numero positivo de máximo 1 millón):")
+                l=   self.filter(mode='int', args=[0, 1000000])
+                print('Se van a generar ',n, ' cadenas de tamaño ', l, ' para ', len(self.listaAutomatas), ' autómata(s) en los próximos 3 segundos:')
+                time.sleep(3)
+
+                for i,M in enumerate(self.listaAutomatas):
+                    print(string.ascii_lowercase[i]+'. Autómata: ', M.nombreArchivo, M.extension)
+                    for i in range(n):
+                        c= M.Sigma.generarCadenaAleatoria(l)
+                        print(c, M.procesarCadenaConDetalles(c))
+                    print()
+                pass
+                pass
+            elif opcion == 3:
+                print("\nEscriba cuantas cadenas quiere que cada autómata procese (numero positivo de máximo 1 millón):")
+                n=   self.filter(mode='int', args=[0, 1000000])
+                print("\nEscriba que tan larga quiere que sea la cadena (numero positivo de máximo 1 millón):")
+                l=   self.filter(mode='int', args=[0, 1000000])
+                print('Se van a generar ',n, ' cadenas de tamaño ', l, ' para ', len(self.listaAutomatas), ' autómata(s) en los próximos 3 segundos:')
+                time.sleep(3)
+
+                for i,M in enumerate(self.listaAutomatas):
+                    c=[]
+                    for i in range(n):
+                        c.append( M.Sigma.generarCadenaAleatoria(l))
+                    print(string.ascii_lowercase[i]+'. Autómata: ', M.nombreArchivo, M.extension)
+                    print(c, M.procesarListaCadenas(listaCadenas=c, imprimirPantalla=True))
+                    print()
+            elif opcion ==0:
+                print('\nPrograma Terminado.\n')
+                break
 
 
 
-afdSimp = AFD('ej4_simplificar_.dfa')
-afdSimp.toString(graficar=True)
+    def importarArchivosEntrada(self):
+            carpeta= './archivosEntrada'
+            nombres_archivos = []
+            automatas=[]
+            for nombre_archivo in os.listdir(carpeta):
+                ruta_archivo = os.path.join(carpeta, nombre_archivo)
+                if os.path.isfile(ruta_archivo):
+                    nombre_archivo_sin_ruta = os.path.basename(ruta_archivo)
+                    nombres_archivos.append(nombre_archivo_sin_ruta)
+            for url in nombres_archivos:
+                url=str(url)
+                if(url.endswith('dfa')):
+                    automatas.append(AFD(url))
+                elif(url.endswith('nfa')):
+                    automatas.append(AFN(url))
+                elif(url.endswith('nfe')):
+                    automatas.append(AFN_Lambda(url))
+                elif(url.endswith('dpda')):
+                    automatas.append(AFPD(url))
+                elif(url.endswith('pda')):
+                    automatas.append(AFPN(url))
+                elif(url.endswith('msm')):
+                    automatas.append(AF2P(url))
+                elif(url.endswith('tm')):
+                    automatas.append(MT(url))
+            self.listaNombreArchivos= nombres_archivos
+            self.listaAutomatas= automatas
+            return automatas
+
+    def filter(self, mode='int', args=[0,10]):
+        if(mode=='int'):
+            while True:
+                opcion = input(">> ")
+                if(opcion.isdigit()):
+                    opcion= int(opcion)
+                    if opcion >=  args[0] and opcion<=args[1]:
+                        return opcion
+        else:
+            pass
+
+# Ejemplo de uso
+
+# afdSimp = AFD('ej4_simplificar_.dfa')
+# afdSimp.toString(graficar=True)
+# def obtener_nombres_archivos(carpeta):
+#     nombres_archivos = []
+#     for nombre_archivo in os.listdir(carpeta):
+#         ruta_archivo = os.path.join(carpeta, nombre_archivo)
+#         if os.path.isfile(ruta_archivo):
+#             nombre_archivo_sin_ruta = os.path.basename(ruta_archivo)
+#             nombres_archivos.append(nombre_archivo_sin_ruta)
+#     return nombres_archivos
+
+# # Ejemplo de uso
+# carpeta_archivos = './archivosEntrada'
+# nombres_archivos = obtener_nombres_archivos(carpeta_archivos)
+# print(nombres_archivos)
+
+ux = InterfazConsola().mostrar_menu()
