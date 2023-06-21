@@ -5,7 +5,7 @@
   <img src="logo.JPG" alt="Icono de la apicación" width="400">
 </p>
 
-Este proyecto es una implementación en Python 3.10.7 de varios tipos de autómatas y máquinas de Turing complementado con su representación gráfica usando la biblioteca NetworkX. Los tipos de autómatas implementados son:
+Este proyecto es una implementación en Python 3.10.7 de varios tipos de autómatas incluyendo la máquina de Turing complementado con su representación gráfica usando la biblioteca NetworkX. Los tipos de autómatas implementados son:
 
 - Autómata Finito Determinista (AFD)
 - Autómata Finito No Determinista (AFN)
