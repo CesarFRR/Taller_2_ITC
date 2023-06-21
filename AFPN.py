@@ -385,7 +385,7 @@ class AFPN:
         return out
     
     def exportar(self, archivo):
-        with open(f'./archivosSalida/{archivo}.pda', 'a') as archivo:
+        with open(f'./archivosSalida/{archivo}.{self.extension}', 'w') as archivo:
             archivo.write(self.toString())
 
     def graficarAutomata(self):

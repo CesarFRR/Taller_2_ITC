@@ -328,6 +328,10 @@ class AFPD:
             self.gra
         return out
     
+    def exportar(self, nombreArchivo):
+        with open(f'./archivosSalida/{nombreArchivo}.{self.extension}', "w") as f:
+            f.write(self.toString())
+            
     def graficarAutomata(self):
         """Grafica el automata usando librerias de matplotlib y NetworkX"""
         graficar = graficarAutomata()
