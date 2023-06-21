@@ -1,8 +1,9 @@
-abbabbabb	ABBABBAbb	no
-bbaabbbaa	BBAABBBAA	no
-aaabbbaba	AAABBBABA	no
-baaababab	BAAABABAB	no
-aaaabbaab	AAAABBaaB	no
-babbabbaa	BABBABBAA	no
-baaaabbaa	BAAAABBaa	no
-babababba	BABABABBA	no
+babaaaabb	BABAAAABB	no
+bbbaababa	BBBAABABA	no
+abbabbbba	ABBABBbbA	no
+aaabbaaaa	AAABBaaaa	no
+ababbabaa	ABABBABAA	no
+aabaabbaa	AABAABBaa	no
+bbbabbbaa	BBBABbbAA	no
+aababaaaa	AABABaaaa	no
+aaaaaaabb	AAAaaaaBB	no

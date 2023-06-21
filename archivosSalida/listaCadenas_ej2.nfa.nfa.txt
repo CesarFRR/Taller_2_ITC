@@ -1,5 +1,5 @@
-ccbaababa
-[s0,ccbaababa]->Procesamiento Abortado
+abbabcbbc
+[s0,abbabcbbc]->Procesamiento Abortado
 Numero de procesamientos
 1
 Numero de procesamientos de aceptacion
@@ -10,8 +10,8 @@ Numero de procesamientos rechazados
 0
 No
 
-cccaacaab
-[s0,cccaacaab]->Procesamiento Abortado
+cbcbcbcca
+[s0,cbcbcbcca]->Procesamiento Abortado
 Numero de procesamientos
 1
 Numero de procesamientos de aceptacion
@@ -22,75 +22,87 @@ Numero de procesamientos rechazados
 0
 No
 
-abcaabbaa
-[s0,abcaabbaa]->Procesamiento Abortado
+bcaaaccab
+[s0,bcaaaccab]->[s0,caaaccab]->Procesamiento Abortado
 Numero de procesamientos
-1
-Numero de procesamientos de aceptacion
-0
-Numero de procesamientos abortados
-1
-Numero de procesamientos rechazados
-0
-No
-
-abbcbbbac
-[s0,abbcbbbac]->Procesamiento Abortado
-Numero de procesamientos
-1
-Numero de procesamientos de aceptacion
-0
-Numero de procesamientos abortados
-1
-Numero de procesamientos rechazados
-0
-No
-
-bbaccacba
-[s0,bbaccacba]->[s0,baccacba]->[s0,accacba]->Procesamiento Abortado
-Numero de procesamientos
-5
-Numero de procesamientos de aceptacion
-0
-Numero de procesamientos abortados
-5
-Numero de procesamientos rechazados
-0
-No
-
-caaabaaac
-[s0,caaabaaac]->Procesamiento Abortado
-Numero de procesamientos
-1
-Numero de procesamientos de aceptacion
-0
-Numero de procesamientos abortados
-1
-Numero de procesamientos rechazados
-0
-No
-
-cccbbabca
-[s0,cccbbabca]->Procesamiento Abortado
-Numero de procesamientos
-1
-Numero de procesamientos de aceptacion
-0
-Numero de procesamientos abortados
-1
-Numero de procesamientos rechazados
-0
-No
-
-bbabacbcb
-[s0,bbabacbcb]->[s1,babacbcb]->[s2,abacbcb]->[s2,bacbcb]->[s2,acbcb]->[s3,cbcb]->[s1,bcb]->[s3,cb]->[s1,b]->Aceptacion
-Numero de procesamientos
-13
-Numero de procesamientos de aceptacion
 2
+Numero de procesamientos de aceptacion
+0
 Numero de procesamientos abortados
-9
-Numero de procesamientos rechazados
 2
-Si
+Numero de procesamientos rechazados
+0
+No
+
+cccbcbbaa
+[s0,cccbcbbaa]->Procesamiento Abortado
+Numero de procesamientos
+1
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+1
+Numero de procesamientos rechazados
+0
+No
+
+baabcabbb
+[s0,baabcabbb]->[s0,aabcabbb]->Procesamiento Abortado
+Numero de procesamientos
+2
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+2
+Numero de procesamientos rechazados
+0
+No
+
+cbaabcaca
+[s0,cbaabcaca]->Procesamiento Abortado
+Numero de procesamientos
+1
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+1
+Numero de procesamientos rechazados
+0
+No
+
+aababcbcb
+[s0,aababcbcb]->Procesamiento Abortado
+Numero de procesamientos
+1
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+1
+Numero de procesamientos rechazados
+0
+No
+
+bbabcacba
+[s0,bbabcacba]->[s0,babcacba]->[s0,abcacba]->Procesamiento Abortado
+Numero de procesamientos
+7
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+7
+Numero de procesamientos rechazados
+0
+No
+
+aabcbacca
+[s0,aabcbacca]->Procesamiento Abortado
+Numero de procesamientos
+1
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+1
+Numero de procesamientos rechazados
+0
+No
 

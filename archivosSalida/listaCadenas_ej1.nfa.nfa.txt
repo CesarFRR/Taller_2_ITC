@@ -1,5 +1,5 @@
-aabababbc
-[s0,aabababbc]->Procesamiento Abortado
+cacacbaac
+[s0,cacacbaac]->Procesamiento Abortado
 Numero de procesamientos
 1
 Numero de procesamientos de aceptacion
@@ -10,8 +10,8 @@ Numero de procesamientos rechazados
 0
 No
 
-cbcccaabb
-[s0,cbcccaabb]->Procesamiento Abortado
+caaccabbc
+[s0,caaccabbc]->Procesamiento Abortado
 Numero de procesamientos
 1
 Numero de procesamientos de aceptacion
@@ -22,8 +22,8 @@ Numero de procesamientos rechazados
 0
 No
 
-ccbacabcb
-[s0,ccbacabcb]->Procesamiento Abortado
+ccaaaaccb
+[s0,ccaaaaccb]->Procesamiento Abortado
 Numero de procesamientos
 1
 Numero de procesamientos de aceptacion
@@ -34,8 +34,8 @@ Numero de procesamientos rechazados
 0
 No
 
-cbacbabbb
-[s0,cbacbabbb]->Procesamiento Abortado
+aabccbcbb
+[s0,aabccbcbb]->Procesamiento Abortado
 Numero de procesamientos
 1
 Numero de procesamientos de aceptacion
@@ -46,8 +46,8 @@ Numero de procesamientos rechazados
 0
 No
 
-caaaacacb
-[s0,caaaacacb]->Procesamiento Abortado
+cbcbbbacc
+[s0,cbcbbbacc]->Procesamiento Abortado
 Numero de procesamientos
 1
 Numero de procesamientos de aceptacion
@@ -58,8 +58,8 @@ Numero de procesamientos rechazados
 0
 No
 
-acccabcab
-[s0,acccabcab]->Procesamiento Abortado
+aaaacbccb
+[s0,aaaacbccb]->Procesamiento Abortado
 Numero de procesamientos
 1
 Numero de procesamientos de aceptacion
@@ -70,26 +70,38 @@ Numero de procesamientos rechazados
 0
 No
 
-bbcbabcbb
-[s0,bbcbabcbb]->[s0,bcbabcbb]->[s0,cbabcbb]->Procesamiento Abortado
+cbbccacca
+[s0,cbbccacca]->Procesamiento Abortado
 Numero de procesamientos
-7
+1
 Numero de procesamientos de aceptacion
 0
 Numero de procesamientos abortados
-7
+1
 Numero de procesamientos rechazados
 0
 No
 
-bbcccabab
-[s0,bbcccabab]->[s0,bcccabab]->[s0,cccabab]->Procesamiento Abortado
+bacccbbba
+[s0,bacccbbba]->[s0,acccbbba]->Procesamiento Abortado
 Numero de procesamientos
-4
+2
 Numero de procesamientos de aceptacion
 0
 Numero de procesamientos abortados
-4
+2
+Numero de procesamientos rechazados
+0
+No
+
+baaabbaba
+[s0,baaabbaba]->[s0,aaabbaba]->Procesamiento Abortado
+Numero de procesamientos
+2
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+2
 Numero de procesamientos rechazados
 0
 No

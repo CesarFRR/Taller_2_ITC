@@ -1,96 +1,101 @@
-111101011
-['s0', '111101011', '$']-> ['s0', '11101011', '$']-> ['s0', '1101011', '$']-> ['s0', '101011', '$']-> ['s0', '01011', '$']-> ['s0', '1011', '$']-> ['s0', '011', '$']-> ['s0', '11', '$']-> ['s0', '1', '$']-> ['s1', '$', '$']-> Aceptacion
+000100011
+Numero de procesamientos
+19
+Numero de procesamientos de aceptacion
+0
+Numero de procesamientos abortados
+16
+Numero de procesamientos rechazados
+3
+No
+
+101101101
+['s0', '101101101', '$']-> ['s0', '01101101', 'B']-> ['s0', '1101101', 'BA']-> ['s0', '101101', 'BAB']-> ['s0', '01101', 'BABB']-> ['s1', '1101', 'BABB']-> ['s1', '101', 'BAB']-> ['s1', '01', 'BA']-> ['s1', '1', 'B']-> ['s1', '$', '$']-> Aceptacion
 Numero de procesamientos
 19
 Numero de procesamientos de aceptacion
 1
 Numero de procesamientos abortados
-17
+14
 Numero de procesamientos rechazados
-1
+4
 Si
 
-110000010
-['s0', '110000010', '$']-> ['s0', '10000010', '$']-> ['s0', '0000010', '$']-> ['s0', '000010', '$']-> ['s0', '00010', '$']-> ['s0', '0010', '$']-> ['s0', '010', '$']-> ['s0', '10', '$']-> ['s0', '0', '$']-> ['s1', '$', '$']-> Aceptacion
+011110011
 Numero de procesamientos
 19
 Numero de procesamientos de aceptacion
-1
+0
 Numero de procesamientos abortados
-17
+15
 Numero de procesamientos rechazados
-1
-Si
+4
+No
 
-100110010
-['s0', '100110010', '$']-> ['s0', '00110010', '$']-> ['s0', '0110010', '$']-> ['s0', '110010', '$']-> ['s0', '10010', '$']-> ['s0', '0010', '$']-> ['s0', '010', '$']-> ['s0', '10', '$']-> ['s0', '0', '$']-> ['s1', '$', '$']-> Aceptacion
+110000000
 Numero de procesamientos
 19
 Numero de procesamientos de aceptacion
-1
+0
 Numero de procesamientos abortados
-17
+11
 Numero de procesamientos rechazados
-1
-Si
+8
+No
 
-101110110
-['s0', '101110110', '$']-> ['s0', '01110110', '$']-> ['s0', '1110110', '$']-> ['s0', '110110', '$']-> ['s0', '10110', '$']-> ['s0', '0110', '$']-> ['s0', '110', '$']-> ['s0', '10', '$']-> ['s0', '0', '$']-> ['s1', '$', '$']-> Aceptacion
+111000001
 Numero de procesamientos
 19
 Numero de procesamientos de aceptacion
-1
+0
 Numero de procesamientos abortados
-17
+16
 Numero de procesamientos rechazados
-1
-Si
+3
+No
 
-100111110
-['s0', '100111110', '$']-> ['s0', '00111110', '$']-> ['s0', '0111110', '$']-> ['s0', '111110', '$']-> ['s0', '11110', '$']-> ['s0', '1110', '$']-> ['s0', '110', '$']-> ['s0', '10', '$']-> ['s0', '0', '$']-> ['s1', '$', '$']-> Aceptacion
+000110111
 Numero de procesamientos
 19
 Numero de procesamientos de aceptacion
-1
+0
 Numero de procesamientos abortados
-17
+15
 Numero de procesamientos rechazados
-1
-Si
+4
+No
 
-100000101
-['s0', '100000101', '$']-> ['s0', '00000101', '$']-> ['s0', '0000101', '$']-> ['s0', '000101', '$']-> ['s0', '00101', '$']-> ['s0', '0101', '$']-> ['s0', '101', '$']-> ['s0', '01', '$']-> ['s0', '1', '$']-> ['s1', '$', '$']-> Aceptacion
+101000111
 Numero de procesamientos
 19
 Numero de procesamientos de aceptacion
-1
+0
 Numero de procesamientos abortados
-17
+15
 Numero de procesamientos rechazados
-1
-Si
+4
+No
 
-101100111
-['s0', '101100111', '$']-> ['s0', '01100111', '$']-> ['s0', '1100111', '$']-> ['s0', '100111', '$']-> ['s0', '00111', '$']-> ['s0', '0111', '$']-> ['s0', '111', '$']-> ['s0', '11', '$']-> ['s0', '1', '$']-> ['s1', '$', '$']-> Aceptacion
+101111010
 Numero de procesamientos
 19
 Numero de procesamientos de aceptacion
-1
+0
 Numero de procesamientos abortados
-17
+16
 Numero de procesamientos rechazados
-1
-Si
+3
+No
 
-100010000
-['s0', '100010000', '$']-> ['s0', '00010000', '$']-> ['s0', '0010000', '$']-> ['s0', '010000', '$']-> ['s0', '10000', '$']-> ['s0', '0000', '$']-> ['s0', '000', '$']-> ['s0', '00', '$']-> ['s0', '0', '$']-> ['s1', '$', '$']-> Aceptacion
+110111011
+['s0', '110111011', '$']-> ['s0', '10111011', 'B']-> ['s0', '0111011', 'BB']-> ['s0', '111011', 'BBA']-> ['s0', '11011', 'BBAB']-> ['s1', '1011', 'BBAB']-> ['s1', '011', 'BBA']-> ['s1', '11', 'BB']-> ['s1', '1', 'B']-> ['s1', '$', '$']-> Aceptacion
 Numero de procesamientos
 19
 Numero de procesamientos de aceptacion
 1
 Numero de procesamientos abortados
-17
+14
 Numero de procesamientos rechazados
-1
+4
 Si
 

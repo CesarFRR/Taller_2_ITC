@@ -1,8 +1,9 @@
-baccbacca	[s0,baccbacca]-> [s0,accbacca]-> [s0,ccbacca]-> [L,cbacca]-> [L,bacca]-> [L,acca]-> [L,cca]-> [L,ca]-> [L,a]-> No Aceptacion	no
-bacabbcab	[s0,bacabbcab]-> [s0,acabbcab]-> [s0,cabbcab]-> [L,abbcab]-> [L,bbcab]-> [L,bcab]-> [L,cab]-> [L,ab]-> [L,b]-> No Aceptacion	no
-bccbacbaa	[s0,bccbacbaa]-> [s0,ccbacbaa]-> [L,cbacbaa]-> [L,bacbaa]-> [L,acbaa]-> [L,cbaa]-> [L,baa]-> [L,aa]-> [L,a]-> No Aceptacion	no
-bbbbabccb	[s0,bbbbabccb]-> [s0,bbbabccb]-> [s0,bbabccb]-> [s0,babccb]-> [s0,abccb]-> [s0,bccb]-> [s0,ccb]-> [L,cb]-> [L,b]-> No Aceptacion	no
-abccbacaa	[s0,abccbacaa]-> [s0,bccbacaa]-> [s0,ccbacaa]-> [L,cbacaa]-> [L,bacaa]-> [L,acaa]-> [L,caa]-> [L,aa]-> [L,a]-> No Aceptacion	no
-bbaabccba	[s0,bbaabccba]-> [s0,baabccba]-> [s0,aabccba]-> [s0,abccba]-> [s0,bccba]-> [s0,ccba]-> [L,cba]-> [L,ba]-> [L,a]-> No Aceptacion	no
-bababbbaa	[s0,bababbbaa]-> [s0,ababbbaa]-> [s0,babbbaa]-> [s0,abbbaa]-> [s0,bbbaa]-> [s0,bbaa]-> [s0,baa]-> [s0,aa]-> [s0,a]-> Aceptacion	yes
-ccacabccb	[s0,ccacabccb]-> [L,cacabccb]-> [L,acabccb]-> [L,cabccb]-> [L,abccb]-> [L,bccb]-> [L,ccb]-> [L,cb]-> [L,b]-> No Aceptacion	no
+aaccbccca	[s0,aaccbccca]-> [s0,accbccca]-> [s0,ccbccca]-> [L,cbccca]-> [L,bccca]-> [L,ccca]-> [L,cca]-> [L,ca]-> [L,a]-> No Aceptacion	no
+abcbcbbbc	[s0,abcbcbbbc]-> [s0,bcbcbbbc]-> [s0,cbcbbbc]-> [L,bcbbbc]-> [L,cbbbc]-> [L,bbbc]-> [L,bbc]-> [L,bc]-> [L,c]-> No Aceptacion	no
+cbcaaaaab	[s0,cbcaaaaab]-> [L,bcaaaaab]-> [L,caaaaab]-> [L,aaaaab]-> [L,aaaab]-> [L,aaab]-> [L,aab]-> [L,ab]-> [L,b]-> No Aceptacion	no
+bcccbbacc	[s0,bcccbbacc]-> [s0,cccbbacc]-> [L,ccbbacc]-> [L,cbbacc]-> [L,bbacc]-> [L,bacc]-> [L,acc]-> [L,cc]-> [L,c]-> No Aceptacion	no
+cccaaacba	[s0,cccaaacba]-> [L,ccaaacba]-> [L,caaacba]-> [L,aaacba]-> [L,aacba]-> [L,acba]-> [L,cba]-> [L,ba]-> [L,a]-> No Aceptacion	no
+cbacbbaca	[s0,cbacbbaca]-> [L,bacbbaca]-> [L,acbbaca]-> [L,cbbaca]-> [L,bbaca]-> [L,baca]-> [L,aca]-> [L,ca]-> [L,a]-> No Aceptacion	no
+acccbbabb	[s0,acccbbabb]-> [s0,cccbbabb]-> [L,ccbbabb]-> [L,cbbabb]-> [L,bbabb]-> [L,babb]-> [L,abb]-> [L,bb]-> [L,b]-> No Aceptacion	no
+aaaacaccb	[s0,aaaacaccb]-> [s0,aaacaccb]-> [s0,aacaccb]-> [s0,acaccb]-> [s0,caccb]-> [L,accb]-> [L,ccb]-> [L,cb]-> [L,b]-> No Aceptacion	no
+cbacbbaba	[s0,cbacbbaba]-> [L,bacbbaba]-> [L,acbbaba]-> [L,cbbaba]-> [L,bbaba]-> [L,baba]-> [L,aba]-> [L,ba]-> [L,a]-> No Aceptacion	no

@@ -175,59 +175,62 @@ class AFPN:
             
 
     def procesamiento(self,cadena):
-        self.aceptacion = []
-        self.rechazadas = []
-        self.abortadas = []
-        pila = ''
-        tree = nonBinaryTreePila(self.q0, cadena, pila)
-        self.rutas = []
-        
-        pila = self.recorrerCadena(tree)
-        
+        try:
+            self.aceptacion = []
+            self.rechazadas = []
+            self.abortadas = []
+            pila = ''
+            tree = nonBinaryTreePila(self.q0, cadena, pila)
+            self.rutas = []
+            
+            pila = self.recorrerCadena(tree)
+            
 
-        self.rutas = tree.recorrer(tree)
+            self.rutas = tree.recorrer(tree)
 
-        for ruta in range(len(self.rutas)):
-            self.rutas[ruta] = list(self.rutas[ruta])
-            for i in range(len(self.rutas[ruta])):
-                self.rutas[ruta][i] = list(self.rutas[ruta][i])
-                for j in range(len(self.rutas[ruta][i])):
-                    if self.rutas[ruta][i][j] == '':
-                        self.rutas[ruta][i][j] = '$'
+            for ruta in range(len(self.rutas)):
+                self.rutas[ruta] = list(self.rutas[ruta])
+                for i in range(len(self.rutas[ruta])):
+                    self.rutas[ruta][i] = list(self.rutas[ruta][i])
+                    for j in range(len(self.rutas[ruta][i])):
+                        if self.rutas[ruta][i][j] == '':
+                            self.rutas[ruta][i][j] = '$'
 
-        for ruta in self.rutas:
-            out=''
-            if ruta[-1][1] == '$':
-                if ruta[-1][2] == '$':
-                    if ruta[-1][0] in self.F:
-                        for procesamiento in ruta:
-                            out += f'{procesamiento}-> '
-                        out+='Aceptacion'
-                        if out not in self.aceptacion:
-                            self.aceptacion.append(out)
+            for ruta in self.rutas:
+                out=''
+                if ruta[len(ruta)-1][1] == '$':
+                    if ruta[len(ruta)-1][2] == '$':
+                        if ruta[len(ruta)-1][0] in self.F:
+                            for procesamiento in ruta:
+                                out += f'{procesamiento}-> '
+                            out+='Aceptacion'
+                            if out not in self.aceptacion:
+                                self.aceptacion.append(out)
+                        else:
+                            for procesamiento in ruta:
+                                out += f'{procesamiento}->'
+                            out+='No aceptacion'
+                            if out not in self.aceptacion:
+                                self.rechazadas.append(out)
                     else:
                         for procesamiento in ruta:
                             out += f'{procesamiento}->'
                         out+='No aceptacion'
-                        if out not in self.aceptacion:
+                        if out not in self.rechazadas:
                             self.rechazadas.append(out)
                 else:
                     for procesamiento in ruta:
                         out += f'{procesamiento}->'
-                    out+='No aceptacion'
-                    if out not in self.rechazadas:
-                        self.rechazadas.append(out)
-            else:
-                for procesamiento in ruta:
-                    out += f'{procesamiento}->'
-                out+='Procesamiento abortado'
-                if out not in self.abortadas:
-                    self.abortadas.append(out)
-        # print('aceptacion \n',self.aceptacion)
-        # print('rechazadas \n',self.rechazadas)           
-        # print('abortadas \n',self.abortadas)
-        if len(self.aceptacion) > 0:
-            return self.aceptacion[0]
+                    out+='Procesamiento abortado'
+                    if out not in self.abortadas:
+                        self.abortadas.append(out)
+            # print('aceptacion \n',self.aceptacion)
+            # print('rechazadas \n',self.rechazadas)           
+            # print('abortadas \n',self.abortadas)
+            if len(self.aceptacion) > 0:
+                return self.aceptacion[0]
+        except:
+            pass
         return None
 
         #print(tree)
@@ -297,12 +300,15 @@ class AFPN:
                 self.procesamiento(cadena)
                 archivo.write(f'{cadena}\n')
                 try:
-                    archivo.write(f'{self.aceptacion[0]}\n')
+                    if(self.aceptacion):
+                        archivo.write(f'{self.aceptacion[0]}\n')
                 except:
                     try:
-                        archivo.write(f'{self.rechazadas[0]}\n')
+                        if(self.rechazadas):
+                            archivo.write(f'{self.rechazadas[0]}\n')
                     except:
-                        archivo.write(f'{self.abortadas[0]}\n')
+                        if(self.abortadas):
+                            archivo.write(f'{self.abortadas[0]}\n')
                 archivo.write(f'Numero de procesamientos\n{len(self.aceptacion+self.rechazadas+self.abortadas)}\n')
                 archivo.write(f'Numero de procesamientos de aceptacion\n{len(self.aceptacion)}\n')
                 archivo.write(f'Numero de procesamientos abortados\n{len(self.abortadas)}\n')
