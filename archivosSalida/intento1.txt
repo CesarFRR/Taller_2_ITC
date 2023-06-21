@@ -1,0 +1,5 @@
+aabb	(q0,aabb,$)>>aborted, ($ not in #stackAlphabet) V (A no in #stackAlphabet)(q0,$,$)>>accepted	yes
+aab	(q0,aab,$)>>aborted, ($ not in #stackAlphabet) V (A no in #stackAlphabet)(q0,$,$)>>accepted	yes
+aaabcbb	(q0,aaabcbb,$)>>aborted, ($ not in #stackAlphabet) V (A no in #stackAlphabet)(q0,$,$)>>accepted	yes
+bb	(q1,bb,$)>>aborted, (A not in #stackAlphabet) V ($ no in #stackAlphabet)(q1,$,$)>>accepted	yes
+aaaa	(q0,aaaa,$)>>aborted, ($ not in #stackAlphabet) V (A no in #stackAlphabet)(q0,$,$)>>accepted	yes

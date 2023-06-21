@@ -1,0 +1,9 @@
+[q1*,abba]-> [q3*,bba]-> [q1*,ba]-> [q3*,a]-> No Aceptacion
+[q1*,baabb]-> [q3*,aabb]-> [q1*,abb]-> [q3*,bb]-> [q1*,b]-> Aceptacion
+[q3*,bbabaaab]-> [q1*,babaaab]-> [q3*,abaaab]-> [q1*,baaab]-> [q3*,aaab]-> [q1*,aab]-> [q3*,ab]-> [q1*,b]-> Aceptacion
+[q3*,a]-> No Aceptacion
+[q1*,bba]-> [q3*,ba]-> [q1*,a]-> Aceptacion
+[q3*,baabba]-> [q1*,aabba]-> [q3*,abba]-> [q1*,bba]-> [q3*,ba]-> [q1*,a]-> Aceptacion
+[q3*,aaaaaba]-> [q1*,aaaaba]-> [q3*,aaaba]-> [q1*,aaba]-> [q3*,aba]-> [q1*,ba]-> [q3*,a]-> No Aceptacion
+[q1*,bbbbab]-> [q3*,bbbab]-> [q1*,bbab]-> [q3*,bab]-> [q1*,ab]-> [q3*,b]-> No Aceptacion
+[q1*,ababababbaXa]-> [q3*,babababbaXa]-> [q1*,abababbaXa]-> [q3*,bababbaXa]-> [q1*,ababbaXa]-> [q3*,babbaXa]-> [q1*,abbaXa]-> [q3*,bbaXa]-> [q1*,baXa]-> [q3*,aXa]-> [q1*,Xa]-> No Aceptacion
