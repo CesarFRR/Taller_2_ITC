@@ -98,7 +98,7 @@ class AFPN:
         elif operacion == 'swap':
             pila[-1] == parametro
 
-        return True
+        return pila
     
     def recorrerCadena(self,tree):
         cadena = tree.val[1]
@@ -111,17 +111,17 @@ class AFPN:
                             if len(pila) > 0:
                                 if parametro1 != '$' and parametro2 != '$':
                                     if parametro1 == pila[-1]:
-                                        self.modificarPila(pila, 'swap', parametro2)
+                                        pila = self.modificarPila(pila, 'swap', parametro2)
                                         tree.insert(result, cadena[index+1:], pila)
                                         
                                 elif parametro1 != '$' and parametro2 =='$':
                                     if parametro1 == pila[-1]:
-                                        self.modificarPila(pila, 'pop', parametro2)
+                                        pila = self.modificarPila(pila, 'pop', parametro2)
                                         tree.insert(result, cadena[index+1:], pila)
                                         
                                     else:break
                                 elif parametro1 == '$' and parametro2 != '$':
-                                    self.modificarPila(pila, 'push', parametro2)
+                                    pila = self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, cadena[index+1:], pila)
                                     
                                 elif parametro1 == '$' and parametro2 == '$':
@@ -129,7 +129,7 @@ class AFPN:
                                     
                             else:
                                 if parametro1 == '$' and parametro2 != '$':
-                                    self.modificarPila(pila, 'push', parametro2)
+                                    pila = self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, cadena[index+1:], pila)
                                     
                                 elif parametro1 == '$' and parametro2 == '$':
@@ -142,17 +142,17 @@ class AFPN:
                             if len(pila) > 0:
                                 if parametro1 != '$' and parametro2 != '$':
                                     if parametro1 == pila[-1]:
-                                        self.modificarPila(pila, 'swap', parametro2)
+                                        pila = self.modificarPila(pila, 'swap', parametro2)
                                         tree.insert(result, cadena[index:], pila)
                                         
                                 elif parametro1 != '$' and parametro2 =='$':
                                     if parametro1 == pila[-1]:
-                                        self.modificarPila(pila, 'pop', parametro2)
+                                        pila = self.modificarPila(pila, 'pop', parametro2)
                                         tree.insert(result, cadena[index:], pila)
                                         
                                     else:break
                                 elif parametro1 == '$' and parametro2 != '$':
-                                    self.modificarPila(pila, 'push', parametro2)
+                                    pila = self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, cadena[index:], pila)
                                     
                                 elif parametro1 == '$' and parametro2 == '$':
@@ -160,7 +160,7 @@ class AFPN:
                                     
                             else:
                                 if parametro1 == '$' and parametro2 != '$':
-                                    self.modificarPila(pila, 'push', parametro2)
+                                    pila = self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, cadena[index:], pila)
                                     
                                 elif parametro1 == '$' and parametro2 == '$':
@@ -219,7 +219,7 @@ class AFPN:
                         self.rechazadas.append(out)
             else:
                 for procesamiento in ruta:
-                    out += f'[{procesamiento}]->'
+                    out += f'{procesamiento}->'
                 out+='Procesamiento abortado'
                 if out not in self.abortadas:
                     self.abortadas.append(out)
@@ -310,7 +310,7 @@ class AFPN:
                     archivo.write('No\n\n')
 
         if imprimirPantalla:
-            with open(f'./archivosSalida/{nombreArchivo}', 'r') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'r') as archivo:
                 for line in archivo:
                     print(line)
 
@@ -333,7 +333,6 @@ class AFPN:
             if({q1,q2}=={self.q0, afd.q0}):
                 q0 = estadoCreado
             for simbolo in self.Sigma.simbolos:
-                print('a')
                 trAFD = list(afd.delta[q2][simbolo])[0]
                 if self.delta.get(q1) is not None:
                     for char, parametro1 in self.delta[q1]:
@@ -374,16 +373,20 @@ class AFPN:
         if graficar:
             self.graficarAutomata()
         return out
+    
+    def exportar(self, archivo):
+        with open(f'./archivosSalida/{archivo}.pda', 'a') as archivo:
+            archivo.write(self.toString())
 
 
 #----------------------------------------------------------------
 
-pda1 = AFPN('ej1.pda')
+#
 # print(pda1.delta)
 # dfa = AFD('ej4.dfa')
 # cartesiano = pda1.hallarProductoCartesianoConAFD(dfa)
 # print(cartesiano.toString())
-print(pda1.procesarCadenaConDetalles('0110'))
+# print(pda1.procesarCadenaConDetalles('0110'))
 # cartesiano.computarTodosLosProcesamientos('0110', 'cartesianoPrueba')
 #print(pda1.computarTodosLosProcesamientos('0110', 'AFPN_rechazadas'))
 # pda1.procesarListaCadenas(['aaab','aabbbbcc','aabbc','abc','abbbbbcccc'], 'ListaDeCadenasPila')

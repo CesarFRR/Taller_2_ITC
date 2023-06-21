@@ -142,7 +142,7 @@ class AFN:
 
     def exportar(self, archivo):
         """Guardar el autómata en un archivo con el formatoespecificado """
-        with open(f'./archivosSalida/{archivo}', "w") as f:
+        with open(f'./archivosSalida/{archivo}.nfa', "w") as f:
                 f.write(self.toString())
 
     def AFNtoAFD(self, afn1, imprimir = True):
@@ -381,7 +381,7 @@ class AFN:
                     archivo.write('No\n\n')
 
         if imprimirPantalla:
-            with open(f'./archivosSalida/{nombreArchivo}', 'r') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.txt', 'r') as archivo:
                 for line in archivo:
                     print(line)
 

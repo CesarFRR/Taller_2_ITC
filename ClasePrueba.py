@@ -75,6 +75,8 @@ class ClasePrueba:
         elif metodo == 'Procesar cadena con detalles':
             aceptada = self.afn.procesarCadenaConDetalles(args)
             return print(aceptada)
+        elif metodo == 'Computar todos los procesamientos':
+            aceptada = self.afn.computarTodosLosProcesamientos(args, 'AFNprocesamientos')
         elif metodo == 'Procesar lista de cadenas':
             print(args[0])
             self.afn.procesarListaCadenas(args[0], args[1], True)
@@ -113,11 +115,19 @@ class ClasePrueba:
 
     def probarAFNtoAFD(self, args = None):
         self.afn_conversion = self.afn.AFNtoAFD(self.afn)
-        cadena = args
-        print('AFN \n', self.afn.toString(), '\n')
-        print('procesamiento AFN \n',self.afn_conversion.procesarCadenaConDetalles(cadena), '\n')
-        print('AFN convertido \n', self.afn_conversion.toString(), '\n')
-        print('procesamiento AFN convertido a AFD \n',self.afn.procesarCadena(cadena))
+        cadena = args[0]
+        lista = args[1]
+        archivo = args[2]
+        if len(lista[0]) == 0:
+            print('AFN \n', self.afn.toString(), '\n')
+            print('procesamiento AFN \n',self.afn_conversion.procesarCadenaConDetalles(cadena), '\n')
+            print('AFN convertido \n', self.afn_conversion.toString(), '\n')
+            print('procesamiento AFN convertido a AFD \n',self.afn.procesarCadena(cadena))
+        else:
+            print('AFN \n', self.afn.toString(), '\n')
+            'procesamiento AFN \n',self.afn_conversion.procesarListaCadenas(lista, archivo, True), '\n'
+            print('AFN convertido \n', self.afn_conversion.toString(), '\n')
+            'procesamiento AFN convertido a AFD \n',self.afn.procesarListaCadenas(lista, archivo, True)
         pass
 
     def probarAFNLambdaToAFD(self, args = None):
