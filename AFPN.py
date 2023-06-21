@@ -234,10 +234,13 @@ class AFPN:
 
     def procesarCadena(self, cadena):
         """ procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. """
-        aceptada = self.procesamiento(cadena)
-        if aceptada is not None:
-            return True
-        return False
+        aceptada = None
+        
+        try:
+            aceptada=self.procesamiento(cadena)
+        except:
+            aceptada=False
+        return aceptada
     
     def procesarCadenaConDetalles(self, cadena):
         """realiza  lo  mismo  que  el  método  anterior aparte  imprime  losdetalles  del  procesamiento  con  el  formato  que se  indica  en  el  archivo AFPD.pdf."""
@@ -333,6 +336,7 @@ class AFPN:
             if({q1,q2}=={self.q0, afd.q0}):
                 q0 = estadoCreado
             for simbolo in self.Sigma.simbolos:
+                #print('a')
                 trAFD = list(afd.delta[q2][simbolo])[0]
                 if self.delta.get(q1) is not None:
                     for char, parametro1 in self.delta[q1]:
@@ -378,15 +382,19 @@ class AFPN:
         with open(f'./archivosSalida/{archivo}.pda', 'a') as archivo:
             archivo.write(self.toString())
 
+    def graficarAutomata(self):
+        """Grafica el automata usando librerias de matplotlib y NetworkX"""
+        graficar = graficarAutomata()
+        graficar.mostrarGrafo(self)
 
 #----------------------------------------------------------------
 
-#
+#pda1 = AFPN('ej1.pda')
 # print(pda1.delta)
 # dfa = AFD('ej4.dfa')
 # cartesiano = pda1.hallarProductoCartesianoConAFD(dfa)
 # print(cartesiano.toString())
-# print(pda1.procesarCadenaConDetalles('0110'))
+#print(pda1.procesarCadenaConDetalles('0110'))
 # cartesiano.computarTodosLosProcesamientos('0110', 'cartesianoPrueba')
 #print(pda1.computarTodosLosProcesamientos('0110', 'AFPN_rechazadas'))
 # pda1.procesarListaCadenas(['aaab','aabbbbcc','aabbc','abc','abbbbbcccc'], 'ListaDeCadenasPila')

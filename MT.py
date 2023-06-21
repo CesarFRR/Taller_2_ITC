@@ -144,14 +144,14 @@ class MT:
 
     def procesarCadenaConDetalles(self, cadena):
         """  realiza  lo  mismo  que  el  método  anterior aparte  imprime  los detalles  del  procesamiento  con  el  formato  que se  indica  en  el  archivo MT.pdf. """
-
+        
         return self.procesarCadena(cadena=cadena, imprimir=True)
     
     def procesarFunción(self, cadena):
         """procesa  la  cadena  y  retorna la  cadena  que  queda  escrita sobre la cinta al final(última configuración instantánea). """
         return self.procesarCadena(cadena=cadena, procesarFuncion=True)
 
-    def procesarListaCadenas(self, listaCadenas ,nombreArchivo: str, imprimirPantalla: bool): 
+    def procesarListaCadenas(self, listaCadenas ,nombreArchivo:str='', imprimirPantalla: bool=False): 
         """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo;  si  este  es  inválido  se  asigna  un  nombre  por  defecto.  Además,todo  esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.Los campos deben estar separados por tabulación y son: 
         1. cadena 
         2. Última configuración instantánea

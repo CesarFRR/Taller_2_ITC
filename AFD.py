@@ -224,7 +224,7 @@ class AFD:
         print(out)
         return aceptada
 
-    def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str, imprimirPantalla: bool):
+    def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str='', imprimirPantalla: bool=False):
         """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo; si este es inválido se asigna un nombre por defecto.Además,todo esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla. Los campos deben estar separados por tabulación y son:
         1. cadena,
         2. sucesion de parejas (estado, símbolo) de cada paso del procesamiento .

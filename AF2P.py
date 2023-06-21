@@ -40,7 +40,7 @@ class AF2P:
                                 transLine=re.split(r"[>]", i)
                                
                                 transA, transB = transLine
-                                print(transLine, transA.split(':'))
+                                #print(transLine, transA.split(':'))
                                 if(len(transA.split(':'))!=4): raise ValueError("transicion invalida: ", i) # "; " q no puede tener varias salidas con un simbolo
                                 estado, simbolo, pop1, pop2 = transA.split(':') #estadoDestino, push = trans
                                 #print('trans: ', trans)

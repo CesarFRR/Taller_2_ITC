@@ -330,7 +330,12 @@ class AFN_Lambda:
 
     def procesarCadena(self, cadena: str)-> bool:
         """procesa la cadena y retorna verdadero si es aceptada y falso si es rechazada por el autómata. """
-        return self.procesamiento(cadena, self.q0, False, True)
+        aceptada=None
+        try:
+            aceptada= self.procesamiento(cadena, self.q0, False, True)
+        except:
+            aceptada=False
+        return  aceptada
 
     def procesarCadenaConDetalles(self, cadena: str)-> bool:
         """realiza lo mismo que el método procesarCadena() pero aparte imprime los estados que va tomando al procesar cada símbolo de uno de los procesamientos que lleva a la cadena a ser aceptada."""
@@ -361,7 +366,7 @@ class AFN_Lambda:
 
         return len(self.aceptacion + self.rechazadas + self.abortadas)
 
-    def procesarListaCadenas(self, listaCadenas: list,nombreArchivo: str, imprimirPantalla: bool):
+    def procesarListaCadenas(self, listaCadenas: list,nombreArchivo: str='', imprimirPantalla: bool=False):
         """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo; si este es inválido se asigna un nombre por defecto. Además,todo esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.Los campos deben estar separados por tabulación y son:
        
         1. cadena

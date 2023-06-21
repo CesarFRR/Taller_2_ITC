@@ -3,8 +3,14 @@ from Alfabeto import Alfabeto
 from AFD import AFD
 from AFN import AFN
 from AFN_e import AFN_Lambda
+from AFPD import AFPD
+from AFPN import AFPN
+from AF2P import AF2P
+from MT import MT
 from ProcesamientoCadenaAFD import ProcesamientoCadenaAFD
 from ProcesamientoCadenaAFN import ProcesamientoCadenaAFN
+import os
+
 
 
 class ClasePrueba:
@@ -12,8 +18,13 @@ class ClasePrueba:
     afd = None
     afd2 = None
     afn_lambda = None
+    afpd=None
+    afpn= None
+    af2p= None
+    mt= None
     afn_conversion = None
-
+    listaAutomatas=None
+    listaNombreArchivos=None
     def __init__(self, *args):
         #self.interfaz = args[0]
         pass
@@ -33,7 +44,54 @@ class ClasePrueba:
                 self.probarAFNLambdaToAFD(args)
             else:
                 self.probarAFNLambda(metodoAutomata, args)
+        elif tipoAutomata == 'AFPD':
+            if metodoAutomata == 'AFPD_procesarCadena':
+                self.probarAFNLambdaToAFD(args)
 
+        elif tipoAutomata == 'AFPN':
+            if metodoAutomata == 'AFPN_procesarCadena':
+                self.probarAFNLambdaToAFD(args)
+
+        elif tipoAutomata == 'AF2P':
+            if metodoAutomata == 'AF2P_procesarCadena':
+                self.probarAFNLambdaToAFD(args)
+            else:
+                self.probarAFNLambda(metodoAutomata, args)
+        elif tipoAutomata == 'MT':
+            if metodoAutomata == 'MT_procesarCadena':
+                self.probarAFNLambdaToAFD(args)
+            else:
+                self.probarAFNLambda(metodoAutomata, args)
+        
+
+    def importarArchivosEntrada(self):
+        carpeta= './archivosEntrada'
+        nombres_archivos = []
+        automatas=[]
+        for nombre_archivo in os.listdir(carpeta):
+            ruta_archivo = os.path.join(carpeta, nombre_archivo)
+            if os.path.isfile(ruta_archivo):
+                nombre_archivo_sin_ruta = os.path.basename(ruta_archivo)
+                nombres_archivos.append(nombre_archivo_sin_ruta)
+        for url in nombres_archivos:
+            url=str(url)
+            if(url.endswith('dfa')):
+                automatas.append(AFD(url))
+            elif(url.endswith('nfa')):
+                automatas.append(AFN(url))
+            elif(url.endswith('nfe')):
+                automatas.append(AFN_Lambda(url))
+            elif(url.endswith('dpda')):
+                automatas.append(AFPD(url))
+            elif(url.endswith('pda')):
+                automatas.append(AFPN(url))
+            elif(url.endswith('msm')):
+                automatas.append(AF2P(url))
+            elif(url.endswith('tm')):
+                automatas.append(MT(url))
+        self.listaNombreArchivos= nombres_archivos
+        self.listaAutomatas= automatas
+        return automatas
     def probarAFD(self, metodo = None, args = None):
         if metodo == None:
             if self.afd is not None:

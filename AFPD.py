@@ -141,7 +141,8 @@ class AFPD:
                 transicion= self.delta[actual][simbolo][0]
                 pop, push, actual = transicion
                 if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
-                    aceptada = False # simbolo no se encuentre en el alfabeto de la pila {PSigma}
+                     if all(simb!='$' for simb in pop + push):
+                        aceptada = False # simbolo no se encuentre en el alfabeto de la pila {PSigma}
                 if('$' != pop and '$' !=push):
                     self.modificarPila(pila, 'swap',push)
                 else:
@@ -198,9 +199,10 @@ class AFPD:
                 transicion= self.delta[actual][simbolo][0]
                 pop, push, actual = transicion
                 if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
-                    out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} not in #stackAlphabet) V ({push} not in #stackAlphabet)'
-                    print(out)
-                    return False # simbolo no se encuentre en el alfabeto de la pila {PSigma}, abortar
+                    if all(simb!='$' for simb in pop + push):
+                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} not in #stackAlphabet) V ({push} not in #stackAlphabet)'
+                        print(out)
+                        return False # simbolo no se encuentre en el alfabeto de la pila {PSigma}, abortar
                 out+=  f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
                 if('$' != pop and '$' !=push):
                     self.modificarPila(pila, 'swap',push)
@@ -236,7 +238,7 @@ class AFPD:
         return aceptada
        
         
-    def procesarListaCadenas(self, listaCadenas,nombreArchivo, imprimirPantalla): 
+    def procesarListaCadenas(self, listaCadenas,nombreArchivo='', imprimirPantalla=False): 
         """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo;  si  este  es  inválido  se  asigna  un  nombre  por  defecto. Además,todo  esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.
         Los campos deben estar separados por tabulación y son:
         1. cadena.
@@ -273,8 +275,9 @@ class AFPD:
                     transicion= self.delta[actual][simbolo][0]
                     pop, push, actual = transicion
                     if not all(simb in self.PSigma.simbolos for simb in pop) or not all(simb in self.PSigma.simbolos for simb in push):
-                        out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} not in #stackAlphabet) V ({push} no in #stackAlphabet)'
-                        break# simbolo no se encuentre en el alfabeto de la pila {PSigma}, abortar
+                        if all(simb!='$' for simb in pop + push):
+                            out+= f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })>>aborted, ({pop} not in #stackAlphabet) V ({push} no in #stackAlphabet)'
+                            break# simbolo no se encuentre en el alfabeto de la pila {PSigma}, abortar
                     out+=  f'({actual},{cadena[index:]},{"$" if len(pila)==0 else "".join(pila) })->'
                     if('$' != pop and '$' !=push):
                         self.modificarPila(pila, 'swap',push)
