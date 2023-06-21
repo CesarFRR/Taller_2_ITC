@@ -98,7 +98,7 @@ class AFPN:
         elif operacion == 'swap':
             pila[-1] == parametro
 
-        return True
+        return pila
     
     def recorrerCadena(self,tree):
         cadena = tree.val[1]
@@ -111,17 +111,17 @@ class AFPN:
                             if len(pila) > 0:
                                 if parametro1 != '$' and parametro2 != '$':
                                     if parametro1 == pila[-1]:
-                                        self.modificarPila(pila, 'swap', parametro2)
+                                        pila = self.modificarPila(pila, 'swap', parametro2)
                                         tree.insert(result, cadena[index+1:], pila)
                                         
                                 elif parametro1 != '$' and parametro2 =='$':
                                     if parametro1 == pila[-1]:
-                                        self.modificarPila(pila, 'pop', parametro2)
+                                        pila = self.modificarPila(pila, 'pop', parametro2)
                                         tree.insert(result, cadena[index+1:], pila)
                                         
                                     else:break
                                 elif parametro1 == '$' and parametro2 != '$':
-                                    self.modificarPila(pila, 'push', parametro2)
+                                    pila = self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, cadena[index+1:], pila)
                                     
                                 elif parametro1 == '$' and parametro2 == '$':
@@ -129,7 +129,7 @@ class AFPN:
                                     
                             else:
                                 if parametro1 == '$' and parametro2 != '$':
-                                    self.modificarPila(pila, 'push', parametro2)
+                                    pila = self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, cadena[index+1:], pila)
                                     
                                 elif parametro1 == '$' and parametro2 == '$':
@@ -142,17 +142,17 @@ class AFPN:
                             if len(pila) > 0:
                                 if parametro1 != '$' and parametro2 != '$':
                                     if parametro1 == pila[-1]:
-                                        self.modificarPila(pila, 'swap', parametro2)
+                                        pila = self.modificarPila(pila, 'swap', parametro2)
                                         tree.insert(result, cadena[index:], pila)
                                         
                                 elif parametro1 != '$' and parametro2 =='$':
                                     if parametro1 == pila[-1]:
-                                        self.modificarPila(pila, 'pop', parametro2)
+                                        pila = self.modificarPila(pila, 'pop', parametro2)
                                         tree.insert(result, cadena[index:], pila)
                                         
                                     else:break
                                 elif parametro1 == '$' and parametro2 != '$':
-                                    self.modificarPila(pila, 'push', parametro2)
+                                    pila = self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, cadena[index:], pila)
                                     
                                 elif parametro1 == '$' and parametro2 == '$':
@@ -160,7 +160,7 @@ class AFPN:
                                     
                             else:
                                 if parametro1 == '$' and parametro2 != '$':
-                                    self.modificarPila(pila, 'push', parametro2)
+                                    pila = self.modificarPila(pila, 'push', parametro2)
                                     tree.insert(result, cadena[index:], pila)
                                     
                                 elif parametro1 == '$' and parametro2 == '$':
@@ -219,7 +219,7 @@ class AFPN:
                         self.rechazadas.append(out)
             else:
                 for procesamiento in ruta:
-                    out += f'[{procesamiento}]->'
+                    out += f'{procesamiento}->'
                 out+='Procesamiento abortado'
                 if out not in self.abortadas:
                     self.abortadas.append(out)
@@ -377,6 +377,10 @@ class AFPN:
         if graficar:
             self.graficarAutomata()
         return out
+    
+    def exportar(self, archivo):
+        with open(f'./archivosSalida/{archivo}.pda', 'a') as archivo:
+            archivo.write(self.toString())
 
     def graficarAutomata(self):
         """Grafica el automata usando librerias de matplotlib y NetworkX"""

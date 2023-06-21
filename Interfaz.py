@@ -124,30 +124,31 @@ class AutomataInterface(tk.Tk):
         tk.Button(ventana_metodo, text="Procesar Cadena", command= lambda:self.prueba.main([tipoAutomata, 'Procesar cadena'],self.cadena_entrada.get())).grid(row=2, column=0, padx=10, pady=5)
         tk.Button(ventana_metodo, text="Procesar con Detalles", command=lambda:self.prueba.main([tipoAutomata, 'Procesar cadena con detalles'], self.cadena_entrada.get())).grid(row=2, column=1, padx=10, pady=5)
         
-        tk.Label(ventana_metodo, text = 'Ingresar lista de cadenas(separadas por coma)').grid(row=3, column=0,pady = 10)
-        tk.Label(ventana_metodo, text = 'Nombre archivo').grid(row=3, column=1)
-        tk.Entry(ventana_metodo, textvariable=self.lista_cadenas).grid(row=4,column=0)
-        tk.Entry(ventana_metodo, textvariable=self.archivo_lista).grid(row=4,column=1)
-        tk.Button(ventana_metodo, text="Procesar Lista de Cadenas", command=lambda:self.prueba.main([tipoAutomata, 'Procesar lista de cadenas'],[self.lista_cadenas.get().split(','),self.archivo_lista.get()])).grid(row=5, column=0, padx=10, pady=5, columnspan=2)
+        tk.Label(ventana_metodo, text = 'Ingresar lista de cadenas(separadas por coma)').grid(row=4, column=0,pady = 10)
+        tk.Label(ventana_metodo, text = 'Nombre archivo').grid(row=4, column=1)
+        tk.Entry(ventana_metodo, textvariable=self.lista_cadenas).grid(row=5,column=0)
+        tk.Entry(ventana_metodo, textvariable=self.archivo_lista).grid(row=5,column=1)
+        tk.Button(ventana_metodo, text="Procesar Lista de Cadenas", command=lambda:self.prueba.main([tipoAutomata, 'Procesar lista de cadenas'],[self.lista_cadenas.get().split(','),self.archivo_lista.get()])).grid(row=6, column=0, padx=10, pady=5, columnspan=2)
         
-        tk.Label(ventana_metodo, text = 'Nombre archivo para exportar automata').grid(row=6, column=0,columnspan=2,pady = 10)
-        tk.Entry(ventana_metodo, textvariable=self.archivo_exportar).grid(row=7,column=0,columnspan=2)
-        tk.Button(ventana_metodo, text="Exportar Autómata", command=lambda:self.prueba.main([tipoAutomata, 'Exportar'],self.archivo_exportar.get())).grid(row=8, column=0, padx=10, pady=5, columnspan=2)
-        tk.Button(ventana_metodo, text="Imprimir automata", command=lambda:self.prueba.main([tipoAutomata, 'Imprimir'])).grid(row=9, column=0)
-        tk.Button(ventana_metodo, text="Mostrar grafo", command=lambda:self.prueba.main([tipoAutomata, 'Graficar'])).grid(row=9, column=1)
+        tk.Label(ventana_metodo, text = 'Nombre archivo para exportar automata').grid(row=7, column=0,columnspan=2,pady = 10)
+        tk.Entry(ventana_metodo, textvariable=self.archivo_exportar).grid(row=8,column=0,columnspan=2)
+        tk.Button(ventana_metodo, text="Exportar Autómata", command=lambda:self.prueba.main([tipoAutomata, 'Exportar'],self.archivo_exportar.get())).grid(row=9, column=0, padx=10, pady=5, columnspan=2)
+        tk.Button(ventana_metodo, text="Imprimir automata", command=lambda:self.prueba.main([tipoAutomata, 'Imprimir'])).grid(row=10, column=0)
+        tk.Button(ventana_metodo, text="Mostrar grafo", command=lambda:self.prueba.main([tipoAutomata, 'Graficar'])).grid(row=10, column=1)
         
         if tipoAutomata == 'AFD':
-            tk.Button(ventana_metodo, text = 'Producto cartesiano', command= lambda:[self.volver_ventana_principal(ventana_metodo)]).grid(row=10, column=0,pady = 10)
-            tk.Button(ventana_metodo, text = 'Simplificar', command= self.prueba.probarSimplificacion).grid(row=10, column=1,pady = 10)
-            tk.Button(ventana_metodo, text = 'Hallar complemento', command= self.prueba.probarComplemento).grid(row=11, column=0, columnspan= 2)
+            tk.Button(ventana_metodo, text = 'Producto cartesiano', command= lambda:[self.volver_ventana_principal(ventana_metodo)]).grid(row=11, column=0,pady = 10)
+            tk.Button(ventana_metodo, text = 'Simplificar', command= self.prueba.probarSimplificacion).grid(row=11, column=1,pady = 10)
+            tk.Button(ventana_metodo, text = 'Hallar complemento', command= self.prueba.probarComplemento).grid(row=12, column=0, columnspan= 2)
         
         elif tipoAutomata == 'AFN':
-            tk.Entry(ventana_metodo, textvariable=self.cadena_entrada).grid(row=10,column=0,pady = 10)
-            tk.Button(ventana_metodo, text = 'AFN a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNtoAFD'], self.cadena_entrada.get())).grid(row=10,column=1)
+            tk.Button(ventana_metodo, text="Computar todos los procesamientos", command=lambda:self.prueba.main([tipoAutomata, 'Computar todos los procesamientos'], self.cadena_entrada.get())).grid(row=3, column=0, columnspan=2, padx=10, pady=5)
+            tk.Entry(ventana_metodo, textvariable=self.cadena_entrada).grid(row=11,column=0,pady = 10)
+            tk.Button(ventana_metodo, text = 'AFN a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNtoAFD'], [self.cadena_entrada.get(),self.lista_cadenas.get().split(','),self.archivo_lista.get()])).grid(row=11,column=1)
         
         elif tipoAutomata == 'AFNLambda':
-            tk.Entry(ventana_metodo, textvariable=self.cadena_entrada).grid(row=10,column=0,pady = 10)
-            tk.Button(ventana_metodo, text = 'AFNLambda a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNLambdaToAFD'], self.cadena_entrada.get())).grid(row=10,column=0, columnspan=2)
+            tk.Entry(ventana_metodo, textvariable=self.cadena_entrada).grid(row=11,column=0,pady = 10)
+            tk.Button(ventana_metodo, text = 'AFNLambda a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNLambdaToAFD'], self.cadena_entrada.get())).grid(row=11,column=0, columnspan=2)
 
         tk.Button(ventana_metodo, text="Salir", command=self.close).grid(row=0, column=1, columnspan=1)
         
