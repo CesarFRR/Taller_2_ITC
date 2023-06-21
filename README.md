@@ -2,10 +2,10 @@
 # Taller de autómatas de Introducción a la teoría de la computación 2023-1 (Python 3)
 
 <p align="center">
-  <img src="logo.JPG" alt="Icono de la apicación">
+  <img src="logo.JPG" alt="Icono de la apicación" width="400">
 </p>
 
-Este proyecto es una implementación en Python 3.10.7 de varios tipos de autómatas y máquinas de Turing complementado con su representación gráfica usando la biblioteca NetworkX. Los tipos de autómatas implementados son:
+Este proyecto es una implementación en Python 3.10.7 de varios tipos de autómatas incluyendo la máquina de Turing complementado con su representación gráfica usando la biblioteca NetworkX. Los tipos de autómatas implementados son:
 
 - Autómata Finito Determinista (AFD)
 - Autómata Finito No Determinista (AFN)
@@ -35,13 +35,6 @@ pip install prettytable
 
 pip install networkx
 ```
-## Authors
-
-- [Juan Montoya (Hallip)](https://github.com/Hallip)
-- [César Rincon (CesarFRR)](https://github.com/CesarFRR)
-- [Johan Rodriguez (Homeroso)](https://github.com/Homeroso)
-- [Anzola Tachak (ganzola)](https://github.com/ganzola)
-
 
 ## Clases main
 Las clases main o clases principales,son aquellas a las que se puede acceder al control de todo el proyecto, asi como también para las pruebas de las funcionalidades.
@@ -64,7 +57,10 @@ InterfazCLI.py --> Es una interfaz de consola, diseñada para ejecutar y probar 
 5. Mostrar los grafos (se exportará un archivo pdf a /archivosSalida)
 ```
 
+## Authors
 
-
-[Documentation](https://linktodocumentation)
+- [Juan Montoya (Hallip)](https://github.com/Hallip)
+- [César Rincon (CesarFRR)](https://github.com/CesarFRR)
+- [Johan Rodriguez (Homeroso)](https://github.com/Homeroso)
+- [Anzola Tachak (ganzola)](https://github.com/ganzola)
 
