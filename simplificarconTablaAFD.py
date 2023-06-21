@@ -1,13 +1,18 @@
 from AFD import AFD
 from prettytable import PrettyTable
 
-def simplificar(afd: AFD):
+
+
+def simplificar(afd1: AFD):
+    afd = AFD(afd1)
+
+    # SIMPLIFICAR USANDO UNA MATRIZ COMPLETA
+
     delta = afd.delta
     F= afd.F
     estados= sorted(list(afd.Q))
     n = len(estados)  # Tamaño de la matriz
     matriz = [['E'] * n for _ in range(n)]  # Inicializar matriz con 'E'
-
     # Paso 1: Crear los pares de estados involucrados en el DFA dado
     totalParejas=set()
     marcados0= set()
@@ -20,14 +25,9 @@ def simplificar(afd: AFD):
                 matriz[j][i] = '1'
                 if (estados[i], estados[j]) not in marcados0 and (estados[j], estados[i]) not in marcados0 and estados[i]!=estados[j]:
                     marcados0.add( (estados[i], estados[j]))
-    # print(estados, type(estados))
-    # for i in matriz:
-    #     print(f'[ {"  ,  ".join(i)} ]')
-
     # Paso 3: Marcar los pares (Qa, Qb) que cumplen la condición de transición marcada
     marcados = set()
     ciclo = 2
-
     while True:
         nuevos_marcados = set()
         for i in range(n):
@@ -40,7 +40,6 @@ def simplificar(afd: AFD):
                         transQa= delta.get(qa, None)
                         transQb = delta.get(qb, None)
                         if(not transQa) or (not transQb): # Cualquier estado o cualquier simbolo que...
-                            print('ERROR, ESTADO NO ENCONTRADO: ', transQa, transQb)
                             marcado = False
                             break
                         transQa = transQa.get(simb, None)
@@ -59,83 +58,111 @@ def simplificar(afd: AFD):
                         if(indexQa>indexQb):
                             indexQa, indexQb = indexQb, indexQa
                         # Con comparar uno de los dos sectores de un q1,q2 de la matriz basta:
-                        if (matriz[indexQa][indexQb] !='E' and int(matriz[indexQa][indexQb])<ciclo ): # no tengo ni idea de porque puse int(matriz[indexQa][indexQb])<ciclo, solo sé que si lo quito sale mal la tabla, que dios nos bendiga hablo enserio xd
+                        if (matriz[indexQa][indexQb] !='E' and int(matriz[indexQa][indexQb])<ciclo ): # int(matriz[indexQa][indexQb])<ciclo hace que se registre el ultimo ciclo
                             cycle= str(ciclo)
                             matriz[i][j] = cycle
                             matriz[j][i] = cycle
                             marcado=True
                             break
                     if marcado and (qa, qb) not in nuevos_marcados and (qb,qa) not in nuevos_marcados:
-                        if(qa=='q0' or qb=='q4'):
-                            print('encontrados! B: ', qa, qb)
                         nuevos_marcados.add((qa, qb)) # se agrega a los nuevos (i,j) no se agrega (j,i) por redundancia
-
         if len(nuevos_marcados) == 0:
             break
-
         marcados.update(nuevos_marcados)
         ciclo += 1
- 
-    print('total n° de parejas: ', len(totalParejas)/2)
     marcados.update(marcados0)
-    noMarcados =  totalParejas.difference(marcados)
 
-    for qa, qb in sorted(list(noMarcados)): # AQUI SE DEBE HACER LA FUSION DE ESTAODS
-        new_key= '{'+f'{qa},{qb}'+'}'
-        #afd.delta[new_key]=
+    # IMPRIMIR TABLA TRIANGULAR
 
-    return matriz, marcados, noMarcados# return: matriz, marcados, no marcados
-
-def imprimir_matriz_adyacencia_triangular(matriz, simbolos):
-    n = len(matriz)  # Tamaño de la matriz
     for i in range(n):
         for j in range(i+1):  # Solo imprime elementos hasta la diagonal principal
             if(i==j):
-                print(simbolos[i])
+                print(estados[i], end=' |\n')
             else:
-                print(matriz[j][i], end=" ")
+                print(matriz[j][i], end=" "*len(estados[i]) + "|" + " "*len(estados[i]) ) 
         print()  # Salto de línea después de cada fila
 
+    # IMPRIMIR TABLA DEL DELTA
 
-
-def imprimir_tabla_delta_simplificar(matriz, marcados, noMarcados, afd1):
+    noMarcados = totalParejas.difference(marcados)
     tabla = PrettyTable()
-    # Agregar encabezados
-    estados=sorted(list(afd1.Q))
-    simbolos=sorted(afd1.Sigma.simbolos)
+    simbolos=sorted(afd.Sigma.simbolos)
     encabezado=['{p,q}']
     for simb in simbolos:
         encabezado.append('{' + f'δ(p,{simb}),δ(q,{simb})' + '}')
     tabla.field_names = encabezado
-    # for q in estados:
-    #     if(afd1.delta.get(q)==None):
-    #         continue
-    #     fila=[q]
-    #     for simb in simbolos:
-    #         trans=list(afd1.delta[q].get(simb, ['∅']))
-    #         fila.append(trans[0])
-    #     tabla.add_row(fila)
-    tabla.add_row(['pareja(p,q)', 'parejaEvaluadacon simb 0', 'parejaEvaluadacon simb 1'])
+    n= len(matriz)
+    for i in range(n):
+        for j in range(n):
+            if (estados[i],estados[j]) in marcados:
+                qa, qb = estados[i], estados[j]
+                ciclo= int(matriz[i][j])
+                filaTabla1=['{' + f'{qa},{qb}' + '}']
+                if(ciclo >1 ):
+                    filaTabla1[0] = filaTabla1[0]+ f' X {ciclo}'
+                for simb in afd.Sigma.simbolos:
+                    qaEv = list(delta[qa][simb])[0]
+                    qbEv = list(delta[qb][simb])[0]
+                    filaTabla1.append('{' + f'{qaEv},{qbEv}' + '}')
+                tabla.add_row(filaTabla1)
+            elif (estados[i],estados[j]) in noMarcados:
+                filaTabla2=['{' + f'{qa},{qb}' + '}']
+                for simb in afd.Sigma.simbolos:
+                    qaEv = list(delta[qa][simb])[0]
+                    qbEv = list(delta[qb][simb])[0]
+                    filaTabla2.append('{' + f'{qaEv},{qbEv}' + '}')
+                tabla.add_row(filaTabla2)
     print(tabla)
 
-    pass
+    # FUSIONAR ESTADOS EN EL DELTA ORIGINAL
+    sorted_noMarcados =sorted(list(noMarcados))
+    for qa, qb in sorted_noMarcados:
+        estadoNext=set()
+        new_key= '{'+f'{qa},{qb}'+'}'
+        afd.delta[new_key]=dict()
+        for simb in afd.Sigma.simbolos:
+            afd.delta[new_key].update({simb:set()})
+            estadoNext |=(delta[qa][simb])
+            estadoNext |= (delta[qb][simb])
+            if(len(estadoNext)==1):
+                afd.delta[new_key][simb]={estadoNext.pop()}
+            else:
+                strQnext= '{'+",".join(sorted(list(estadoNext)))+'}'
+                delta[new_key][simb].add(strQnext)
 
-
+    for qa, qb in sorted_noMarcados:
+        strQ= '{'+f'{qa},{qb}'+'}'
+        if (qa in afd.F or qb in afd.F):
+            afd.F.difference_update({qa,qb})
+            afd.F.add(strQ)
+        if (qa in afd.Q or qb in afd.Q):
+            afd.Q.difference_update({qa,qb})
+            afd.Q.add(strQ)
+        for q in delta:
+            for simb in delta[q]:
+                trans= delta[q][simb].pop()
+                if(trans!=None):
+                    if(trans in {qa,qb}):
+                        delta[q][simb]={strQ}
+                    else:
+                        delta[q][simb]={trans}
+        del delta[qa]
+        del delta[qb]
+    afd.nombreArchivo=afd1.nombreArchivo + 'Simplificado'
+    return afd
 
 afd1 = AFD('ej4_simplificar_.dfa')
 
-matriz, marcados, noMarcados = simplificar(afd=afd1)
+afd2 =simplificar(afd1)
 
 
-#DE AQUI PARA ABAJO ES LO QUE PIDE EL PROFESOR EN CUANTO A LA IMAGEN Simplificación.png
+afd1.toString(graficar=True)
 
-# TODO: 
-# cosas por hacer: falta fusionar los estados teniendo en cuenta los estados que no fueron marcados --> noMarcados
-# Falta la tabla que piden en Simplificación.png
-# Eso sería todo
-print('\n')
-imprimir_matriz_adyacencia_triangular(matriz=matriz, simbolos=sorted(list(afd1.Q)))
-print('\n')
+afd2.toString(graficar=True)
+#imprimir_matriz_adyacencia_triangular(matriz, Q)
+
+#imprimir_tabla_delta_simplificar(matriz, marcados, noMarcados, afd1)
 
 
-imprimir_tabla_delta_simplificar(matriz, marcados, noMarcados, afd1)
+#fusionar_estados(afd1, noMarcados)
+

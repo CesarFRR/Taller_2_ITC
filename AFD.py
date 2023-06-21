@@ -131,6 +131,8 @@ class AFD:
             if all( self.delta[estado].get(simb, set())=={estado} for simb in self.Sigma.simbolos):
                 #estado limbo encontrado!
                 if(estado==self.q0): raise ValueError('El estado inicial no puede ser un estado limbo')
+                elif(estado in self.F):
+                    continue
                 self.estadosLimbo.add(estado)
                 self.Q.add(estado)
 
@@ -424,68 +426,154 @@ class AFD:
 
         return AFD
 
-    def AFD_simplificarAFD(self, afdinput ):
-        """Dado un AFD llamado afdInput, eliminar los estados inaccesibles (a través de un método de la clase AFD) y calcular un AFD equivalente con el mínimo número de estados de acuerdo al algoritmo estudiado en clase"""
-        simpDelta=copy.deepcopy(afdinput.delta)
-        simpQ= afdinput.Q.difference(afdinput.estadosInaccesibles)
-        simpF= afdinput.F.difference(afdinput.estadosInaccesibles)
-        for q in afdinput.delta:
-            if(q in afdinput.estadosLimbo):
-                simpDelta.pop(q)
-                continue
-            for simb in afdinput.delta[q]:
-                deltaSet= list(afdinput.delta[q][simb])[0]
-                if(deltaSet in afdinput.estadosLimbo):
-                    simpDelta[q].pop(simb)
-                    continue
-        afd1= AFD(afdinput.Sigma, simpQ, afdinput.q0, simpF, simpDelta).graficarAutomata()
 
-        # Inicializar conjuntos y diccionarios
-        states = afd1.Q
-        alphabet = set(afd1.Sigma.simbolos)
-        for transitions in afd1.delta.values():
-            alphabet.update(transitions.keys())
+    def AFD_simplificarAFD(self, afd1):
+        afd = AFD(afd1)
 
-        # Dividir los estados en finales y no finales
-        final_states = afd1.F
-        non_final_states = afd1.Q.difference(afd1.F)
+        # SIMPLIFICAR USANDO UNA MATRIZ COMPLETA
 
-        # Inicializar la partición inicial de los estados
-        partition = [final_states, non_final_states]
-        new_partition = partition.copy()
+        delta = afd.delta
+        F= afd.F
+        estados= sorted(list(afd.Q))
+        n = len(estados)  # Tamaño de la matriz
+        matriz = [['E'] * n for _ in range(n)]  # Inicializar matriz con 'E'
+        # Paso 1: Crear los pares de estados involucrados en el DFA dado
+        totalParejas=set()
+        marcados0= set()
+        # Paso 2: Marcar los pares (Qa, Qb) donde Qa está en F y Qb no está en F
+        for i in range(n):
+            totalParejas.update([  (estados[i],estados[x]) for x in range(n) if estados[i]!= estados[x] and i<x]  )
+            for j in range(n):
+                if (estados[i] in F) != (estados[j] in F):
+                    matriz[i][j] = '1'
+                    matriz[j][i] = '1'
+                    if (estados[i], estados[j]) not in marcados0 and (estados[j], estados[i]) not in marcados0 and estados[i]!=estados[j]:
+                        marcados0.add( (estados[i], estados[j]))
+        # Paso 3: Marcar los pares (Qa, Qb) que cumplen la condición de transición marcada
+        marcados = set()
+        ciclo = 2
+        while True:
+            nuevos_marcados = set()
+            for i in range(n):
+                for j in range(n):
+                    if matriz[i][j] == 'E':
+                        qa = estados[i]
+                        qb = estados[j]
+                        marcado = None
+                        for simb in afd.Sigma.simbolos:
+                            transQa= delta.get(qa, None)
+                            transQb = delta.get(qb, None)
+                            if(not transQa) or (not transQb): # Cualquier estado o cualquier simbolo que...
+                                marcado = False
+                                break
+                            transQa = transQa.get(simb, None)
+                            transQb = transQb.get(simb, None)
+                            if(not transQa) or (not transQb): # ...no exista, significa que esto conduce a un estado de no aceptación,
+                                # por lo que el caso (qa, qb) de ese instante se descarta inmediatamente
+                                # print('ERROR, SIMBOLO NO ENCONTRADO: ', transQa, transQb, 'simb: ', simb, 'originales qa y qb: ', qa, qb)
+                                # print('delta de qa:', delta.get(qa, None), '\ndelta de qb: ', delta.get(qb, None))
+                                marcado=False
+                                break
+                            if(transQa== transQb): # Se descarta tambien si el par es igual, ej: (q3,q3), esto no se usa en la matriz
+                                marcado=False
+                                break
+                            indexQa= estados.index(list(transQa)[0])
+                            indexQb= estados.index(list(transQb)[0])
+                            if(indexQa>indexQb):
+                                indexQa, indexQb = indexQb, indexQa
+                            # Con comparar uno de los dos sectores de un q1,q2 de la matriz basta:
+                            if (matriz[indexQa][indexQb] !='E' and int(matriz[indexQa][indexQb])<ciclo ): # int(matriz[indexQa][indexQb])<ciclo hace que se registre el ultimo ciclo
+                                cycle= str(ciclo)
+                                matriz[i][j] = cycle
+                                matriz[j][i] = cycle
+                                marcado=True
+                                break
+                        if marcado and (qa, qb) not in nuevos_marcados and (qb,qa) not in nuevos_marcados:
+                            nuevos_marcados.add((qa, qb)) # se agrega a los nuevos (i,j) no se agrega (j,i) por redundancia
+            if len(nuevos_marcados) == 0:
+                break
+            marcados.update(nuevos_marcados)
+            ciclo += 1
+        marcados.update(marcados0)
 
-        while new_partition != partition:
-            partition = new_partition.copy()
-            new_partition = []
+        # IMPRIMIR TABLA TRIANGULAR
 
-            for group in partition:
-                for symbol in alphabet:
-                    # Calcular el conjunto de destinos para el símbolo actual
-                    destinations = set()
-                    for state in group:
-                        transitions = afd1.delta[state].get(symbol, set())
-                        destinations.update(transitions)
+        for i in range(n):
+            for j in range(i+1):  # Solo imprime elementos hasta la diagonal principal
+                if(i==j):
+                    print(estados[i], end=' |\n')
+                else:
+                    print(matriz[j][i], end=" "*len(estados[i]) + "|" + " "*len(estados[i]) ) 
+            print()  # Salto de línea después de cada fila
 
-                    # Dividir el grupo actual en subgrupos basados en los destinos
-                    for sub_group in new_partition:
-                        intersect = sub_group.intersection(destinations)
-                        difference = sub_group.difference(destinations)
-                        if intersect and difference:
-                            new_partition.remove(sub_group)
-                            new_partition.append(intersect)
-                            new_partition.append(difference)
-                            break
-                    else:
-                        new_partition.append(destinations)
+        # IMPRIMIR TABLA DEL DELTA
 
-        # Construir el nuevo delta minimizado
-        minimized_delta = {}
-        for i, group in enumerate(new_partition):
-            state_name = 'q{}'.format(i)
-            for state in group:
-                minimized_delta[state] = state_name
+        noMarcados = totalParejas.difference(marcados)
+        tabla = PrettyTable()
+        simbolos=sorted(afd.Sigma.simbolos)
+        encabezado=['{p,q}']
+        for simb in simbolos:
+            encabezado.append('{' + f'δ(p,{simb}),δ(q,{simb})' + '}')
+        tabla.field_names = encabezado
+        n= len(matriz)
+        for i in range(n):
+            for j in range(n):
+                if (estados[i],estados[j]) in marcados:
+                    qa, qb = estados[i], estados[j]
+                    ciclo= int(matriz[i][j])
+                    filaTabla1=['{' + f'{qa},{qb}' + '}']
+                    if(ciclo >1 ):
+                        filaTabla1[0] = filaTabla1[0]+ f' X {ciclo}'
+                    for simb in afd.Sigma.simbolos:
+                        qaEv = list(delta[qa][simb])[0]
+                        qbEv = list(delta[qb][simb])[0]
+                        filaTabla1.append('{' + f'{qaEv},{qbEv}' + '}')
+                    tabla.add_row(filaTabla1)
+                elif (estados[i],estados[j]) in noMarcados:
+                    filaTabla2=['{' + f'{qa},{qb}' + '}']
+                    for simb in afd.Sigma.simbolos:
+                        qaEv = list(delta[qa][simb])[0]
+                        qbEv = list(delta[qb][simb])[0]
+                        filaTabla2.append('{' + f'{qaEv},{qbEv}' + '}')
+                    tabla.add_row(filaTabla2)
+        print(tabla)
 
-        return minimized_delta
+        # FUSIONAR ESTADOS EN EL DELTA ORIGINAL
+        sorted_noMarcados =sorted(list(noMarcados))
+        for qa, qb in sorted_noMarcados:
+            estadoNext=set()
+            new_key= '{'+f'{qa},{qb}'+'}'
+            afd.delta[new_key]=dict()
+            for simb in afd.Sigma.simbolos:
+                afd.delta[new_key].update({simb:set()})
+                estadoNext |=(delta[qa][simb])
+                estadoNext |= (delta[qb][simb])
+                if(len(estadoNext)==1):
+                    afd.delta[new_key][simb]={estadoNext.pop()}
+                else:
+                    strQnext= '{'+",".join(sorted(list(estadoNext)))+'}'
+                    delta[new_key][simb].add(strQnext)
+
+        for qa, qb in sorted_noMarcados:
+            strQ= '{'+f'{qa},{qb}'+'}'
+            if (qa in afd.F or qb in afd.F):
+                afd.F.difference_update({qa,qb})
+                afd.F.add(strQ)
+            if (qa in afd.Q or qb in afd.Q):
+                afd.Q.difference_update({qa,qb})
+                afd.Q.add(strQ)
+            for q in delta:
+                for simb in delta[q]:
+                    trans= delta[q][simb].pop()
+                    if(trans!=None):
+                        if(trans in {qa,qb}):
+                            delta[q][simb]={strQ}
+                        else:
+                            delta[q][simb]={trans}
+            del delta[qa]
+            del delta[qb]
+        afd.nombreArchivo=afd1.nombreArchivo + 'Simplificado'
+        return afd
 
     def imprimirAFDSimplificado(self,graficar: bool=False)-> str:
         """método para imprimir donde se vean los estados, estado inicial, estados de aceptación, y tabla de transiciones. No se deben mostrar los estados inaccesibles, ni los estados limbo, ni las transiciones que vayan a los estados limbo."""

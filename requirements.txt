@@ -1,5 +1,2 @@
 prettytable==3.7.0
-copy
 networkx
-re
-itertools
