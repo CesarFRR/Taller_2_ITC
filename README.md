@@ -2,7 +2,7 @@
 # Taller de autómatas de Introducción a la teoría de la computación 2023-1 (Python 3)
 
 <p align="center">
-  <img src="logo.JPG" alt="Icono de la apicación" width="200">
+  <img src="logo.JPG" alt="Icono de la apicación" width="400">
 </p>
 
 Este proyecto es una implementación en Python 3.10.7 de varios tipos de autómatas y máquinas de Turing complementado con su representación gráfica usando la biblioteca NetworkX. Los tipos de autómatas implementados son:
