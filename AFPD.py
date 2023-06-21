@@ -300,7 +300,7 @@ class AFPD:
             out+=f'\t{"yes" if aceptada else "no"}\n'
 
         try:
-            with open(f'./archivosSalida/{nombreArchivo}.txt', "w") as f:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', "w") as f:
                 f.write(out)
         except:
             with open(f'./archivosSalida/procesarListaCadenas_AFPD.txt', "w") as f:

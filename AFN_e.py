@@ -377,40 +377,41 @@ class AFN_Lambda:
         6. número de procesamientos de rechazo
         7. sí o no dependiendo de si la cadena es aceptada o no."""
         try:
-            with open(f'./archivosSalida/{nombreArchivo}', 'r+') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
                 archivo.truncate(0)
         except:
             nombreArchivo= 'procesarListaCadenas_AFNe'
-            with open(f'./archivosSalida/{nombreArchivo}', 'r+') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
                 archivo.truncate(0)
+        try:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
+                for cadena in listaCadenas:
+                    self.aceptacion = []
+                    self.rechazadas = []
+                    self.abortadas = []
+                    actual = self.q0
+                    self.procesamiento(cadena, actual, True, True)
 
-        with open(f'./archivosSalida/{nombreArchivo}', 'a') as archivo:
-            for cadena in listaCadenas:
-                self.aceptacion = []
-                self.rechazadas = []
-                self.abortadas = []
-                actual = self.q0
-                self.procesamiento(cadena, actual, True, True)
-
-                archivo.write(f'{cadena}\n')
-                try:
-                    archivo.write(f'{self.aceptacion[0]}\n')
-                except:
+                    archivo.write(f'{cadena}\n')
                     try:
-                        archivo.write(f'{self.rechazadas[0]}\n')
+                        archivo.write(f'{self.aceptacion[0]}\n')
                     except:
-                        archivo.write(f'{self.abortadas[0]}\n')
-                archivo.write(f'Numero de procesamientos\n{len(self.aceptacion+self.rechazadas+self.abortadas)}\n')
-                archivo.write(f'Numero de procesamientos de aceptacion\n{len(self.aceptacion)}\n')
-                archivo.write(f'Numero de procesamientos abortados\n{len(self.abortadas)}\n')
-                archivo.write(f'Numero de procesamientos rechazados\n{len(self.rechazadas)}\n')
-                if len(self.aceptacion)>=1:
-                    archivo.write('Si\n\n')
-                else:
-                    archivo.write('No\n\n')
-
+                        try:
+                            archivo.write(f'{self.rechazadas[0]}\n')
+                        except:
+                            archivo.write(f'{self.abortadas[0]}\n')
+                    archivo.write(f'Numero de procesamientos\n{len(self.aceptacion+self.rechazadas+self.abortadas)}\n')
+                    archivo.write(f'Numero de procesamientos de aceptacion\n{len(self.aceptacion)}\n')
+                    archivo.write(f'Numero de procesamientos abortados\n{len(self.abortadas)}\n')
+                    archivo.write(f'Numero de procesamientos rechazados\n{len(self.rechazadas)}\n')
+                    if len(self.aceptacion)>=1:
+                        archivo.write('Si\n\n')
+                    else:
+                        archivo.write('No\n\n')
+        except:
+            pass
         if imprimirPantalla:
-            with open(f'./archivosSalida/{nombreArchivo}', 'r') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'r') as archivo:
                 for line in archivo:
                     print(line)
 

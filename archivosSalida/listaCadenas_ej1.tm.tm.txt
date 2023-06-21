@@ -1,0 +1,8 @@
+abbabbabb	ABBABBAbb	no
+bbaabbbaa	BBAABBBAA	no
+aaabbbaba	AAABBBABA	no
+baaababab	BAAABABAB	no
+aaaabbaab	AAAABBaaB	no
+babbabbaa	BABBABBAA	no
+baaaabbaa	BAAAABBaa	no
+babababba	BABABABBA	no

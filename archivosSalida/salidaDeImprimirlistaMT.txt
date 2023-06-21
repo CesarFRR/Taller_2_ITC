@@ -1,7 +1,0 @@
-aabb	AABB	yes
-ab	AB	yes
-bbbba	BBbbA	no
-bbbaaa	BBBAAA	yes
-abababa	ABABABA	no
-a	A	no
-b	B	no

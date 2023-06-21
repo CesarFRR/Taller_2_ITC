@@ -1,5 +1,0 @@
-abbaab	[q0,abbaab]-> [q0,bbaab]-> [q1,baab]-> [q2,aab]-> [q2,ab]-> [q2,b]-> No Aceptacion	no
-babaab	[q0,babaab]-> [q1,abaab]-> [q1,baab]-> [q2,aab]-> [q2,ab]-> [q2,b]-> No Aceptacion	no
-abbbbb	[q0,abbbbb]-> [q0,bbbbb]-> [q1,bbbb]-> [q2,bbb]-> [q3,bb]-> [q3,b]-> No Aceptacion	no
-bbaaaa	[q0,bbaaaa]-> [q1,baaaa]-> [q2,aaaa]-> [q2,aaa]-> [q2,aa]-> [q2,a]-> Aceptacion	yes
-baaaba	[q0,baaaba]-> [q1,aaaba]-> [q1,aaba]-> [q1,aba]-> [q1,ba]-> [q2,a]-> Aceptacion	yes

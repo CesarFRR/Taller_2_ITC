@@ -1,3 +1,0 @@
-aab	[q0,aab]-> [q1,ab]-> [q0,b]-> No Aceptacion	no
-bba	[q0,bba]-> [q0,ba]-> [q0,a]-> Aceptacion	yes
-aaa	[q0,aaa]-> [q1,aa]-> [q0,a]-> Aceptacion	yes

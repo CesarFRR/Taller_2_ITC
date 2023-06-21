@@ -255,7 +255,7 @@ class AFD:
                 aceptada= False
             out+='\n'
         try:
-            with open(f'./archivosSalida/{nombreArchivo}.txt', "w") as f:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', "w") as f:
                 f.write(out)
         except:
             with open(f'./archivosSalida/procesarListaCadenas_AFD.txt', "w") as f:

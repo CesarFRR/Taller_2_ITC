@@ -263,7 +263,7 @@ class InterfazConsola:
                     for i in range(n):
                         c.append( M.Sigma.generarCadenaAleatoria(l))
                     print(string.ascii_lowercase[i]+'. Autómata: ', M.nombreArchivo, M.extension)
-                    print(c, M.procesarListaCadenas(listaCadenas=c, imprimirPantalla=True))
+                    print(c, M.procesarListaCadenas(listaCadenas=c, imprimirPantalla=True, nombreArchivo=f'listaCadenas_{M.nombreArchivo}.{M.extension}'))
                     print()
             elif opcion ==0:
                 print('\nPrograma Terminado.\n')

@@ -161,11 +161,11 @@ class MT:
             out += self.procesarCadena(cadena=cadena,modoProcesarListas=True) + '\n'
 
         try:
-            with open(f'./archivosSalida/{nombreArchivo}.txt', "w") as f:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', "w") as f:
                 f.write(out)
         except:
             nombreArchivo= 'procesarListaCadenas_MT'
-            with open(f'./archivosSalida/{nombreArchivo}', "w") as f:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', "w") as f:
                 f.write(out)
 
         if(imprimirPantalla):

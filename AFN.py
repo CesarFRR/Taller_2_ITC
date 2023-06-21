@@ -344,7 +344,7 @@ class AFN:
 
         return len(self.aceptacion+self.rechazadas+self.abortadas)
 
-    def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str, imprimirPantalla:bool):
+    def procesarListaCadenas(self, listaCadenas: list, nombreArchivo: str='', imprimirPantalla:bool=False):
         """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo; si este es inválido se asigna un nombre por defecto. Además,todo esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.Los campos deben estar separados por tabulación y son: ▪cadena, ▪sucesión de parejas (estado, símbolo) de cada paso del procesamientomás corto de aceptación (si lo hay, si no el más corto de rechazo)
         
         1. número de posibles procesamientos
@@ -353,14 +353,14 @@ class AFN:
         4. número de procesamientos de rechazo
         5. sí o no dependiendo de si la cadena es aceptada o no."""
         try:
-            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
                 archivo.truncate(0)
         except:
             nombreArchivo= 'procesarListaCadenas_AFN'
-            with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
                 archivo.truncate(0)
 
-        with open(f'./archivosSalida/{nombreArchivo}.txt', 'a') as archivo:
+        with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'a') as archivo:
             for cadena in listaCadenas:
                 self.procesamiento(cadena)
                 archivo.write(f'{cadena}\n')
@@ -381,7 +381,7 @@ class AFN:
                     archivo.write('No\n\n')
 
         if imprimirPantalla:
-            with open(f'./archivosSalida/{nombreArchivo}', 'r') as archivo:
+            with open(f'./archivosSalida/{nombreArchivo}.{self.extension}.txt', 'r') as archivo:
                 for line in archivo:
                     print(line)
 

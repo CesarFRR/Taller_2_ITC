@@ -120,7 +120,7 @@ class AF2P:
     def  computarTodosLosProcesamientos(cadena,  nombreArchivo: str)-> int:  
         """Debe  imprimir  cada  uno de los posibles procesamientos de acuerdo al formato establecido en el archivo AF2P.pdfe indicando si al final de cada procesamiento se llega a aceptación o rechazo. Debe llenar una lista  de  todos  procesamientos  de  aceptación,  una  lista  de  todos  los  procesamientos rechazados.  Debe  guardar  los  contenidos  de  estas  listas  cada  una  en  un  archivo(cuyos nombres  son  nombreArchivoAceptadasAF2P.txtynombreArchivoRechazadasAF2P.txt)  y además imprimirlas en pantalla. Se debe retornar el número de procesamientos realizados."""
         return 0
-    def procesarListaCadenas(self, listaCadenas,nombreArchivo, imprimirPantalla): 
+    def procesarListaCadenas(self, listaCadenas,nombreArchivo:str='', imprimirPantalla:bool=False): 
         """procesa cada cadenas con detalles pero los resultados deben ser impresos en un archivo cuyo nombre es nombreArchivo;  si  este  es  inválido  se  asigna  un  nombre  por  defecto.  Además,todo  esto debe ser impreso en pantalla de acuerdo al valor del Booleano imprimirPantalla.Los campos deben estar separados por tabulación y son: 
         1. cadena, 
         2. un procesamientode aceptación (si lo hay, si no unode rechazo), 

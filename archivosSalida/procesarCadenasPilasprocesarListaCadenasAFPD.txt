@@ -1,1 +1,0 @@
-(q0,aa,$)->(q0,a,A)->(q0,$,AA)>>rejected
