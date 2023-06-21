@@ -59,9 +59,9 @@ class ClasePrueba:
         elif metodo == 'Exportar':
             self.afd.exportar(args)
         elif metodo == 'Imprimir':
-            print(self.afd.toString(False))
+            print(self.afd.imprimirAFDSimplificado())
         elif metodo == 'Graficar':
-            self.afd.toString(True)
+            print(self.afd.toString(True))
     
     def probarAFN(self, metodo = None, args = None):
         if metodo == None:
@@ -81,9 +81,9 @@ class ClasePrueba:
         elif metodo == 'Exportar':
             self.afn.exportar(args)
         elif metodo== 'Imprimir':
-            print(self.afn.toString(False))
+            print(self.afn.imprimirAFNSimplificado())
         elif metodo== 'Graficar':
-            self.afn.toString(True)
+            print(self.afn.toString(True))
 
     def probarAFNLambda(self,  metodo = None, args = None):
         if metodo == None:
@@ -107,9 +107,9 @@ class ClasePrueba:
             archivo = args
             self.afn_lambda.exportar(archivo)
         elif metodo == 'Imprimir':
-            print(self.afn_lambda.toString(False))
+            print(self.afn_lambda.imprimirAFNLSimplificado())
         elif metodo == 'Graficar':
-            self.afn_lambda.toString(True)
+            print(self.afn_lambda.toString(True))
 
     def probarAFNtoAFD(self, args = None):
         self.afn_conversion = self.afn.AFNtoAFD(self.afn)

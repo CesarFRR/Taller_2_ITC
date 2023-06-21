@@ -113,7 +113,7 @@ class AFN:
     def toString(self, graficar:bool=False):
         """método para imprimir donde se vean los estados, estado inicial, estados de aceptación, estados inaccesibles, y tabla de transiciones."""
         simb=''
-        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ self.etiquetas[5]#+'\n'+'\n'.join(sorted((list(self.hallarEstadosInaccesibles()))))
+        out=self.etiquetas[0] + '\n' + self.etiquetas[1] +'\n'+self.Sigma.toStringEntrada()+'\n'+ self.etiquetas[2]+'\n'+'\n'.join(sorted(list(self.Q)))+'\n'+self.etiquetas[3] + '\n'+self.q0+'\n'+ self.etiquetas[4]+'\n'+ '\n'.join(sorted(list(self.F)))+ '\n'+ '#inaccesible' + '\n' + '\n'.join(sorted((list(self.estadosInaccesibles)))) + '\n' +self.etiquetas[5]+'\n'
         deltaLinea=''
         for q in sorted(self.delta.keys()):
             for simb in self.delta[q]:

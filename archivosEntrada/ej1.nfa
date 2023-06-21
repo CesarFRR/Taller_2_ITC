@@ -6,6 +6,7 @@ s0
 s1
 s2
 s3
+s4
 #initial
 s0
 #accepting
@@ -20,3 +21,4 @@ s2:a>s2;s3
 s2:b>s2
 s3:c>s1
 s3:b>s1;s2
+s4:b>s1
