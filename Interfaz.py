@@ -2,6 +2,8 @@ import tkinter as tk
 from ClasePrueba import ClasePrueba
 from Alfabeto import Alfabeto
 
+'''Crear inerfaz para ejecutar los metodos de la clase prueba, las impresiones se siguen realizando en consola'''
+
 class AutomataInterface(tk.Tk):
     def __init__(self):
         super().__init__()

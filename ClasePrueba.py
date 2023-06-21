@@ -153,4 +153,4 @@ class ClasePrueba:
         print(sim.toString())
     
     def probarSimplificacion(self):
-        print(self.afd.AFD_simplificarAFD(self.afd))
+        self.afd = self.afd.AFD_simplificarAFD(self.afd)
