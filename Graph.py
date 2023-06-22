@@ -160,8 +160,8 @@ class graficarAutomata:
         pdf.savefig()
         plt.close()
         pdf.close()
-    def exportarGrafos(self, listaAutomatas):
-        pdf = pdf_backend.PdfPages("./archivosSalida/grafos.pdf")
+    def exportarGrafos(self, listaAutomatas, nombreArchivo):
+        pdf = pdf_backend.PdfPages(f"./archivosSalida/{nombreArchivo}.pdf")
         for automata in listaAutomatas: 
             data= None
 

@@ -7,6 +7,15 @@ from Graph import graficarAutomata
 mt1=None
 af2p1=None
 graf = graficarAutomata()
+def clear():
+ 
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+ 
+    # for mac and linux(here, os.name is 'posix')
+    else:
+        _ = system('clear')
 #===================================================================#
 def AF2P_construirDeArchivo(nombreArchivo):
     print('Factor 16 - Construir de archivo:')
@@ -71,15 +80,76 @@ def MT_procesar_funcion(mt1:MT):
 #MT_procesar_funcion(mt1=mt1)
 #===================================================================#
 
-def clear():
- 
-    # for windows
-    if name == 'nt':
-        _ = system('cls')
- 
-    # for mac and linux(here, os.name is 'posix')
-    else:
-        _ = system('clear')
+
+print('AFD PRUEBAS: \n\nSimplificar AFD:\n')
+
+afdNosimp = AFD('ej5_simplificar.dfa')
+print(afdNosimp.toString())
+
+afdSimp = afdNosimp.AFD_simplificarAFD(afdNosimp)
+print(afdSimp.toString())
+
+graf.exportarGrafos([afdNosimp, afdSimp], 'SimplificarAFD')
+
+input ()
+clear()
+
+print('Producto cartesiano O:')
+
+afd2= AFD('impares.dfa')
+afd3= AFD('noContieneBB.dfa')
+
+PCo= afd2.AFD_hallarProductoCartesianoO(afd2, afd3)
+
+graf.exportarGrafos([afd2, afd3], 'PO_o')
+
+
+input ()
+clear()
+
+print('Producto cartesiano Y:')
+
+afd2= AFD('impares.dfa')
+afd3= AFD('noContieneBB.dfa')
+
+PCo= afd2.AFD_hallarProductoCartesianoY(afd2, afd3)
+
+graf.exportarGrafos([afd2, afd3], 'PO_y')
+
+input ()
+clear()
+
+print('Producto cartesiano diff:')
+
+afd2= AFD('impares.dfa')
+afd3= AFD('noContieneBB.dfa')
+
+PCo= afd2.AFD_hallarProductoCartesianoDiferencia(afd2, afd3)
+
+graf.exportarGrafos([afd2, afd3], 'PO_diff')
+
+
+input ()
+clear()
+
+print('Producto cartesiano DIff sim:')
+
+afd2= AFD('impares.dfa')
+afd3= AFD('noContieneBB.dfa')
+
+PCo= afd2.AFD_hallarProductoCartesianoDiferenciaSimetrica(afd2, afd3)
+
+graf.exportarGrafos([afd2, afd3], 'PO_diffSim')
+
+
+
+
+
+
+
+
+
+
 
 # afd1= AFD('noContieneBB.dfa')
 # afd2= AFD('impares.dfa')
@@ -234,7 +304,7 @@ clear()
 print("Factor 39 validacion nfe to afd:")
 print(nfe.delta)
 print(afd1.delta)
-graf.exportarGrafos([nfe, afd1])
+graf.exportarGrafos([nfe, afd1], 'validacionNFE_AFD')
 
 
 input ()
@@ -242,7 +312,7 @@ clear()
 print("Factor 40 validacion nfe to afn:")
 print(nfe.delta)
 print(afn1.delta)
-graf.exportarGrafos([nfe, afn1])
+graf.exportarGrafos([nfe, afn1], 'validacionNFE_AFN')
 
 
 
