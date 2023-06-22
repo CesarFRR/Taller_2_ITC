@@ -128,7 +128,7 @@ class AFN_Lambda:
 
     def exportar(self, archivo: str):
         """Guardar el autómata en un archivo con el formato especificado (Formato de Entrada.pdf)"""
-        with open(f'./archivosSalida/{archivo}', "w") as f:
+        with open(f'./archivosSalida/{archivo}.{self.extension}', "w") as f:
             f.write(self.toString())
 
     def l_clausura(nfe1, states):

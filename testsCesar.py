@@ -2,9 +2,11 @@ from MT import MT
 from AF2P import AF2P
 from AFD import AFD
 from AFN_e import AFN_Lambda
-import os
+from os import system, name
+from Graph import graficarAutomata
 mt1=None
 af2p1=None
+graf = graficarAutomata()
 #===================================================================#
 def AF2P_construirDeArchivo(nombreArchivo):
     print('Factor 16 - Construir de archivo:')
@@ -69,7 +71,15 @@ def MT_procesar_funcion(mt1:MT):
 #MT_procesar_funcion(mt1=mt1)
 #===================================================================#
 
-
+def clear():
+ 
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+ 
+    # for mac and linux(here, os.name is 'posix')
+    else:
+        _ = system('clear')
 
 # afd1= AFD('noContieneBB.dfa')
 # afd2= AFD('impares.dfa')
@@ -85,14 +95,16 @@ nfe = AFN_Lambda('ej2.nfe')
 nfe.graficarAutomata()
 
 input ()
+clear()
 try:
     print("Factor 26 lambda clausura para un estado:")
-    nfe.lambda_clausura(nfe.q0, imprimir=True)
+    nfe.lambda_clausura({sorted(nfe.F)[0]}, imprimir=True)
 except:
     pass
 
 
 input ()
+clear()
 try:
     print("Factor 27 lambda clausura para varios estados:")
     nfe.lambda_clausura(nfe.Q, imprimir=True)
@@ -102,37 +114,48 @@ except:
 
 
 input ()
+clear()
 try:
     print("Factor 28 inaccesibles:")
+    inacces= nfe.hallarEstadosInaccesibles()
+    
     print(nfe.hallarEstadosInaccesibles())
+    if(not inacces):
+        print('Conjunto vacío --> No hay inaccesibles')
 except:
     pass
 
-
+input ()
+clear()
 try:
     print("Factor 29 imprimir automata:")
     print(nfe.imprimirAFNLSimplificado())
 except:
     pass
+
+
+
+
 input ()
- 
-
-
-
-input ()
+clear()
 try:
     print("Factor 30 export:")
     print(nfe.exportar('NFE_EXPORTADO'))
 except:
     pass
+cadena='aabbbca'
 
+input ()
+clear()
 try:
     print("Factor 31 procesar en detalle:")
     print(nfe.procesarCadenaConDetalles(cadena))
 except:
     pass
-cadena='aabbbca'
+
 input ()
+clear()
+
 try:
     print("Factor 32 computar todos los proc:")
     print(nfe.computarTodosLosProcesamientos(cadena=cadena, nombreArchivo='NFE_computado'))
@@ -141,8 +164,10 @@ except:
 
 
 
-
+lista=['aabba', 'sasd', 'ccaac',' aaccaba']
 input ()
+clear()
+
 try:
     print("Factor 33 lista cadenas:")
     print(nfe.procesarListaCadenas(lista))
@@ -150,8 +175,10 @@ except:
     pass
 
 
-lista=['aabba', 'sasd', 'ccaac',' aaccaba']
+
 input ()
+clear()
+
 try:
     print("Factor 34 to AFN")
     afn1= nfe.AFN_LambdaToAFN(nfe1=nfe, imprimir=True)
@@ -162,8 +189,10 @@ except:
 
 
 input ()
+clear()
+print("Factor 35 to afd:")
 try:
-    print("Factor 35 to afd:")
+    
     afd1= nfe.AFN_LambdaToAFD(nfe1=nfe, imprimir=True)
     print(afd1.toString(graficar=True))
 except:
@@ -171,45 +200,50 @@ except:
 
 
 input ()
+clear()
+
 try:
- 
     print("Factor 36 to afd y procesar con detalles:")
     print(nfe.procesarCadenaConDetallesConversion(cadena=cadena))
 except:
     pass
 
 
-input ()
 
 
 
 input ()
- 
+clear()
+
 print("Factor 37 to afd y procesar lista con detalles:")
 nfe.procesarListaCadenasConversion(listaCadenas=lista, nombreArchivo='listaCadenaConversion', imprimirPantalla=True)
 
+
+
 input ()
- 
+clear()
+
 print("Factor 38 manejo alfabeto:")
 print(nfe.Sigma.simbolos, type(nfe.Sigma.simbolos))
 
+
+
 input ()
- 
-print("Factor 39 validacion afn to afd:")
+clear()
+
+print("Factor 39 validacion nfe to afd:")
 print(nfe.delta)
 print(afd1.delta)
-nfe.graficarAutomata()
-afd1.graficarAutomata()
+graf.exportarGrafos([nfe, afd1])
+
 
 input ()
- 
-print("Factor 40 validacion afn to afn:")
+clear()
+print("Factor 40 validacion nfe to afn:")
 print(nfe.delta)
 print(afn1.delta)
-nfe.graficarAutomata()
-afn1.graficarAutomata()
+graf.exportarGrafos([nfe, afn1])
 
 
 
 
-# es esnecillo solo es un input para cada enter, limpiar la pantalla antes de ejecutar cada funcion y luego imprimir

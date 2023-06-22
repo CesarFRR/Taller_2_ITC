@@ -1,4 +1,0 @@
-aaab	(q0,aaab,$)->(q0,aab,A)->(q0,ab,AA)->(q1,b,AAA)->(q1,$,AA)>>rejected	no
-abbb	(q0,abbb,$)->(q1,bbb,A)->(q1,bb,A)->(q1,b,A)->(q1,$,A)>>rejected	no
-baba	(q1,baba,$)->(q1,baba,$)>>aborted(q1,$,$)>>accepted	yes
-bbbb	(q1,bbbb,$)->(q1,bbbb,$)>>aborted(q1,$,$)>>accepted	yes
