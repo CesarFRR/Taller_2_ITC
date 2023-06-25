@@ -91,6 +91,27 @@ print(afdSimp.toString())
 
 graf.exportarGrafos([afdNosimp, afdSimp], 'SimplificarAFD')
 
+
+
+
+input ()
+clear()
+print('AFN Lambda_to_AFN')
+nfe0= AFN_Lambda('ej2.nfe')
+nfa0= nfe0.AFN_LambdaToAFN(nfe1=nfe0, imprimir=True)
+
+input ()
+
+print('AFN_to_AFD')
+
+dfa0= nfa0.AFNtoAFD(nfa0, imprimir=True)
+
+
+input ()
+
+
+graf.exportarGrafos([nfe0, nfa0, dfa0], 'conversiones')
+
 input ()
 clear()
 
@@ -101,20 +122,17 @@ afd3= AFD('noContieneBB.dfa')
 
 PCo= afd2.AFD_hallarProductoCartesianoO(afd2, afd3)
 
-graf.exportarGrafos([afd2, afd3], 'PO_o')
+graf.exportarGrafos([afd2, afd3, PCo], 'PC_o')
 
-
-input ()
-clear()
 
 print('Producto cartesiano Y:')
 
 afd2= AFD('impares.dfa')
 afd3= AFD('noContieneBB.dfa')
 
-PCo= afd2.AFD_hallarProductoCartesianoY(afd2, afd3)
+PCy= afd2.AFD_hallarProductoCartesianoY(afd2, afd3)
 
-graf.exportarGrafos([afd2, afd3], 'PO_y')
+graf.exportarGrafos([afd2, afd3, PCy], 'PC_y')
 
 input ()
 clear()
@@ -124,9 +142,9 @@ print('Producto cartesiano diff:')
 afd2= AFD('impares.dfa')
 afd3= AFD('noContieneBB.dfa')
 
-PCo= afd2.AFD_hallarProductoCartesianoDiferencia(afd2, afd3)
+PCdiff= afd2.AFD_hallarProductoCartesianoDiferencia(afd2, afd3)
 
-graf.exportarGrafos([afd2, afd3], 'PO_diff')
+graf.exportarGrafos([afd2, afd3, PCdiff], 'PC_diff')
 
 
 input ()
@@ -137,9 +155,9 @@ print('Producto cartesiano DIff sim:')
 afd2= AFD('impares.dfa')
 afd3= AFD('noContieneBB.dfa')
 
-PCo= afd2.AFD_hallarProductoCartesianoDiferenciaSimetrica(afd2, afd3)
+PCdsim= afd2.AFD_hallarProductoCartesianoDiferenciaSimetrica(afd2, afd3)
 
-graf.exportarGrafos([afd2, afd3], 'PO_diffSim')
+graf.exportarGrafos([afd2, afd3, PCdsim], 'PC_diffSim')
 
 
 

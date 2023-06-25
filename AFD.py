@@ -4,7 +4,6 @@ from Alfabeto import Alfabeto
 from itertools import product as productoCartesiano
 from prettytable import PrettyTable
 from Graph import graficarAutomata
-#from visual_automata.fa.dfa import VisualDFA
 
 class AFD:
     """
@@ -359,13 +358,15 @@ class AFD:
         nuevoSigma=afd1.Sigma 
         nuevoQ=set()
         nuevoq0=''
-        nuevoF= set(afd1.F).difference(set(afd2.F)) # DIFERENCIA: Se restan conjuntos
+        nuevoF= set() 
         nuevoDelta={}
         out=[] #Lo que el profe pide imprimir --> ProductoCartesiano.png
         for q1, q2 in paresOrdenados:
             nuevoEstado=f'{q1},{q2}'
             nuevoQ.add(nuevoEstado)
             nuevoDelta.update({nuevoEstado:{}})
+            if(q1 in afd1.F and q2 not in afd2.F): # DIFERENCIA: 
+                nuevoF.add(nuevoEstado)
             if({q1,q2}=={afd1.q0, afd2.q0}):
                 nuevoq0 =nuevoEstado
 
@@ -389,13 +390,15 @@ class AFD:
         nuevoSigma=afd1.Sigma 
         nuevoQ=set()
         nuevoq0=''
-        nuevoF= set(afd1.F).symmetric_difference(set(afd2.F)) # DIFERENCIA SIMÉTRICA: Se restan conjuntos
+        nuevoF= set() 
         nuevoDelta={}
         out=[] #Lo que el profe pide imprimir --> ProductoCartesiano.png
         for q1, q2 in paresOrdenados:
             nuevoEstado=f'{q1},{q2}'
             nuevoQ.add(nuevoEstado)
             nuevoDelta.update({nuevoEstado:{}})
+            if(q1 in afd1.F) != (q2 in afd2.F): # DIFERENCIA SIMETRICA 
+                nuevoF.add(nuevoEstado)
             if({q1,q2}=={afd1.q0, afd2.q0}):
                 nuevoq0 =nuevoEstado
             for simbolo in afd1.Sigma.simbolos: 

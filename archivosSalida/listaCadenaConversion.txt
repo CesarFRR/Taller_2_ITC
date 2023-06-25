@@ -1,4 +1,0 @@
-aabba	[s0,aabba]-> [L,abba]-> [L,bba]-> [L,ba]-> [L,a]-> No Aceptacion	no
-sasd	[s0,sasd]-> Procesamiento abortado
-ccaac	[s0,ccaac]-> [L,caac]-> [L,aac]-> [L,ac]-> [L,c]-> No Aceptacion	no
- aaccaba	[s0, aaccaba]-> Procesamiento abortado
