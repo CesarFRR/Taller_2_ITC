@@ -62,5 +62,5 @@ InterfazCLI.py --> Es una interfaz de consola, diseñada para ejecutar y probar 
 - [Juan Montoya (Hallip)](https://github.com/Hallip)
 - [César Rincon (CesarFRR)](https://github.com/CesarFRR)
 - [Johan Rodriguez (Homeroso)](https://github.com/Homeroso)
-- [Anzola Tachak (ganzola)](https://github.com/ganzola)
+- [Gabriel Anzola Tachak (ganzola)](https://github.com/ganzola)
 
