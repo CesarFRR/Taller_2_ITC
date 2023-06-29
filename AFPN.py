@@ -27,7 +27,7 @@ class AFPN:
     aceptacion = []
     rechazadas = []
     abortadas = []
-
+    nombreArchivo = ''
     def __init__(self, *args):
         if (len(args) == 1 and isinstance(args[0], str)):  # Inicializar por archivo txt
             if (not args[0].endswith("." + self.extension)):raise ValueError("El archivo proporcioando no es de formato ", self.extension)

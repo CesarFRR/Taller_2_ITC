@@ -30,11 +30,14 @@ class ClasePrueba:
         #self.interfaz = args[0]
         pass
     
-    def main(self, metodo = None, args = None):
+    def main(self, metodo = None, args = None, afpn = False):
         tipoAutomata = metodo[0]
         metodoAutomata = metodo[1]
         if tipoAutomata == 'AFD':
-            self.probarAFD(metodoAutomata, args)
+            if afpn:
+                self.probarAFD(metodoAutomata, args, True)
+            else:
+                self.probarAFD(metodoAutomata, args)
         elif tipoAutomata == 'AFN':
             if metodoAutomata == 'AFNtoAFD':
                 self.probarAFNtoAFD(args)
@@ -87,18 +90,21 @@ class ClasePrueba:
         self.listaAutomatas= automatas
         return automatas
     
-    def probarAFD(self, metodo = None, args = None):
+    def probarAFD(self, metodo = None, args = None, afpn = False):
         if metodo == None:
             if self.afd is not None:
                 if len(args) == 1:
                     self.afd2 = AFD(args[0])
                 else:
                     self.afd2 = AFD(args[0], args[1], args[2], args[3], args[4])
-                self.probarProductoCartesiano()
+                if afpn == False:
+                    self.probarProductoCartesiano()
             elif len(args) == 1:
                 self.afd = AFD(args[0])
             else:
                 self.afd = AFD(args[0], args[1], args[2], args[3], args[4])
+            if afpn:
+                self.probarAFPNcartesiano(self.afd)
             
         if metodo == 'Procesar cadena':
             aceptada = self.afd.procesarCadena(args)
@@ -335,5 +341,10 @@ class ClasePrueba:
         
         print(sim.toString())
         graph.exportarGrafos([y, o, dif, sim], 'productoCartesianoAFD')
+
     def probarSimplificacion(self):
         self.afd = self.afd.imprimirAFDSimplificado(True)
+    
+    def probarAFPNcartesiano(self, afd):
+        self.afpn_cartesiano = self.afpn.hallarProductoCartesianoConAFD(afd)
+        print(self.afpn_cartesiano.toString(True))

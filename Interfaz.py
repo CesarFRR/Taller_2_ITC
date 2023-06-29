@@ -5,6 +5,8 @@ from Alfabeto import Alfabeto
 '''Crear inerfaz para ejecutar los metodos de la clase prueba, las impresiones se siguen realizando en consola'''
 
 class AutomataInterface(tk.Tk):
+    count = 0
+
     def __init__(self):
         super().__init__()
         self.title("Interfaz de Autómata Finito")
@@ -77,7 +79,10 @@ class AutomataInterface(tk.Tk):
         '''Crear automata desde archivo'''
         archivo = self.archivo_importar.get().strip(' ')
         tipo_automata = self.tipo_automata.get()
-        self.prueba.main([tipo_automata, None], [archivo])
+        if self.count == 0:
+            self.prueba.main([tipo_automata, None], [archivo])
+        else:
+            self.prueba.main([tipo_automata,None], [archivo], True)
         self.mostrar_ventana_metodo(tipo_automata)
 
 
@@ -149,6 +154,7 @@ class AutomataInterface(tk.Tk):
             tk.Button(ventana_metodo, text = 'AFN a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNtoAFD'], [self.cadena_entrada.get(),self.lista_cadenas.get().split(','),self.archivo_lista.get()])).grid(row=11,column=1)
         
         elif tipoAutomata == 'AFPN':
+            self.count+=1
             tk.Button(ventana_metodo, text = 'Producto cartesiano', command= lambda:[self.volver_ventana_principal(ventana_metodo)]).grid(row=11, column=0,pady = 10)
             tk.Button(ventana_metodo, text="Computar todos los procesamientos", command=lambda:self.prueba.main([tipoAutomata, 'Computar todos los procesamientos'], self.cadena_entrada.get())).grid(row=3, column=0, columnspan=2, padx=10, pady=5)
 
@@ -169,14 +175,6 @@ class AutomataInterface(tk.Tk):
         
         # Mostrar nuevamente la ventana principal
         self.deiconify()
-    
-    def producto_cartesiano(self, ventana):
-
-        ventana.destroy()
-
-        tk.Label(self, text = 'Ingrese el archivo').grid(row=0, column=0, columnspan= 2)
-        tk.Entry(self, textvariable=self.archivo_importar).grid(row=0, column=0, columnspan= 1)
-        tk.Button(self, text= 'Importar', command=self.importar).grid(row=8, column=3, columnspan=2)
 
     def close(self):
         '''Cerrar ventana y finalizar programa'''
