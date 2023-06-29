@@ -110,6 +110,9 @@ class AFN_Lambda:
                 deltaSet= deltaSet[0] if len(deltaSet)==1 else ';'.join(deltaSet)
                 deltaLinea=f'{Q}:{simb}>{deltaSet}'
                 out+='\n'+deltaLinea
+        
+        if graficar:
+            self.graficarAutomata()
         return out
     def imprimirAFNLSimplificado(self, graficar: bool=False)-> str:
         """método para imprimir donde se vean los estados, estado inicial, estados de aceptacióny tabla de transiciones. No se deben mostrar los estados inaccesibles.El formato debe ser el adjunto acá (Formato de Entrada.pdf).Se darán puntos adicionales si se muestra el grafo (Se puede con graficar = True)"""

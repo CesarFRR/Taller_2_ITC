@@ -25,6 +25,7 @@ class AutomataInterface(tk.Tk):
         self.archivo_lista = tk.StringVar()
         self.archivo_exportar = tk.StringVar()
         self.archivo_importar = tk.StringVar()
+        self.l_estados = tk.StringVar()
         self.st = tk.Entry(self, textvariable=self.transiciones_start, width=10)
         self.sy= tk.Entry(self, textvariable=self.transiciones_symbol, width=10)
         self.en = tk.Entry(self, textvariable=self.transiciones_end, width=10)
@@ -142,13 +143,23 @@ class AutomataInterface(tk.Tk):
             tk.Button(ventana_metodo, text = 'Hallar complemento', command= self.prueba.probarComplemento).grid(row=12, column=0, columnspan= 2)
         
         elif tipoAutomata == 'AFN':
+            
             tk.Button(ventana_metodo, text="Computar todos los procesamientos", command=lambda:self.prueba.main([tipoAutomata, 'Computar todos los procesamientos'], self.cadena_entrada.get())).grid(row=3, column=0, columnspan=2, padx=10, pady=5)
             tk.Entry(ventana_metodo, textvariable=self.cadena_entrada).grid(row=11,column=0,pady = 10)
             tk.Button(ventana_metodo, text = 'AFN a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNtoAFD'], [self.cadena_entrada.get(),self.lista_cadenas.get().split(','),self.archivo_lista.get()])).grid(row=11,column=1)
         
+        elif tipoAutomata == 'AFPN':
+            tk.Button(ventana_metodo, text = 'Producto cartesiano', command= lambda:[self.volver_ventana_principal(ventana_metodo)]).grid(row=11, column=0,pady = 10)
+            tk.Button(ventana_metodo, text="Computar todos los procesamientos", command=lambda:self.prueba.main([tipoAutomata, 'Computar todos los procesamientos'], self.cadena_entrada.get())).grid(row=3, column=0, columnspan=2, padx=10, pady=5)
+
         elif tipoAutomata == 'AFNLambda':
+            tk.Button(ventana_metodo, text="Computar todos los procesamientos", command=lambda:self.prueba.main([tipoAutomata, 'Computar todos los procesamientos'], self.cadena_entrada.get())).grid(row=3, column=0, columnspan=2, padx=10, pady=5)
             tk.Entry(ventana_metodo, textvariable=self.cadena_entrada).grid(row=11,column=0,pady = 10)
-            tk.Button(ventana_metodo, text = 'AFNLambda a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNLambdaToAFD'], self.cadena_entrada.get())).grid(row=11,column=0, columnspan=2)
+            tk.Button(ventana_metodo, text = 'AFNLambda a AFD', command=lambda:self.prueba.main([tipoAutomata, 'AFNLambdaToAFD'], self.cadena_entrada.get())).grid(row=11,column=1, columnspan=2)
+            tk.Entry(ventana_metodo, textvariable=self.l_estados).grid(row=12,column=0,pady = 10)
+            tk.Button(ventana_metodo, text = 'lamda clausura', command=lambda:self.prueba.main([tipoAutomata, 'Lamda clausura'], self.l_estados.get().split(','))).grid(row=12,column=1, columnspan=2)
+
+
 
         tk.Button(ventana_metodo, text="Salir", command=self.close).grid(row=0, column=1, columnspan=1)
         
@@ -158,6 +169,14 @@ class AutomataInterface(tk.Tk):
         
         # Mostrar nuevamente la ventana principal
         self.deiconify()
+    
+    def producto_cartesiano(self, ventana):
+
+        ventana.destroy()
+
+        tk.Label(self, text = 'Ingrese el archivo').grid(row=0, column=0, columnspan= 2)
+        tk.Entry(self, textvariable=self.archivo_importar).grid(row=0, column=0, columnspan= 1)
+        tk.Button(self, text= 'Importar', command=self.importar).grid(row=8, column=3, columnspan=2)
 
     def close(self):
         '''Cerrar ventana y finalizar programa'''

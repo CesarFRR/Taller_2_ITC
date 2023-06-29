@@ -325,7 +325,7 @@ class AFPD:
                 out+='\n'+deltaLinea
                 #print ('deltaLinea: ',deltaLinea)
         if graficar:
-            self.gra
+            self.graficarAutomata()
         return out
     
     def exportar(self, nombreArchivo):
